@@ -380,7 +380,7 @@ async function checkWithAI(){
 問題「未來半年我的工作會有什麼轉變」→ {"status":"ok","message":"這個問題很好！聚焦在半年內、主題明確，能量會非常清晰 ✨","suggested":null}`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:systemPrompt,messages:[{role:'user',content:`問題：「${q}」`}]})});
+    const resp=await fetch('https://broad-leaf-2208.cvcv99662.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:systemPrompt,messages:[{role:'user',content:`問題：「${q}」`}]})});
     const data=await resp.json();
     const raw=data.content?.map(b=>b.text||'').join('')||'{}';
     let parsed;
@@ -529,7 +529,7 @@ async function callClaude(){
   const cardDesc=drawnCards.map(c=>`${c.position}：${c.name}（${c.orientation}）`).join('、');
   const prompt=`我是小都塔羅的使用者。我的問題是：「${userQuestion}」\n我抽到的三張牌是：${cardDesc}。\n\n請用小都塔羅的溫柔語氣，以「能量流故事」方式整合解讀這三張牌（過去主因→現在能量→未來半年方向），請避免逐張死板解牌，語氣要有陪伴感，避免命定論。解讀約 250 字。\n\n然後另起一行，生成格式如下的覺察句：\n【覺察句】「＿＿＿＿」\n\n覺察句要第一人稱、呼應牌義，10–20 字。`;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'你是小都塔羅的占卜解讀助理。語氣溫柔、有陪伴感、具體可落地。避免命定論。使用繁體中文。',messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://broad-leaf-2208.cvcv99662.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'你是小都塔羅的占卜解讀助理。語氣溫柔、有陪伴感、具體可落地。避免命定論。使用繁體中文。',messages:[{role:'user',content:prompt}]})});
     ld.style.display='none';
     const data=await resp.json();
     const text=data.content?.map(b=>b.text||'').join('')||'';
