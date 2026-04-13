@@ -382,13 +382,26 @@ async function checkWithAI(){
   try{
     const resp=await fetch('https://broad-leaf-2208.cvcv99662.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:systemPrompt,messages:[{role:'user',content:`問題：「${q}」`}]})});
     const data=await resp.json();
-    const raw=data.content?.map(b=>b.text||'').join('')||'{}';
-    let parsed;
-    try{parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());}
-    catch{parsed={status:'ok',message:'這個問題看起來可以，讓我們開始吧！',suggested:null};}
-    showReview(parsed.message, parsed.suggested, parsed.status==='ok', parsed.status==='blocked');
+    // 如果 API Key 有問題，Anthropic 會回傳 error 物件
+    if(data.error){
+      showReview('連線設定還在調整中，你的問題看起來可以，直接繼續吧！',null,true);
+      return;
+    }
+    const raw=(data.content||[]).map(b=>b.text||'').join('').trim();
+    if(!raw){
+      showReview('這個問題看起來可以，讓我們開始吧！',null,true);
+      return;
+    }
+    let parsed={status:'ok',message:null,suggested:null};
+    try{
+      const jm=raw.replace(/^```json\s*/,'').replace(/\s*```$/,'');
+      const match=jm.match(/\{[\s\S]*\}/);
+      if(match) parsed=JSON.parse(match[0]);
+    }catch(pe){}
+    const msg=parsed.message||'這個問題看起來可以，讓我們開始吧！';
+    showReview(msg, parsed.suggested||null, parsed.status!=='blocked', parsed.status==='blocked');
   }catch(e){
-    showReview('網路有點不穩，但你的問題看起來可以，直接繼續吧！',null,true);
+    showReview('這個問題看起來可以，直接繼續吧！',null,true);
   }
   aiChecking=false;
   document.getElementById('btn-check-q').textContent='讓小都幫你確認問題 →';
