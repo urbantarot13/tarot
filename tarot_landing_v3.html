@@ -20,6 +20,88 @@
 html{scroll-behavior:smooth;}
 body{background:var(--warm);color:var(--text);font-family:var(--body);font-weight:300;line-height:1.8;overflow-x:hidden;}
 
+/* COMPOUND GROWTH */
+.compound{background:linear-gradient(175deg,#fdfaf6 0%,#f5ede2 40%,#ede3d6 100%);padding:7rem 2rem;}
+.compound-hook-title{font-family:var(--serif);font-size:clamp(2rem,4vw,3.2rem);font-weight:300;color:var(--brown-dark);margin-bottom:1.25rem;line-height:1.3;}
+.compound-stat-row{display:grid;grid-template-columns:auto 1px 1fr;gap:3rem;align-items:center;padding:2.5rem;background:rgba(253,250,246,.7);border:1px solid rgba(184,146,74,.18);margin-top:1rem;}
+.compound-stat-block{text-align:center;}
+.compound-stat-num{font-family:var(--serif);font-size:clamp(3.5rem,7vw,6rem);color:var(--gold);display:block;line-height:1;}
+.compound-stat-label{font-size:.82rem;color:var(--text-mid);letter-spacing:.1em;white-space:nowrap;}
+.compound-stat-divider{width:1px;height:80px;background:rgba(184,146,74,.2);margin:0 auto;}
+.compound-stat-text p{color:var(--text-mid);font-size:.9rem;line-height:2;margin-bottom:.75rem;}
+.compound-stat-punchline{font-family:var(--serif);font-size:1.05rem;color:var(--brown-dark);}
+.compound-stat-punchline strong{color:var(--rose-deep);}
+
+.compound-quit{margin-top:5rem;}
+.compound-quit-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.compound-sub-title{font-family:var(--serif);font-size:clamp(1.4rem,3vw,2rem);font-weight:300;color:var(--brown-dark);margin-bottom:1rem;line-height:1.35;}
+.compound-quit-text p{color:var(--text-mid);font-size:.9rem;line-height:2;margin-bottom:.75rem;}
+.compound-quit-visual{position:relative;}
+.cq-label-top{font-size:.78rem;color:var(--text-light);letter-spacing:.1em;margin-bottom:.5rem;text-align:right;}
+.cq-chart svg{width:100%;height:auto;}
+
+.compound-job{margin-top:5rem;}
+.compound-job-sub{color:var(--text-mid);font-size:.9rem;line-height:2;margin-bottom:2rem;}
+.compound-diamond-wrap{width:100%;max-width:720px;margin:0 auto 1.5rem;}
+.cd-svg{width:100%;height:auto;display:block;}
+
+.compound-payslip{display:flex;align-items:center;gap:2.5rem;padding:2rem 2.5rem;background:rgba(61,43,31,.04);border:1px solid rgba(107,79,58,.12);margin-top:1.5rem;}
+.compound-payslip-num{font-family:var(--serif);font-size:clamp(2rem,5vw,3.5rem);color:rgba(107,79,58,.22);white-space:nowrap;font-style:italic;}
+.compound-payslip-desc p{font-family:var(--serif);font-size:1.1rem;color:var(--brown-dark);margin-bottom:.4rem;}
+.compound-payslip-sub{font-size:.85rem;color:var(--text-mid);line-height:1.9;font-style:normal;}
+
+.compound-curve{margin-top:5rem;}
+.compound-curve-sub{color:var(--text-mid);font-size:.9rem;margin-bottom:2.5rem;line-height:2;}
+.compound-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:2rem;align-items:center;margin-bottom:3rem;}
+.cc-before,.cc-after{padding:2rem;text-align:center;border:1px solid rgba(184,146,74,.18);}
+.cc-before{background:rgba(107,79,58,.04);}
+.cc-after{background:rgba(184,146,74,.08);border-color:rgba(184,146,74,.35);}
+.cc-year{font-size:.72rem;letter-spacing:.2em;color:var(--text-light);margin-bottom:.75rem;}
+.cc-amount{font-family:var(--serif);display:block;line-height:1;margin-bottom:.5rem;}
+.cc-amount-small{font-size:clamp(1.8rem,4vw,2.8rem);color:rgba(107,79,58,.4);}
+.cc-amount-big{font-size:clamp(2.2rem,5vw,3.8rem);color:var(--gold);}
+.cc-label{font-size:.75rem;color:var(--text-light);letter-spacing:.05em;}
+.cc-vs{text-align:center;font-size:1.2rem;color:var(--text-light);line-height:1.8;}
+.cc-vs span{font-size:.75rem;letter-spacing:.1em;display:block;margin-top:.25rem;}
+.compound-chart-wrap{width:100%;overflow:hidden;}
+.compound-chart-svg{width:100%;height:auto;display:block;}
+
+.compound-model{margin-top:5rem;}
+.compound-model-sub{font-size:.88rem;color:var(--text-light);letter-spacing:.08em;margin-bottom:2.5rem;}
+.compound-model-grid{display:flex;align-items:center;gap:3rem;margin-bottom:2.5rem;}
+.cm-center{flex-shrink:0;}
+.cm-center-inner{width:140px;height:140px;border:1px solid rgba(184,146,74,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(184,146,74,.06);}
+.cm-center-label{font-family:var(--serif);font-size:.95rem;color:var(--brown-dark);text-align:center;line-height:1.5;}
+.cm-branches{display:flex;flex-wrap:wrap;gap:1rem 1.5rem;flex:1;}
+.cm-branch{display:flex;align-items:center;gap:.6rem;padding:.5rem 1.1rem;border:1px solid rgba(184,146,74,.22);background:rgba(253,250,246,.8);font-size:.85rem;color:var(--text-mid);letter-spacing:.05em;transition:all .3s;}
+.cm-branch:hover{border-color:rgba(184,146,74,.5);color:var(--brown-dark);}
+.cm-branch-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.cm-branch-line{display:none;}
+.cm-formula{display:flex;align-items:center;justify-content:center;gap:1.5rem;padding:2rem;background:var(--brown-dark);flex-wrap:wrap;}
+.cm-formula-part{font-family:var(--serif);font-size:clamp(1.1rem,2.5vw,1.6rem);color:var(--gold-pale);}
+.cm-formula-op{font-family:var(--serif);font-size:clamp(1.1rem,2.5vw,1.6rem);color:rgba(240,223,192,.35);}
+.cm-formula-result{font-family:var(--serif);font-size:clamp(1.1rem,2.5vw,1.6rem);color:var(--gold2);font-style:italic;}
+
+@media(max-width:900px){
+  .compound-stat-row{grid-template-columns:1fr;text-align:center;}
+  .compound-stat-divider{width:80px;height:1px;margin:0 auto;}
+  .compound-quit-inner{grid-template-columns:1fr;}
+  .compound-compare{grid-template-columns:1fr;text-align:center;}
+  .cc-vs{transform:rotate(90deg);margin:1rem auto;}
+  .compound-model-grid{flex-direction:column;align-items:flex-start;}
+}
+
+/* VIDEO PREVIEW */
+.video-preview{background:linear-gradient(160deg,#fdfaf6 0%,#f5ede2 50%,#ede1d3 100%);padding:6rem 2rem;}
+.video-desc{color:var(--text-mid);font-size:.95rem;line-height:2;margin-bottom:3rem;max-width:560px;}
+.video-wrapper{position:relative;max-width:800px;margin:0 auto;}
+.video-frame-deco{position:absolute;top:-16px;left:-16px;right:16px;bottom:16px;border:1px solid rgba(184,146,74,0.25);pointer-events:none;z-index:0;}
+.video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:var(--brown-dark);box-shadow:0 24px 60px rgba(61,43,31,.18),0 8px 20px rgba(61,43,31,.1);z-index:1;}
+.video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+.video-caption{display:flex;align-items:center;gap:1rem;margin-top:1.25rem;padding-left:.25rem;}
+.video-tag{display:inline-block;padding:.3rem .85rem;background:var(--gold);color:#fff;font-size:.68rem;letter-spacing:.2em;font-family:var(--body);}
+.video-caption p{color:var(--text-light);font-size:.82rem;letter-spacing:.05em;}
+
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 3rem;display:flex;justify-content:space-between;align-items:center;background:rgba(253,250,246,0.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(184,146,74,0.12);}
 .nav-logo{font-family:var(--serif);font-size:1.05rem;color:var(--gold);letter-spacing:.18em;text-decoration:none;}
@@ -157,7 +239,7 @@ footer{background:var(--brown-dark);padding:3rem 2rem;text-align:center;border-t
   <a href="#" class="nav-logo">小都塔羅</a>
   <ul class="nav-links">
     <li><a href="#about">關於小都</a></li>
-    <li><a href="#offers">陪跑內容</a></li>
+    <li><a href="#preview">先修課程</a></li><li><a href="#compound">複利成長</a></li><li><a href="#offers">陪跑內容</a></li>
     <li><a href="#gallery">教學現場</a></li><li><a href="#testimonials">學員見證</a></li>
     <li><a href="#booking">免費診斷</a></li>
   </ul>
@@ -202,6 +284,235 @@ footer{background:var(--brown-dark);padding:3rem 2rem;text-align:center;border-t
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- VIDEO COURSE PREVIEW -->
+<section class="video-preview" id="preview">
+  <div class="section-inner">
+    <span class="section-label reveal">先修課程</span>
+    <h2 class="section-title reveal">塔羅創業先修課程</h2>
+    <div class="gold-line reveal"></div>
+    <p class="video-desc reveal">在正式開始之前，先送你一堂完整的先修課。<br>這支影片濃縮了我走過的彎路，讓你在起步前就看清楚方向。</p>
+    <div class="video-wrapper reveal">
+      <div class="video-frame-deco"></div>
+      <div class="video-container">
+        <iframe
+          src="https://www.youtube.com/embed/Bb2buQsY8o0?start=5&autoplay=0&rel=0&modestbranding=1&color=white"
+          title="塔羅創業先修課程"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="video-caption">
+        <span class="video-tag">免費先修</span>
+        <p>觀看這支影片，先掌握塔羅創業的核心觀念</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPOUND GROWTH STORY -->
+<section class="compound" id="compound">
+  <div class="section-inner">
+
+    <!-- 1. 引題：成功是容易還是困難 -->
+    <div class="compound-hook reveal">
+      <span class="section-label">現實</span>
+      <h2 class="compound-hook-title">成功是容易還是困難？</h2>
+      <div class="gold-line"></div>
+      <div class="compound-stat-row">
+        <div class="compound-stat-block">
+          <span class="compound-stat-num">90%</span>
+          <span class="compound-stat-label">的人撐不過第一年</span>
+        </div>
+        <div class="compound-stat-divider"></div>
+        <div class="compound-stat-text">
+          <p>根據經濟部中小企業處的統計，創業第一年內的倒閉率高達 90%。在存活下來的 10% 中，又有 90% 會在五年內倒閉。</p>
+          <p class="compound-stat-punchline">創業五年後的存活率，僅約 <strong>1%</strong>。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 放棄是容易還是困難 -->
+    <div class="compound-quit reveal d1">
+      <div class="compound-quit-inner">
+        <div class="compound-quit-text">
+          <h3 class="compound-sub-title">那放棄是容易還是困難？</h3>
+          <p>大多數人嘗試了一陣子，沒看到成果，就選擇放棄——回到老闆給的薪水，繼續原本的生活。</p>
+          <p>放棄很容易。但放棄有代價。</p>
+        </div>
+        <div class="compound-quit-visual">
+          <div class="cq-label-top">放棄複利機會</div>
+          <div class="cq-chart">
+            <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg">
+              <!-- axes -->
+              <line x1="30" y1="10" x2="30" y2="155" stroke="rgba(107,79,58,.25)" stroke-width="1"/>
+              <line x1="30" y1="155" x2="290" y2="155" stroke="rgba(107,79,58,.25)" stroke-width="1"/>
+              <!-- compound growth curve -->
+              <path d="M30,150 C80,148 120,140 160,120 C200,100 230,70 285,15" fill="none" stroke="var(--gold)" stroke-width="1.5"/>
+              <!-- quit curve -->
+              <path d="M30,150 C70,148 110,145 160,130 C190,122 200,135 290,152" fill="none" stroke="rgba(107,79,58,.3)" stroke-width="1" stroke-dasharray="4,3"/>
+              <!-- dot at quit point -->
+              <circle cx="160" cy="130" r="4" fill="none" stroke="var(--rose-deep)" stroke-width="1.2"/>
+              <!-- labels -->
+              <text x="160" y="115" text-anchor="middle" font-size="8" fill="var(--text-mid)" font-family="'Noto Serif TC',serif">嘗試看看</text>
+              <text x="160" y="124" text-anchor="middle" font-size="8" fill="var(--text-mid)" font-family="'Noto Serif TC',serif">最後選擇放棄</text>
+              <text x="262" y="168" font-size="8" fill="var(--text-light)" font-family="'Noto Serif TC',serif">老闆給的薪水</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 打工的代價（餐廳舉例） -->
+    <div class="compound-job reveal d1">
+      <h3 class="compound-sub-title reveal">打工的代價長這樣</h3>
+      <p class="compound-job-sub reveal d1">以餐廳打工為例——付出這麼多，換來的只是固定薪水。</p>
+
+      <div class="compound-diamond-wrap reveal d2">
+        <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" class="cd-svg">
+          <!-- 左側「這我」 -->
+          <text x="52" y="132" text-anchor="middle" font-size="22" font-weight="300" fill="#3d2b1f" font-family="'Cormorant Garamond','Noto Serif TC',serif">這我</text>
+          <circle cx="52" cy="148" r="5" fill="none" stroke="#b8924a" stroke-width="1.4"/>
+
+          <!-- 右側「薪水」 -->
+          <text x="672" y="136" text-anchor="middle" font-size="28" font-weight="300" fill="#3d2b1f" font-family="'Cormorant Garamond','Noto Serif TC',serif">薪水</text>
+
+          <!-- 菱形四條邊線 -->
+          <line x1="62" y1="148" x2="360" y2="40"  stroke="rgba(107,79,58,.18)" stroke-width="1"/>
+          <line x1="360" y1="40"  x2="640" y2="148" stroke="rgba(107,79,58,.18)" stroke-width="1"/>
+          <line x1="62" y1="148" x2="360" y2="220" stroke="rgba(107,79,58,.18)" stroke-width="1"/>
+          <line x1="360" y1="220" x2="640" y2="148" stroke="rgba(107,79,58,.18)" stroke-width="1"/>
+
+          <!-- 箭頭（中線）-->
+          <line x1="62" y1="148" x2="636" y2="148" stroke="rgba(107,79,58,.12)" stroke-width="1" stroke-dasharray="4 3"/>
+          <polygon points="640,148 632,144 632,152" fill="rgba(107,79,58,.3)"/>
+
+          <!-- 菱形交點節點（上、中、下） -->
+          <circle cx="360" cy="40"  r="4" fill="none" stroke="rgba(107,79,58,.25)" stroke-width="1.2"/>
+          <circle cx="360" cy="148" r="4" fill="none" stroke="rgba(107,79,58,.25)" stroke-width="1.2"/>
+          <circle cx="360" cy="220" r="4" fill="none" stroke="rgba(107,79,58,.25)" stroke-width="1.2"/>
+
+          <!-- 任務文字 — 上方兩個 -->
+          <text x="215" y="72"  text-anchor="middle" font-size="13" fill="#7a5c48" font-family="'Noto Serif TC',serif">提早上班・不算加薪</text>
+          <text x="500" y="72"  text-anchor="middle" font-size="13" fill="#7a5c48" font-family="'Noto Serif TC',serif">整潔環境</text>
+
+          <!-- 任務文字 — 中間兩個（左右） -->
+          <text x="180" y="145" text-anchor="middle" font-size="13" fill="#7a5c48" font-family="'Noto Serif TC',serif">客人聊太久</text>
+          <text x="502" y="138" text-anchor="middle" font-size="13" fill="#7a5c48" font-family="'Noto Serif TC',serif">清點備貨</text>
+
+          <!-- 任務文字 — 下方兩個 -->
+          <text x="215" y="212" text-anchor="middle" font-size="13" fill="#7a5c48" font-family="'Noto Serif TC',serif">做不好被老闆罵</text>
+          <text x="500" y="212" text-anchor="middle" font-size="13" fill="#7a5c48" font-family="'Noto Serif TC',serif">強迫加班</text>
+        </svg>
+      </div>
+
+      <div class="compound-payslip reveal d3">
+        <div class="compound-payslip-num">14,134</div>
+        <div class="compound-payslip-desc">
+          <p>薪水只有 1.5K</p>
+          <p class="compound-payslip-sub">跟多拉A夢一樣——要 24 小時幫老闆打理一切，給薪一個月不到 1 萬 5</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 複利成長曲線 vs 5年對比 -->
+    <div class="compound-curve reveal">
+      <h3 class="compound-sub-title">塔羅師的成長複利曲線</h3>
+      <p class="compound-curve-sub">同樣是 5 年，選擇不同，結果完全不同。</p>
+
+      <div class="compound-compare">
+        <!-- 2021 vs 2026 -->
+        <div class="cc-before reveal d1">
+          <div class="cc-year">2021 年</div>
+          <div class="cc-amount cc-amount-small">14,134</div>
+          <div class="cc-label">月薪實發（扣掉勞健保）</div>
+        </div>
+        <div class="cc-vs reveal d2">→<br><span>5 年後</span><br>不同結果</div>
+        <div class="cc-after reveal d3">
+          <div class="cc-year">2026 年</div>
+          <div class="cc-amount cc-amount-big">100,000</div>
+          <div class="cc-label">月薪資獎金入帳</div>
+        </div>
+      </div>
+
+      <!-- Growth chart SVG -->
+      <div class="compound-chart-wrap reveal d2">
+        <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" class="compound-chart-svg">
+          <!-- axes -->
+          <line x1="60" y1="20" x2="60" y2="230" stroke="rgba(107,79,58,.2)" stroke-width="1"/>
+          <line x1="60" y1="230" x2="680" y2="230" stroke="rgba(107,79,58,.2)" stroke-width="1"/>
+          <!-- curve -->
+          <path d="M60,225 C140,222 240,215 320,195 C420,168 520,120 670,30" fill="none" stroke="var(--gold)" stroke-width="2"/>
+          <!-- milestone dots -->
+          <circle cx="130" cy="224" r="5" fill="none" stroke="var(--gold)" stroke-width="1.5"/>
+          <circle cx="320" cy="195" r="5" fill="none" stroke="var(--gold)" stroke-width="1.5"/>
+          <circle cx="520" cy="120" r="5" fill="none" stroke="var(--gold)" stroke-width="1.5"/>
+          <circle cx="670" cy="30" r="5" fill="none" stroke="var(--gold)" stroke-width="1.5"/>
+          <!-- milestone labels bottom -->
+          <text x="90" y="252" font-size="11" fill="var(--text-mid)" font-family="'Noto Serif TC',serif">第3個月</text>
+          <text x="90" y="264" font-size="10" fill="var(--text-light)" font-family="'Noto Serif TC',serif">0–10,000</text>
+          <text x="280" y="252" font-size="11" fill="var(--text-mid)" font-family="'Noto Serif TC',serif">第1年</text>
+          <text x="265" y="264" font-size="10" fill="var(--text-light)" font-family="'Noto Serif TC',serif">10,000–30,000</text>
+          <text x="468" y="252" font-size="11" fill="var(--text-mid)" font-family="'Noto Serif TC',serif">第3年</text>
+          <text x="450" y="264" font-size="10" fill="var(--text-light)" font-family="'Noto Serif TC',serif">30,000–50,000</text>
+          <text x="618" y="252" font-size="11" fill="var(--text-mid)" font-family="'Noto Serif TC',serif">第5年</text>
+          <text x="595" y="264" font-size="10" fill="var(--text-light)" font-family="'Noto Serif TC',serif">100,000–300,000</text>
+          <!-- top label -->
+          <text x="580" y="22" font-size="11" fill="var(--text-light)" font-family="'Noto Serif TC',serif">遠超老闆給的薪水</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 5. 內容複利模式 -->
+    <div class="compound-model reveal">
+      <h3 class="compound-sub-title">轉化內容複利模式</h3>
+      <p class="compound-model-sub">內容是邊際成本為 0 的槓桿——一次製作，持續帶客</p>
+      <div class="compound-model-grid">
+        <div class="cm-center reveal d1">
+          <div class="cm-center-inner">
+            <span class="cm-center-label">你做的內容</span>
+          </div>
+        </div>
+        <div class="cm-branches reveal d2">
+          <div class="cm-branch">
+            <div class="cm-branch-dot"></div>
+            <div class="cm-branch-line"></div>
+            <span>塔羅占卜</span>
+          </div>
+          <div class="cm-branch">
+            <div class="cm-branch-dot"></div>
+            <div class="cm-branch-line"></div>
+            <span>魔法</span>
+          </div>
+          <div class="cm-branch">
+            <div class="cm-branch-dot"></div>
+            <div class="cm-branch-line"></div>
+            <span>水晶</span>
+          </div>
+          <div class="cm-branch">
+            <div class="cm-branch-dot"></div>
+            <div class="cm-branch-line"></div>
+            <span>教育</span>
+          </div>
+          <div class="cm-branch">
+            <div class="cm-branch-dot"></div>
+            <div class="cm-branch-line"></div>
+            <span>延伸商品</span>
+          </div>
+        </div>
+      </div>
+      <div class="cm-formula reveal d3">
+        <span class="cm-formula-part">客單價</span>
+        <span class="cm-formula-op">×</span>
+        <span class="cm-formula-part">來客數</span>
+        <span class="cm-formula-op">=</span>
+        <span class="cm-formula-result">主要收入</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
