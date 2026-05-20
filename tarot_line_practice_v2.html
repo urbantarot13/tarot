@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>塔羅占卜 LINE 接單練習器 · 小都塔羅</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark: #1e1208;
+  --mid: #2c1a0e;
+  --panel: #3a2210;
+  --gold: #c9a96e;
+  --gold2: #e8c98a;
+  --cream: #f5edd8;
+  --soft: #faf5ec;
+  --muted: #8a6a40;
+  --white: #ffffff;
+  --card: #fdf8f0;
+  --line-green: #06c755;
+  --line-bg: #aad7a8;
+  --line-chat: #efeeee;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans TC', sans-serif; background: var(--soft); color: var(--dark); min-height: 100vh; }
+
+/* HEADER */
+header {
+  background: var(--dark);
+  padding: 0 2rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid #3a2810;
+}
+.logo { font-family: 'Noto Serif TC', serif; color: var(--gold); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.05em; }
+.header-sub { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.08em; }
+
+/* APP LAYOUT */
+.app { display: grid; grid-template-columns: 280px 1fr 320px; min-height: calc(100vh - 52px); }
+
+/* LEFT SIDEBAR */
+.sidebar-left {
+  background: var(--dark);
+  border-right: 1px solid #3a2810;
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.sb-section { padding: 1rem 1.1rem; border-bottom: 1px solid #2a1a08; }
+.sb-label { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; font-weight: 500; }
+
+/* Scenario tabs */
+.scenario-list { display: flex; flex-direction: column; gap: 0.35rem; }
+.scenario-btn {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #3a2810;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s;
+  color: var(--muted);
+}
+.scenario-btn:hover { border-color: var(--gold); color: var(--gold2); background: #2a1a08; }
+.scenario-btn.active { background: linear-gradient(135deg,#3a2210,#2c1a0e); border-color: var(--gold); color: var(--gold); }
+.scenario-tag { font-size: 0.58rem; letter-spacing: 0.08em; margin-bottom: 0.2rem; opacity: 0.75; }
+.scenario-name { font-size: 0.82rem; font-weight: 500; font-family: 'Noto Serif TC', serif; }
+.scenario-desc { font-size: 0.65rem; margin-top: 0.2rem; line-height: 1.4; }
+
+/* Stage list */
+.stage-list { display: flex; flex-direction: column; gap: 0.25rem; }
+.stage-btn {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.5rem 0.65rem; border-radius: 8px;
+  cursor: pointer; border: 1px solid transparent;
+  color: var(--muted); font-size: 0.76rem; transition: all 0.15s;
+}
+.stage-btn:hover { background: #2a1a08; color: var(--cream); }
+.stage-btn.active { background: linear-gradient(135deg,#3a2210,#2c1a0e); border-color: #5a3a18; color: var(--gold2); }
+.stage-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #2a1a08; display: flex; align-items: center;
+  justify-content: center; font-size: 0.62rem; font-weight: 600;
+  flex-shrink: 0; color: var(--muted); transition: all 0.18s;
+}
+.stage-btn.active .stage-num { background: var(--gold); color: var(--dark); }
+.stage-btn.done .stage-num { background: #1e4a2e; color: #4ade80; }
+.stage-btn.done { color: #4a6a4a; }
+
+/* Progress */
+.prog-bar { height: 3px; background: #2a1a08; border-radius: 2px; overflow: hidden; margin-top: 0.45rem; }
+.prog-fill { height: 100%; background: linear-gradient(90deg,var(--gold),var(--gold2)); border-radius: 2px; transition: width 0.4s ease; }
+.prog-lbl { font-size: 0.62rem; color: var(--muted); margin-top: 0.25rem; text-align: right; }
+
+/* CENTER - LINE CHAT */
+.center { display: flex; flex-direction: column; }
+
+/* LINE header bar */
+.line-topbar {
+  background: var(--line-green);
+  padding: 0.65rem 1rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  border-bottom: 1px solid #04a844;
+}
+.line-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--white); display: flex; align-items: center;
+  justify-content: center; font-size: 1rem; flex-shrink: 0;
+}
+.line-name { font-size: 0.88rem; font-weight: 500; color: var(--white); }
+.line-status { font-size: 0.65rem; color: rgba(255,255,255,0.75); }
+.stage-pill {
+  margin-left: auto;
+  background: rgba(0,0,0,0.2);
+  color: var(--white);
+  font-size: 0.65rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* Chat area */
+.chat-area {
+  flex: 1; overflow-y: auto;
+  background: var(--line-bg);
+  padding: 1rem;
+  display: flex; flex-direction: column; gap: 0.7rem;
+}
+.chat-date {
+  text-align: center; font-size: 0.65rem;
+  color: rgba(0,0,0,0.45); margin: 0.25rem 0;
+}
+
+/* LINE bubbles */
+.msg-row { display: flex; align-items: flex-end; gap: 0.5rem; }
+.msg-row.client { justify-content: flex-start; }
+.msg-row.you { justify-content: flex-end; }
+
+.client-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--white); display: flex; align-items: center;
+  justify-content: center; font-size: 0.75rem; flex-shrink: 0; align-self: flex-start;
+}
+.bubble-wrap { display: flex; flex-direction: column; max-width: 65%; }
+.client .bubble-wrap { align-items: flex-start; }
+.you .bubble-wrap { align-items: flex-end; }
+.sender-name { font-size: 0.6rem; color: rgba(0,0,0,0.5); margin-bottom: 0.2rem; padding-left: 0.15rem; }
+
+.bubble {
+  padding: 0.6rem 0.85rem;
+  border-radius: 16px;
+  font-size: 0.845rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  position: relative;
+}
+.client .bubble {
+  background: var(--white);
+  color: #111;
+  border-top-left-radius: 4px;
+}
+.you .bubble {
+  background: #c6e88a;
+  color: #111;
+  border-top-right-radius: 4px;
+}
+.bubble-time { font-size: 0.6rem; color: rgba(0,0,0,0.4); margin-top: 0.2rem; }
+
+/* Special bubbles */
+.system-msg {
+  text-align: center; font-size: 0.68rem; color: rgba(0,0,0,0.45);
+  background: rgba(255,255,255,0.45); border-radius: 10px;
+  padding: 0.4rem 0.8rem; margin: 0.25rem auto; max-width: 80%;
+}
+.price-card {
+  background: var(--white); border-radius: 12px;
+  overflow: hidden; max-width: 260px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.price-card-header { background: var(--line-green); padding: 0.65rem 0.9rem; }
+.price-card-title { font-size: 0.82rem; font-weight: 600; color: var(--white); }
+.price-card-body { padding: 0.75rem 0.9rem; }
+.price-row { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid #f0ece8; font-size: 0.78rem; }
+.price-row:last-child { border-bottom: none; }
+.price-name { color: #333; }
+.price-amt { font-weight: 600; color: var(--dark); }
+
+/* Stage label in chat */
+.stage-label {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin: 0.5rem 0 0.25rem;
+}
+.stage-label-line { flex: 1; height: 1px; background: rgba(0,0,0,0.15); }
+.stage-label-text { font-size: 0.63rem; color: rgba(0,0,0,0.45); white-space: nowrap; padding: 0 0.25rem; }
+
+/* Nav bar */
+.nav-bar {
+  background: var(--white);
+  border-top: 1px solid #e4d8c8;
+  padding: 0.65rem 1rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-info { font-size: 0.72rem; color: var(--muted); }
+.nav-btns { display: flex; gap: 0.5rem; }
+.btn {
+  padding: 0.45rem 1.1rem; border-radius: 8px;
+  font-size: 0.8rem; font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer; transition: all 0.15s; font-weight: 500;
+}
+.btn-outline { border: 1px solid #d4c4a8; background: transparent; color: var(--muted); }
+.btn-outline:hover { border-color: var(--dark); color: var(--dark); }
+.btn-primary { border: none; background: var(--dark); color: var(--gold); }
+.btn-primary:hover { background: #2c1a0e; }
+.btn:disabled { opacity: 0.3; cursor: default; }
+
+/* RIGHT SIDEBAR - Analysis */
+.sidebar-right {
+  background: var(--white);
+  border-left: 1px solid #e4d8c8;
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.analysis-block { padding: 1.1rem 1.15rem; border-bottom: 1px solid #f0e8d8; }
+.analysis-block:last-child { border-bottom: none; }
+.a-label {
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 0.55rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.a-analysis { color: var(--muted); }
+.a-analysis .dot { background: var(--gold); }
+.a-warning { color: #b03020; }
+.a-warning .dot { background: #e05040; }
+.a-tips { color: #2060a0; }
+.a-tips .dot { background: #4090d0; }
+.a-purpose { color: #206040; }
+.a-purpose .dot { background: #40a060; }
+
+.a-text { font-size: 0.79rem; line-height: 1.75; color: #4a3820; white-space: pre-wrap; }
+.warn-box {
+  font-size: 0.79rem; line-height: 1.7; color: #7a2818;
+  background: #fff0ee; border: 1px solid #f0c8c0;
+  border-radius: 8px; padding: 0.65rem 0.8rem;
+}
+.tip-item {
+  font-size: 0.77rem; line-height: 1.55; color: #204060;
+  padding: 0.45rem 0.7rem; background: #f0f8ff;
+  border-radius: 8px; border-left: 2px solid #4090d0; margin-bottom: 0.4rem;
+}
+.tip-item:last-child { margin-bottom: 0; }
+.purpose-box {
+  font-size: 0.79rem; line-height: 1.7; color: #1a4a30;
+  background: #f0fff4; border: 1px solid #b8e8c8;
+  border-radius: 8px; padding: 0.65rem 0.8rem;
+}
+
+/* KEY PHRASE highlight */
+.key-phrase {
+  display: inline-block;
+  background: #fff8e6; border: 1px solid var(--gold);
+  border-radius: 6px; padding: 0.15rem 0.5rem;
+  font-size: 0.75rem; color: #7a5010; font-weight: 500;
+  margin: 0.2rem 0.1rem;
+}
+.key-phrase-block { margin-top: 0.6rem; }
+
+/* fade */
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.fade-in { animation: fadeUp 0.2s ease forwards; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c8b898; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">小都塔羅 · LINE 接單練習器</div>
+  <div class="header-sub">塔羅占卜問事諮詢 · 學員訓練版</div>
+</header>
+
+<div class="app">
+
+<!-- LEFT SIDEBAR -->
+<aside class="sidebar-left">
+  <div class="sb-section">
+    <div class="sb-label">客人情境</div>
+    <div class="scenario-list">
+      <button class="scenario-btn active" onclick="setScenario('love')" id="scn-love">
+        <div class="scenario-tag">情境 A</div>
+        <div class="scenario-name">「我想要算感情」</div>
+        <div class="scenario-desc">有主題直接說，學員要怎麼接、怎麼問、怎麼報價</div>
+      </button>
+      <button class="scenario-btn" onclick="setScenario('price')" id="scn-price">
+        <div class="scenario-tag">情境 B</div>
+        <div class="scenario-name">「請問你們怎麼收費」</div>
+        <div class="scenario-desc">直接問價格，要不要直接報？怎麼讓她不只是問問</div>
+      </button>
+      <button class="scenario-btn" onclick="setScenario('silent')" id="scn-silent">
+        <div class="scenario-tag">情境 C</div>
+        <div class="scenario-name">「我再想想」就消失</div>
+        <div class="scenario-desc">報了價格後沒有回應，學員要怎麼跟進不顯得追客</div>
+      </button>
+      <button class="scenario-btn" onclick="setScenario('vague')" id="scn-vague">
+        <div class="scenario-tag">情境 G</div>
+        <div class="scenario-name">「我最近運氣很差」</div>
+        <div class="scenario-desc">問題模糊，學員怎麼引導客人說出可以排牌的具體問題</div>
+      </button>
+      <button class="scenario-btn" onclick="setScenario('forbidden')" id="scn-forbidden">
+        <div class="scenario-tag">情境 H</div>
+        <div class="scenario-name">客人問了禁止類型的題目</div>
+        <div class="scenario-desc">健康、投資、一事多問、幫朋友問——怎麼設邊界又不失禮</div>
+      </button>
+      <button class="scenario-btn" onclick="setScenario('bargain')" id="scn-bargain">
+        <div class="scenario-tag">情境 E</div>
+        <div class="scenario-name">「可以便宜一點嗎」</div>
+        <div class="scenario-desc">直接砍價、比較別人、說預算有限——守住定價又不失客人</div>
+      </button>
+      <button class="scenario-btn" onclick="setScenario('returning')" id="scn-returning">
+        <div class="scenario-tag">情境 K</div>
+        <div class="scenario-name">回頭客要求特殊待遇</div>
+        <div class="scenario-desc">要折扣、介紹獎勵、說上次不準要補算——怎麼讓她繼續回來又不讓定價崩掉</div>
+      </button>
+      <button class="scenario-btn" onclick="setScenario('unhappy')" id="scn-unhappy">
+        <div class="scenario-tag">情境 I</div>
+        <div class="scenario-name">「這個結果我不接受」</div>
+        <div class="scenario-desc">算完客人不滿意、說要重算、威脅留負評——守住解析又不失去客人</div>
+      </button>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">整體進度</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:20%"></div></div>
+    <div class="prog-lbl" id="prog-lbl">1 / 5 階段</div>
+  </div>
+
+  <div class="sb-section" style="flex:1;overflow-y:auto;">
+    <div class="sb-label">對話流程</div>
+    <div class="stage-list" id="stage-list"></div>
+  </div>
+</aside>
+
+<!-- CENTER - LINE CHAT -->
+<main class="center">
+  <div class="line-topbar">
+    <div class="line-avatar">🔮</div>
+    <div>
+      <div class="line-name" id="client-name">小情人</div>
+      <div class="line-status">官方帳號</div>
+    </div>
+    <div class="stage-pill" id="stage-pill">階段 1 · 接觸</div>
+  </div>
+
+  <div class="chat-area" id="chat-area">
+    <!-- messages render here -->
+  </div>
+
+  <div class="nav-bar">
+    <div class="nav-info" id="nav-info">情境 A · 感情占卜</div>
+    <div class="nav-btns">
+      <button class="btn btn-outline" id="nav-prev" onclick="navigate(-1)">← 上一步</button>
+      <button class="btn btn-primary" id="nav-next" onclick="navigate(1)">下一步 →</button>
+    </div>
+  </div>
+</main>
+
+<!-- RIGHT SIDEBAR -->
+<aside class="sidebar-right" id="analysis-panel"></aside>
+
+</div>
+
+<script>
+const TIME = ['10:23','10:24','10:25','10:26','10:27','10:28','10:30','10:32','10:33','10:35','10:36','10:38','10:40','10:42','10:44'];
+let timeIdx = 0;
+function t() { return TIME[Math.min(timeIdx++, TIME.length-1)]; }
+
+// ─── SCENARIOS ────────────────────────────────────────────────────────────────
+const scenarios = {
+
+  // ══ SCENARIO A：感情占卜 ══
+  love: {
+    clientName: '小情人',
+    navInfo: '情境 A · 直接說主題',
+    stages: [
+      {
+        title: '接觸與暖場',
+        pill: '階段 1 · 接觸',
+        purpose: '客人說了主題（感情），學員的第一句話決定她願不願意繼續聊。',
+        chat: [
+          { type: 'date', text: '今天' },
+          { type: 'system', text: '小情人 加入了官方LINE' },
+          { type: 'client', text: '你好，我想要算感情' },
+          { type: 'you', text: '你好歡迎來✨\n感情的確是很多人最在意的事情，你來對地方了！\n\n我先簡單問你幾個問題，這樣等一下幫你解牌會更準喔～' },
+        ],
+        analysis: '第一句話的目的是讓她感覺「這裡是安全的、你懂她」，不是立刻說「好的請問你要算哪個方案」。\n\n你說「感情的確是很多人最在意的事情」——這是共情，讓她覺得被理解，不是被銷售。\n\n最後說「我先問你幾個問題」是在拿主導權，她會進入回答模式。',
+        warning: '⚠️ 最常見錯誤：客人說「我想算感情」，學員直接說「好的，我們的感情占卜方案是XXX元」。這樣她會立刻進入防禦模式，覺得你只是在賣她東西。',
+        tips: ['第一句要有溫度，讓她感覺被接住', '說「我先問你幾個問題」拿回主導權，不是讓她問你'],
+        keyPhrases: ['感情的確是很多人最在意的事情，你來對地方了', '我先簡單問你幾個問題，這樣幫你解牌會更準'],
+      },
+      {
+        title: '問清楚問題',
+        pill: '階段 2 · 了解狀況',
+        purpose: '在報價之前，先了解她的狀況。這不只是為了解牌，也是讓她感覺「你真的在乎她的問題」。',
+        chat: [
+          { type: 'you', text: '你現在是單身想了解感情運，還是有在交往中想問特定的事情呢？' },
+          { type: 'client', text: '有在交往，想問說我們感情的走向' },
+          { type: 'you', text: '好的～這段感情多久了呢？大概的狀態可以說一下嗎，比如說有遇到什麼卡關，還是純粹想確認方向？' },
+          { type: 'client', text: '交往快兩年了，最近感覺有點冷淡，我想知道他還有沒有心' },
+          { type: 'you', text: '了解了，感覺到對方冷淡又不確定原因，這種感覺真的很煎熬😔\n\n那你想問的核心是「他現在的心意是什麼」，對嗎？還是你也想看接下來這段感情的走向？' },
+          { type: 'client', text: '兩個都想知道' },
+        ],
+        analysis: '問問題的邏輯是：\n1. 先問「狀態」（單身還是交往中）→ 大方向定位\n2. 再問「具體狀況」（多久、遇到什麼）→ 讓她說出痛點\n3. 最後確認「核心問題」→ 這決定你等一下解牌的方向\n\n她說「感覺有點冷淡，想知道他還有沒有心」——這是她真正在意的，後面介紹方案的時候要呼應這個點。',
+        warning: null,
+        tips: ['問題要一次問一個，不要一口氣問三個問題讓她不知道回哪個', '她說出「很煎熬」的感受時，先共情，再繼續問'],
+        keyPhrases: ['感覺到對方冷淡又不確定原因，這種感覺真的很煎熬', '你想問的核心是「他現在的心意是什麼」，對嗎？'],
+      },
+      {
+        title: '介紹服務與報價',
+        pill: '階段 3 · 報價',
+        purpose: '報價不是列表格，是「告訴她這個方案可以解決她剛才說的問題」。',
+        chat: [
+          { type: 'you', text: '好，我大概了解你的狀況了～\n\n針對你說的，我建議你做【感情深度解析】，這個方案會幫你看：\n\n✦ 他現在對你的心意和狀態\n✦ 這段感情目前的能量走向\n✦ 接下來你們的相處建議\n\n費用是 NT$800，解牌完我會給你一份完整的文字報告，你可以慢慢看。' },
+          { type: 'you', text: '如果你也想另外問「要不要繼續這段感情」或者「有沒有第三者」這類比較深入的問題，可以加購單題占卜 NT$200 一個問題。' },
+          { type: 'client', text: '好像不便宜耶' },
+        ],
+        analysis: '報價的結構是：\n【方案名稱】→【這個方案幫她看什麼】→【直接對應她說的問題】→【費用】→【她拿到什麼】\n\n注意：不是列服務項目，是「這個方案解決你剛才說的問題」。\n\n加購是放在後面說，不是一開始就堆滿選項讓她選擇障礙。\n\n她說「好像不便宜耶」——這不是拒絕，是在試探，下一步要處理這個。',
+        warning: '⚠️ 不要一次丟出三個方案讓她選。客人資訊過多會直接說「我再想想」然後消失。先給一個最適合她的方案，加購是補充。',
+        tips: ['方案介紹要對應她說的問題，不是通用說明', '費用後面要說「你拿到什麼」，讓她感覺物有所值'],
+        keyPhrases: ['針對你說的，我建議你做…', '費用是NT$800，解牌完我會給你一份完整的文字報告'],
+      },
+      {
+        title: '處理價格抵抗',
+        pill: '階段 4 · 處理猶豫',
+        purpose: '她說「不便宜」，不是叫你打折。是讓你把她拉回她的問題上。',
+        chat: [
+          { type: 'client', text: '好像不便宜耶' },
+          { type: 'you', text: '我理解😊 你說的我懂。\n\n不過我想反問你——你剛才說他最近變得冷淡，你已經在這個不確定裡面待多久了？' },
+          { type: 'client', text: '最近大概一兩個月了，每天都在想' },
+          { type: 'you', text: '一兩個月，每天都在想——這個心裡的消耗其實不小。\n\nNT$800的解牌，幫你在今天就得到一個清楚的方向，不用再繼續猜下去。\n\n你覺得，一個明確的答案，對你來說值多少呢？' },
+          { type: 'client', text: '這樣說也是...' },
+          { type: 'you', text: '那要不要試試看？今天下單的話我今天就會幫你排牌，明天前可以給你報告喔✨' },
+        ],
+        analysis: '處理「不便宜」的方法不是降價，是把她拉回問題的代價。\n\n她說「每天都在想、一兩個月了」——這就是她一直在承擔的隱形成本。你說「NT$800幫你在今天就得到方向，不用再繼續猜下去」，這個對比才有力量。\n\n最後那句「你覺得一個明確的答案，對你來說值多少呢？」——讓她自己說值得，不是你說值得。\n\n然後立刻給行動誘因「今天下單我今天排牌」，製造小小的緊迫感。',
+        warning: '⚠️ 不要說「那我給你算便宜一點」——這樣做只是讓她覺得你的價格沒有依據，對你的服務失去信心。',
+        tips: ['把她拉回「她已經承擔的隱形成本」，而不是跟她講CP值', '讓她自己說「這樣說也是」，不是你說「很值得」', '最後要給一個具體的下一步動作'],
+        keyPhrases: ['你已經在這個不確定裡面待多久了？', '一個明確的答案，對你來說值多少呢？', '今天下單的話我今天就會幫你排牌'],
+      },
+      {
+        title: '確認成交與收款',
+        pill: '階段 5 · 成交',
+        purpose: '她說好了，怎麼順暢地完成收款，讓她不後悔這個決定。',
+        chat: [
+          { type: 'client', text: '好啦，那我要怎麼付款？' },
+          { type: 'you', text: '太好了！那我傳付款方式給你～\n\n✦ 轉帳：玉山銀行 808　帳號 0123-456-789-0\n✦ 戶名：○○○\n\n轉帳完麻煩截圖傳給我確認，我就開始幫你排牌了🔮\n\n另外，我需要你的：\n① 生日（西元年月日）\n② 他的生日（如果知道的話）\n③ 你最想問的一句話是什麼' },
+          { type: 'client', text: '好，我等一下匯！生日是1998/05/12，他的我不確定，問題是：他現在還愛我嗎' },
+          { type: 'you', text: '收到！匯款確認後我馬上開始，明天早上前會給你報告。\n\n等待的時候如果有什麼想補充的也可以跟我說，不用客氣😊' },
+        ],
+        analysis: '成交後的步驟要清楚、溫暖、讓她感覺這筆錢花得安心。\n\n給付款方式的時候同時問她三個資料（生日、問題），讓她感覺「你真的要幫她算了」，不是付完錢就不見了。\n\n最後那句「等待的時候如果有什麼想補充的也可以跟我說」——讓她覺得你還在、這個服務是人性化的，不是自動化流程。\n\n✦ 給一個交付時間（明天早上前），讓她有期待感，而不是付完不知道何時才有結果。',
+        warning: null,
+        tips: ['付款方式 + 需要的資料同步給，讓流程順暢不要來回', '給明確的交付時間，讓她知道她的錢花在哪裡、什麼時候到'],
+        keyPhrases: ['轉帳完麻煩截圖傳給我確認，我就開始幫你排牌了', '我需要你的：生日、他的生日、你最想問的一句話', '明天早上前會給你報告'],
+      },
+    ]
+  },
+
+  // ══ SCENARIO B：直接問收費 ══
+  price: {
+    clientName: '問價格的客人',
+    navInfo: '情境 B · 直接問收費',
+    stages: [
+      {
+        title: '接住問價的客人',
+        pill: '階段 1 · 第一反應',
+        purpose: '她問收費，不代表她只在乎便宜。她是在確認「這裡值不值得我繼續了解」。',
+        chat: [
+          { type: 'date', text: '今天' },
+          { type: 'system', text: '小美 加入了官方LINE' },
+          { type: 'client', text: '請問你們怎麼收費' },
+          { type: 'you', text: '你好歡迎來✨\n\n我們的占卜方案依問題深度有幾種，想先問你一下——你是有特定想問的事情，還是先看看有什麼服務？這樣我比較能推薦最適合你的方案喔！' },
+        ],
+        analysis: '直接問收費的客人，你的第一反應決定了一切。\n\n❌ 錯的做法：直接貼價目表。她看了一堆數字，不知道選哪個，然後說「好的謝謝」就消失了。\n\n✅ 對的做法：先問她想問什麼，再推薦方案。這樣她感覺你是在「幫她選」，不是在「等她刷卡」。',
+        warning: '⚠️ 絕對不要第一句話就貼出全部的價目表。選擇太多等於沒有選擇，她會直接走。',
+        tips: ['把「你想問什麼」放在「我們怎麼收費」之前', '讓她先說她的狀況，你再給對應的方案'],
+        keyPhrases: ['想先問你一下——你是有特定想問的事情，還是先看看有什麼服務？', '這樣我比較能推薦最適合你的方案'],
+      },
+      {
+        title: '引導說出需求',
+        pill: '階段 2 · 了解需求',
+        purpose: '她願意回答你，就代表她是真的有需求的客人，不是隨便問問的。',
+        chat: [
+          { type: 'client', text: '有想問的，想問感情方面的' },
+          { type: 'you', text: '好的～感情是很多人最在意的事情😊\n\n你現在是單身想看感情運，還是有在交往中想問特定的問題呢？' },
+          { type: 'client', text: '跟一個人曖昧中，想知道對方有沒有心' },
+          { type: 'you', text: '曖昧中想確認對方的心意，這個很常見，也很重要！\n\n曖昧多久了呢？你對他的感覺是確定想發展，還是還在評估？' },
+          { type: 'client', text: '快三個月了，我自己是蠻確定的，只是不知道他' },
+        ],
+        analysis: '她說「想問感情」→ 你問「單身還是交往」→ 她說「曖昧」→ 你問「多久了、你的感覺是什麼」。\n\n每一個問題都讓她多說一點，你也更了解她的狀況。\n\n她說「我自己是蠻確定的，只是不知道他」——這是核心，後面報方案的時候要對應這一句。',
+        warning: null,
+        tips: ['問問題要循序漸進，不要一次問太多', '她說的每一句話都是後面報方案的素材，要記下來'],
+        keyPhrases: ['曖昧中想確認對方的心意，這個很常見，也很重要！', '你對他的感覺是確定想發展，還是還在評估？'],
+      },
+      {
+        title: '精準報方案',
+        pill: '階段 3 · 報價',
+        purpose: '現在才報價，而且是針對她的狀況報，不是貼通用價目表。',
+        chat: [
+          { type: 'you', text: '了解！那針對你說的，我推薦你做【單人感情解析】：\n\n✦ 他對你現在的心意與態度\n✦ 你們之間的感情能量\n✦ 接下來可以怎麼推進\n\n費用 NT$800，完成後給你一份詳細的文字解析報告📝\n\n這個方案剛好可以幫你解答「他有沒有心」這個你最在意的問題😊' },
+          { type: 'client', text: '好的，那其他的方案呢' },
+          { type: 'you', text: '如果你想更全面，我們也有【感情深度解析】NT$1,200，會多加一個抽牌幫你看：\n\n✦ 他對這段關係的未來想法\n✦ 建議你怎麼表態\n\n不過以你現在的狀況，NT$800的方案應該就夠了！除非你想要更完整的解析和建議。' },
+        ],
+        analysis: '她問「其他方案」——這代表她是認真考慮的，不是隨便問問。\n\n這時候可以提升方案，但最後要給她一個「建議」，不是讓她自己選。你說「以你現在的狀況，800的方案應該就夠了」——這讓她感覺你是在幫她，不是推她買貴的。\n\n如果她想要更完整，她會說，不需要你一開始就推最貴的。',
+        warning: '⚠️ 她問其他方案，不代表要立刻換成推最貴的。給她選擇，但同時給她你的建議。',
+        tips: ['先說最適合她的方案，她問了再說其他選項', '給她建議，讓她感覺你在幫她選，不是要她多花錢'],
+        keyPhrases: ['這個方案剛好可以幫你解答「他有沒有心」這個你最在意的問題', '以你現在的狀況，NT$800的方案應該就夠了！'],
+      },
+      {
+        title: '促成決定',
+        pill: '階段 4 · 促成',
+        purpose: '她已經了解方案了，現在要讓她做決定，不是讓她繼續猶豫。',
+        chat: [
+          { type: 'client', text: '800那個好像可以，不過我還要想一下' },
+          { type: 'you', text: '沒問題，可以想看看😊\n\n不過我想問你——你說已經曖昧快三個月了，這三個月你有沒有一直在猜他的心？' },
+          { type: 'client', text: '對啊 一直在想' },
+          { type: 'you', text: '一直在想，很耗心力的😔\n\n今天做了，明天你就有一個清楚的方向，知道要怎麼走或怎麼放手。\n\n如果你決定的話，今天下單我今天就幫你排牌，明天前給你報告✨' },
+          { type: 'client', text: '好啦那就做吧！' },
+        ],
+        analysis: '她說「還要想一下」——不是拒絕，是還沒有足夠的理由現在就做。\n\n你做的是：把她拉回她已經承受的「三個月一直在猜」這個隱形代價。\n\n不是說「你趕快決定」，是說「今天做了，明天你就有方向」——把行動的好處具體化。\n\n然後給一個小誘因：今天下單今天排牌。製造行動的理由，但不是強迫。',
+        warning: '⚠️ 不要說「你不用想太多啦」或「沒關係你慢慢想」——前者讓她有壓力，後者讓她真的去想然後消失。',
+        tips: ['把她拉回她已經承受的代價（三個月一直在猜）', '「今天做了，明天你就有方向」——具體化行動的好處', '給一個時間誘因，但不是施壓'],
+        keyPhrases: ['今天做了，明天你就有一個清楚的方向', '今天下單我今天就幫你排牌，明天前給你報告'],
+      },
+      {
+        title: '確認成交',
+        pill: '階段 5 · 成交',
+        purpose: '她說好了，收款流程要順暢，讓她感覺決定是對的。',
+        chat: [
+          { type: 'client', text: '好啦那就做吧！' },
+          { type: 'you', text: '太好了，謝謝你的信任🙏\n\n付款方式：\n✦ 轉帳：玉山銀行 808　帳號 0123-456-789-0\n✦ 戶名：○○○\n\n轉帳完請截圖傳給我確認喔！\n\n同時我需要：\n① 你的生日（西元年月日）\n② 你最想問他的一句話' },
+          { type: 'client', text: '好！1999/03/22，想問的是：他對我的感情是什麼' },
+          { type: 'you', text: '收到！匯款確認後馬上開始，明天早上前給你報告🔮\n\n這段時間如果還有什麼想補充的可以繼續跟我說😊' },
+        ],
+        analysis: '成交後三件事：\n1. 感謝她的信任（讓她感覺決定是好的）\n2. 清楚的付款資訊 + 需要的資料（一次給完）\n3. 給交付時間（讓她有期待，不是付完不見）\n\n「謝謝你的信任」這句話很重要，讓她感覺你重視這次的合作，不是流水線作業。',
+        warning: null,
+        tips: ['感謝 + 付款資訊 + 需要資料，一次給完', '給明確的交付時間，建立信任感'],
+        keyPhrases: ['謝謝你的信任', '轉帳完請截圖傳給我確認', '明天早上前給你報告'],
+      },
+    ]
+  },
+
+  // ══ SCENARIO C：消失的客人 ══
+  silent: {
+    clientName: '阿珊',
+    navInfo: '情境 C · 「我再想想」後消失',
+    stages: [
+      {
+        title: '報價後客人消失',
+        pill: '階段 1 · 看懂訊號',
+        purpose: '她說「我再想想」或者直接已讀不回，是常見但最難處理的狀況。要先理解為什麼。',
+        chat: [
+          { type: 'date', text: '昨天' },
+          { type: 'client', text: '我想問工作運，想知道現在這份工作要不要繼續做' },
+          { type: 'you', text: '好的，針對你的狀況，推薦你做【工作方向解析】NT$800，幫你看現在這份工作的能量走向和建議。' },
+          { type: 'client', text: '嗯好，我再想想看' },
+          { type: 'date', text: '今天' },
+          { type: 'system', text: '已經過了 18 小時，對方沒有再回覆' },
+        ],
+        analysis: '她說「我再想想」然後消失，通常有幾個原因：\n\n1. 她還沒有感覺到「這對她的問題很重要」\n2. 她在比較其他家\n3. 預算的考量\n4. 你報價太快，她還沒準備好\n\n大多數時候是第1點——你還沒讓她感覺「今天就要解決這個問題」的急迫感。\n\n但不管是哪個原因，現在她消失了，你要怎麼跟進又不顯得在追客？',
+        warning: '⚠️ 最常見的錯誤：立刻傳「你考慮得怎麼樣了？」或「我們最近有優惠喔！」——這樣她會感覺有壓力，更不想回。',
+        tips: ['先理解她消失的可能原因，再決定怎麼跟進', '跟進的目的不是催她，是給她一個「回來的理由」'],
+        keyPhrases: [],
+      },
+      {
+        title: '跟進第一句話',
+        pill: '階段 2 · 跟進',
+        purpose: '18小時後要跟進，但不能讓她感覺「被追著買」，要讓她感覺你是關心她的問題。',
+        chat: [
+          { type: 'date', text: '今天' },
+          { type: 'you', text: '嗨阿珊😊\n\n我記得你說想問工作要不要繼續做，這個問題通常在心裡悶一段時間了對嗎？\n\n今天那個問題有答案了嗎，還是還在想？' },
+          { type: 'client', text: '還在想，主要是預算有點考量' },
+        ],
+        analysis: '跟進的第一句話，目的是「讓她說話」，不是催她買。\n\n你說的是「我記得你說想問工作要不要繼續做」——這讓她感覺你記得她，不是群發訊息。\n\n「這個問題通常在心裡悶一段時間了對嗎？」——這是共情，讓她感覺你懂她，不是在賣她。\n\n她說「預算有點考量」——現在你知道真正的阻礙是什麼了，才能針對性處理。',
+        warning: '⚠️ 不要說「你考慮得怎麼樣了」，這讓她感覺你在等她的決定，有壓力感。要問她的「狀態」，不是問她的「決定」。',
+        tips: ['跟進要讓她感覺你記得她這個人，不是她這張訂單', '問她「問題解決了嗎」而不是「你決定了嗎」'],
+        keyPhrases: ['我記得你說想問工作要不要繼續做', '今天那個問題有答案了嗎，還是還在想？'],
+      },
+      {
+        title: '處理預算顧慮',
+        pill: '階段 3 · 處理阻礙',
+        purpose: '她說「預算考量」，不要立刻降價，要先了解她是真的沒預算，還是感覺不夠值得。',
+        chat: [
+          { type: 'client', text: '還在想，主要是預算有點考量' },
+          { type: 'you', text: '我理解，預算考量是很現實的事😊\n\n我想多問一下，你說要不要繼續做這份工作——你現在是有點撐著做，還是真的很不確定要不要走？' },
+          { type: 'client', text: '有點撐著做，但也不確定現在離開對不對' },
+          { type: 'you', text: '撐著做又不確定要不要走，這個狀態其實蠻消耗的。\n\n這樣說你聽看看——NT$800，幫你在今天確認一個方向，讓你不用繼續在「要走還是不要走」裡面空轉。\n\n如果你算出來答案是該走，你能更快做準備；如果答案是留，你也能放下這個消耗，好好做。\n\n這樣看的話，800對你來說值得嗎？' },
+        ],
+        analysis: '她說預算考量，你沒有立刻降價或給優惠。你做的是：再挖一層她的狀態。\n\n她說「撐著做又不確定要不要走」——這比「我想問工作運」更真實、更痛。\n\n然後你用她說的話重新說明這800的價值：「不用繼續在要走還是不要走裡面空轉」——這是她正在承受的代價。\n\n最後問「這樣看的話，800對你來說值得嗎？」——讓她自己說值得。',
+        warning: '⚠️ 不要說「那我給你算便宜一點好了」——降價讓她覺得你的服務定價本來就是在坑她，更不信任。',
+        tips: ['預算考量通常是「感覺不夠值得」，不是真的沒錢', '用她說的消耗感來說明這筆費用的意義'],
+        keyPhrases: ['讓你不用繼續在「要走還是不要走」裡面空轉', '這樣看的話，800對你來說值得嗎？'],
+      },
+      {
+        title: '她還是猶豫',
+        pill: '階段 4 · 最後一步',
+        purpose: '她說「好像也是」但沒有主動說要做，這時候給她一個最後的理由和清楚的下一步。',
+        chat: [
+          { type: 'client', text: '好像也是沒錯，但還是在考慮' },
+          { type: 'you', text: '沒問題，你不用勉強自己😊\n\n不過我可以告訴你一件事：像你這樣撐著做又不確定的狀態，時間越長，做決定越難——因為你習慣了「忍耐」這個感覺。\n\n如果你在這個禮拜想清楚了，歡迎隨時回來找我，我會幫你排牌🔮\n\n如果你決定現在做，今天下單我今天就幫你排，明天前出報告給你。' },
+          { type: 'client', text: '好，那我今天做好了' },
+        ],
+        analysis: '她說「還是在考慮」——你做了一件很重要的事：給她空間，但同時說了一個心理真相。\n\n「撐著做又不確定的狀態，時間越長，做決定越難」——這是在說她的心理狀態，不是在催她，但她會感覺到。\n\n然後你給兩條路：\n1. 你自己想清楚了隨時來\n2. 今天下單今天排牌\n\n不是強迫她選，而是讓她感覺這兩條路都是她自己的決定。\n\n她說「今天做好了」——這是她自己說的，不是被逼的。',
+        warning: null,
+        tips: ['給她空間，但同時說一個她沒想到的心理真相', '讓她感覺兩條路都是她自己的選擇，不是被推著走'],
+        keyPhrases: ['時間越長，做決定越難——因為你習慣了「忍耐」這個感覺', '今天下單我今天就幫你排，明天前出報告給你'],
+      },
+      {
+        title: '收款完成',
+        pill: '階段 5 · 成交',
+        purpose: '她說要做了，收款流程要快、清楚、讓她感覺這個決定是對的。',
+        chat: [
+          { type: 'client', text: '好，那我今天做好了' },
+          { type: 'you', text: '太好了！我很高興你做了這個決定，相信這個方向感會對你有幫助🙏\n\n付款方式：\n✦ 轉帳：玉山銀行 808　帳號 0123-456-789-0\n✦ 戶名：○○○\n\n轉帳完截圖傳給我確認，我馬上開始！\n\n需要你的：\n① 生日（西元年月日）\n② 你最想問的一句話（要不要繼續這份工作，還是有其他想問的）' },
+          { type: 'client', text: '好！1997/08/15，問題是：我現在這份工作適合我繼續做嗎' },
+          { type: 'you', text: '收到！匯款確認後馬上排牌，明天早上前給你報告🔮\n\n等待的時候如果想到什麼想補充的，隨時可以跟我說😊' },
+        ],
+        analysis: '她說「今天做好了」，你的第一句是「我很高興你做了這個決定」——這讓她感覺這個決定是被肯定的，不會後悔。\n\n付款資訊 + 需要的資料一次給完，不要分兩次問，讓她感覺流程清楚專業。\n\n交付時間「明天早上前」讓她有期待感，知道付出去的錢什麼時候會有回報。',
+        warning: null,
+        tips: ['成交後先肯定她的決定，讓她不後悔', '所有需要的資訊一次給完，展現專業度'],
+        keyPhrases: ['我很高興你做了這個決定，相信這個方向感會對你有幫助', '明天早上前給你報告'],
+      },
+    ]
+  }
+,
+
+  // ══ SCENARIO G：問題很模糊 ══
+  vague: {
+    clientName: '曖昧小妹',
+    navInfo: '情境 G · 問題模糊，引導聚焦',
+    stages: [
+      {
+        title: '接住模糊問題',
+        pill: '階段 1 · 接觸',
+        purpose: '客人說「我最近運氣很差」或「想了解我的未來」——這不是一個可以排牌的問題。學員的任務是溫和地幫她聚焦，不是直接說「你的問題不夠清楚」。',
+        chat: [
+          { type: 'date', text: '今天' },
+          { type: 'system', text: '曖昧小妹 加入了官方LINE' },
+          { type: 'client', text: '你好，我最近運氣很差，想算一下' },
+          { type: 'you', text: '你好歡迎來🔮\n\n聽起來最近過得不太順，來對了！\n\n我想多了解你一下，你說的「運氣很差」，主要是生活上哪個部分讓你最有感覺？比如說感情、工作、還是其他的方向？' },
+        ],
+        analysis: '她說「運氣很差」是一個感受，不是一個問題。你不能拿這個去排牌。\n\n但你不能直接說「你的問題太模糊了」——這樣她會感覺被糾正，有點受傷。\n\n正確做法：先共情（「聽起來最近過得不太順」），然後問她哪個「方向」讓她最有感覺，引導她自己縮小範圍。',
+        warning: '⚠️ 不要說「你的問題需要更具體一點」——這是老師在糾正學生，不是占卜師在幫客人。要讓她感覺你在「幫她找方向」，不是在「考她」。',
+        tips: ['先共情感受，再問方向', '給她選項（感情/工作/其他）幫她縮小範圍，不要讓她自己想'],
+        keyPhrases: ['你說的「運氣很差」，主要是生活上哪個部分讓你最有感覺？', '比如說感情、工作、還是其他的方向？'],
+      },
+      {
+        title: '幫她找到核心問題',
+        pill: '階段 2 · 聚焦',
+        purpose: '她說了方向之後，還需要繼續引導，把「方向」變成「一個可以排牌的具體問題」。公式：時間＋問題（＋給我建議）。',
+        chat: [
+          { type: 'client', text: '主要是工作吧，感覺一直在原地踏步' },
+          { type: 'you', text: '工作一直在原地踏步，這個感覺真的很悶😔\n\n那你現在最想知道的是什麼？\n\n比如說：\n✦「這份工作半年內有沒有機會升遷或加薪」\n✦「我現在要不要換工作」\n✦「我的工作方向下一步應該怎麼走」\n\n你最在意的是哪個，還是有其他的？' },
+          { type: 'client', text: '我想知道這份工作還值不值得繼續做' },
+          { type: 'you', text: '好，那我們可以把問題設定成：\n\n「半年內，這份工作值得繼續做嗎？或是該怎麼做？」\n\n這樣排出來的牌會更有方向感，你覺得這個問題有抓到你想知道的嗎？' },
+          { type: 'client', text: '對！就是這樣' },
+        ],
+        analysis: '這一段有兩個關鍵動作：\n\n① 給她三個具體的問題範例讓她選——不是讓她自己想，是讓她「認出」哪個最像她要的。這大幅降低她的認知負擔。\n\n② 你幫她把模糊的想法，轉換成符合「時間＋問題＋建議」格式的問句，然後再確認她認同。\n\n最後問「這個問題有抓到你想知道的嗎？」——讓她確認，不是你單方面決定要問什麼。',
+        warning: null,
+        tips: ['給選項範例讓她選，不是讓她從零開始想問題', '幫她把問題轉換成「時間＋問題」格式，再讓她確認'],
+        keyPhrases: ['我們可以把問題設定成：「半年內，這份工作值得繼續做嗎？或是該怎麼做？」', '這個問題有抓到你想知道的嗎？'],
+      },
+      {
+        title: '問題太遠 → 拉回來',
+        pill: '階段 3 · 時效調整',
+        purpose: '客人有時候問的問題時間太長（「我兩年後會不會結婚」），根據你的規定問題不超過六個月。學員要知道怎麼調整，讓她不覺得被拒絕。',
+        chat: [
+          { type: 'date', text: '另一個例子' },
+          { type: 'client', text: '我想問我何時能交到新對象' },
+          { type: 'you', text: '交到新對象是很多人都在期待的事情😊\n\n這樣的問題我們通常會縮短時間範圍，這樣排出來的牌比較準確也比較有行動方向。\n\n所以我會把問題調整成：\n「半年內，會有桃花出現嗎？或是我該怎麼做？」\n\n這樣你更能根據結果做一些具體的事，而不是等著「不知道什麼時候」到來。\n\n這樣的方向OK嗎？' },
+          { type: 'client', text: '好喔，這樣感覺比較實際' },
+        ],
+        analysis: '「我何時能交到新對象」是一個沒有時效性的問題，而且問法是「何時」——塔羅很難給精確時間。\n\n你調整的方式：\n① 說明為什麼要縮短時間（「這樣排出來比較準確」）——給理由，不是叫她改\n② 直接給她調整後的版本，讓她確認\n③ 說明縮短時間的好處（「更能做具體的事」）\n\n注意：你用的是「我們通常會」，不是「你的問題不對」——語氣是引導，不是糾正。',
+        warning: '⚠️ 不要說「這個問題沒辦法算」或「塔羅不能預測時間」——這讓她感覺被拒絕。要說「我們可以換個方式來問，結果會更有用」。',
+        tips: ['說「我們通常會縮短時間範圍」而不是「你的問題不行」', '直接給她調整後的問題版本，讓她確認，不是讓她自己改'],
+        keyPhrases: ['這樣排出來的牌比較準確也比較有行動方向', '我會把問題調整成：「半年內，會有桃花出現嗎？或是我該怎麼做？」'],
+      },
+      {
+        title: '報價與成交',
+        pill: '階段 4 · 報價',
+        purpose: '問題確認好了，學員接著要自然地進入報價，不要讓中間有一個尷尬的停頓。',
+        chat: [
+          { type: 'client', text: '對！就是這樣' },
+          { type: 'you', text: '太好了，那問題確認了～\n\n「半年內，這份工作值不值得繼續做？或是我該怎麼做？」\n\n這個問題我推薦你做【工作方向解析】，費用 NT$800，解牌完給你完整的文字報告📝\n\n你方便現在進行嗎？' },
+          { type: 'client', text: '好，要怎麼付款？' },
+          { type: 'you', text: '太好了🙏\n\n付款方式：\n✦ 轉帳：玉山銀行 808　帳號 0123-456-789-0\n✦ 戶名：○○○\n\n轉帳完截圖傳給我，同時告訴我你的生日（西元年月日）就可以囉！\n\n明天早上前給你報告🔮' },
+        ],
+        analysis: '問題確認之後，報價要接得自然，不要有停頓感。\n\n技巧是先「複述確認的問題」再「給方案」——讓她感覺這個方案是針對她的問題設計的，不是通用產品。\n\n最後問「你方便現在進行嗎？」而不是「你要嗎？」——前者是在確認時間，後者是在等她決定，心理壓力不同。',
+        warning: null,
+        tips: ['報價前先複述確認好的問題，讓她感覺方案是為她量身設計的', '說「你方便現在進行嗎？」而不是「你要做嗎？」，降低決策壓力'],
+        keyPhrases: ['問題確認了～「半年內，這份工作值不值得繼續做？」', '你方便現在進行嗎？'],
+      },
+    ]
+  },
+
+  // ══ SCENARIO H：禁問類型 ══
+  forbidden: {
+    clientName: '好奇的客人',
+    navInfo: '情境 H · 客人問了禁止類型的問題',
+    stages: [
+      {
+        title: '認識哪些是禁問',
+        pill: '階段 0 · 觀念確認',
+        purpose: '在練習怎麼說之前，先確認學員知道哪些題目屬於禁問範圍，以及為什麼。',
+        chat: [
+          { type: 'date', text: '觀念確認' },
+          { type: 'system', text: '以下是你課程中定義的「奇型題目」，★越多越要避開' },
+          { type: 'you', text: '【禁問/高風險題型一覽】\n\n★★★★★ 完全禁止\n健康症狀、賭博、生死、違反道德\n\n★★★★ 高度避免\n投資、大樂透\n\n★★ 謹慎處理\n官司\n\n★ 可以但要小心引導\n婚姻（要改成時效性問法）\n前世（容易帶偏，通常不建議）\n\n另外：一事禁止多問\n同一個問題或同類型，這週問過就不要再問了。' },
+        ],
+        analysis: '這個情境的目的是讓學員在「遇到禁問題型之前」就知道怎麼反應，而不是當場慌張。\n\n禁問不是你不想幫她，是這類問題容易帶來以下風險：\n① 健康/生死：客人可能因為牌面做出不理性的決定\n② 賭博/投資：你可能因此負法律責任\n③ 違反道德：幫人算「要不要外遇」等\n\n你的立場是：我不是不幫你，是這類問題我沒有辦法負責任地幫你看。',
+        warning: null,
+        tips: ['把禁問的原因說清楚，客人通常能接受', '禁問不等於不服務，是「換一個方式問」或「換一個主題問」'],
+        keyPhrases: [],
+      },
+      {
+        title: '客人問健康問題',
+        pill: '階段 1 · 健康類禁問',
+        purpose: '「我最近身體一直不好，想知道是什麼原因」——這是高風險的禁問，學員要溫和但清楚地設邊界。',
+        chat: [
+          { type: 'date', text: '今天' },
+          { type: 'client', text: '我最近一直胸悶，想透過塔羅知道是什麼原因' },
+          { type: 'you', text: '謝謝你願意跟我說這件事😊\n\n不過關於身體症狀這個部分，塔羅牌比較沒有辦法準確地回應，因為這類問題需要的是醫療上的判斷，我不希望給你一個不夠負責任的答案。\n\n如果你的身體狀況讓你感到擔心，真的建議先去看醫生確認一下喔！\n\n如果你同時也有其他困擾，比如說最近壓力比較大、情緒或生活狀態想了解，這個方向我可以幫你看✨' },
+          { type: 'client', text: '喔好，那我想問最近的壓力狀態' },
+        ],
+        analysis: '設邊界的三步驟：\n\n① 感謝她分享（不要讓她覺得你在拒絕她這個人）\n② 說明你不能算的原因（不是因為你不想，是因為你負不起責任）\n③ 轉向你可以幫到她的方向（讓她感覺這次來不是白來）\n\n她說「那我想問最近的壓力狀態」——成功轉向，這才是你可以幫到她的。\n\n注意：你說的是「塔羅牌比較沒有辦法準確地回應」，不是「我不能算」——語氣是工具限制，不是你的個人限制。',
+        warning: '⚠️ 不要說「這個我不能算」——這讓她感覺被拒絕。要說「這類問題塔羅比較難負責任地回應，但我可以幫你看……」，給她一個替代方向。',
+        tips: ['邊界要設，但要溫暖地設', '設完邊界後馬上給替代方向，不要讓對話停在「不行」'],
+        keyPhrases: ['這類問題需要的是醫療上的判斷，我不希望給你一個不夠負責任的答案', '如果你同時也有其他困擾，這個方向我可以幫你看'],
+      },
+      {
+        title: '客人問投資/賭博',
+        pill: '階段 2 · 財務類禁問',
+        purpose: '「我想問這支股票值不值得買」「我想知道這次賭博會不會贏」——這類問題涉及法律風險，學員要清楚但不失禮地拒絕。',
+        chat: [
+          { type: 'client', text: '我想問說我最近看上一支股票，塔羅能不能看看值不值得投資' },
+          { type: 'you', text: '感謝你的信任😊\n\n投資相關的問題我們這邊沒有辦法幫你看，因為這類問題牽涉到財務決策，如果透過塔羅給你方向，反而可能對你造成誤導，這點我沒有辦法負責任。\n\n不過如果你最近對未來方向有一些迷茫——比如說職涯發展、或是這個階段的整體能量走向，這些我都可以幫你解析喔！\n\n你有這方面的困擾嗎？' },
+          { type: 'client', text: '其實我也有在想要不要換工作的問題' },
+          { type: 'you', text: '這個我可以幫你看✨\n那工作方向這個主題，你最想問的是什麼呢？' },
+        ],
+        analysis: '財務類禁問處理方式跟健康類一樣，三步驟：\n① 感謝信任\n② 說明原因（這類問題可能對你造成誤導）\n③ 轉向替代主題\n\n這裡你說「如果透過塔羅給你方向，反而可能對你造成誤導」——這讓她感覺你是在保護她，不是在趕她走。\n\n她說「也有在想換工作的問題」——成功轉向，而且這是她真正的底層困擾。',
+        warning: '⚠️ 「賭博」類問題要更直接拒絕，不要試圖轉向——「賭博相關的問題我們這邊不處理，但如果有其他生活上的困擾歡迎問我」。',
+        tips: ['說「這類問題可能對你造成誤導」——你是在保護她', '轉向要自然，問她有沒有其他方面的困擾'],
+        keyPhrases: ['這類問題牽涉到財務決策，如果透過塔羅給你方向，反而可能對你造成誤導', '你有這方面的困擾嗎？'],
+      },
+      {
+        title: '客人想重複問同一件事',
+        pill: '階段 3 · 一事禁止多問',
+        purpose: '「我上週問過他會不會回來，這週我可以再問一次嗎」——這是「一事禁止多問」的情況，學員要說清楚規定，但不讓她感覺被刁難。',
+        chat: [
+          { type: 'client', text: '我上禮拜有問過他會不會回來，但我還是很不安，可以再問一次嗎' },
+          { type: 'you', text: '我完全理解那種不安的感覺，等待答案真的很煎熬😔\n\n不過關於同一件事，我們這邊的規定是一週內不重複問同一個問題——因為牌面能量還沒有改變，再問一次得到的答案不會更清楚，有時候反而會讓自己更混亂。\n\n如果上週的解析有哪個地方你還不確定，我可以幫你再說明一下喔！\n\n或者如果你想從另一個角度問——比如說「我可以為這段感情做什麼」，這樣的問法是可以的✨' },
+          { type: 'client', text: '好，那我想問我可以為這段感情做什麼' },
+        ],
+        analysis: '一事禁止多問的處理要點：\n\n① 先共情（「等待答案真的很煎熬」）——讓她感覺你懂她為什麼想再問\n② 說明原因（「牌面能量還沒有改變，再問反而更混亂」）——有道理的解釋，不是硬規定\n③ 給兩個出口：a.幫她重新說明上週的解析 b.換一個角度問新問題\n\n她選了「我可以為這段感情做什麼」——這是一個新問題，可以算，也讓她感覺有收穫。',
+        warning: '⚠️ 不要說「規定就是規定」——這讓她感覺你在推她走。要給她「為什麼這個規定對她有好處」的理由。',
+        tips: ['說明一事禁止多問的原因（「再問反而更混亂」），不是只說「規定如此」', '給她替代方向，讓她這次來不是白來'],
+        keyPhrases: ['牌面能量還沒有改變，再問一次有時候反而會讓自己更混亂', '如果你想從另一個角度問——比如說「我可以為這段感情做什麼」，這樣可以的'],
+      },
+      {
+        title: '客人想幫朋友問',
+        pill: '階段 4 · 幫朋友問',
+        purpose: '「我可以幫我朋友問問題嗎」——這個根據你的規定是可以的，但學員要確認是真的朋友想問，不是她自己在問同一件事。',
+        chat: [
+          { type: 'client', text: '請問我可以幫我朋友問問題嗎？她想問感情' },
+          { type: 'you', text: '當然可以😊 朋友想問的話沒有問題！\n\n不過我要確認一下——是你朋友真的想問這個問題，對嗎？不是你自己想再問一次同一件事？\n\n（這個確認是因為幫自己問跟幫朋友問是不同的能量，牌面才會準）' },
+          { type: 'client', text: '哈哈真的是我朋友啦，她想問跟她男友的感情走向' },
+          { type: 'you', text: '好的沒問題！那問題我們來確認一下：\n\n「半年內，她和男友的感情走向如何？或是該怎麼做？」\n\n這樣的問法OK嗎？確認了我就報方案給你～' },
+        ],
+        analysis: '幫朋友問是允許的，但你要做一個小確認——不是質疑她，而是「給她一個解釋為什麼要確認」的理由。\n\n你說「幫自己問跟幫朋友問是不同的能量，牌面才會準」——這是一個有說服力的解釋，不是在懷疑她撒謊。\n\n她笑說「真的是我朋友啦」——氣氛輕鬆，確認完成，繼續進行。\n\n然後你把她朋友的問題也轉換成正確格式，再確認，流程跟一般客人一樣。',
+        warning: null,
+        tips: ['確認是否真的是朋友問，但要用輕鬆的方式說，不要讓她感覺被懷疑', '朋友的問題一樣要調整成「時間＋問題」格式'],
+        keyPhrases: ['是你朋友真的想問這個問題，對嗎？不是你自己想再問一次同一件事？', '幫自己問跟幫朋友問是不同的能量，牌面才會準'],
+      },
+    ]
+  }
+
+,
+
+  // ══ SCENARIO E：砍價客人 ══
+  bargain: {
+    clientName: '愛比價的芸',
+    navInfo: '情境 E · 直接要求降價',
+    stages: [
+      {
+        title: '客人直接要求便宜',
+        pill: '階段 1 · 接住砍價',
+        purpose: '她說「可以便宜一點嗎」或「有沒有優惠」，這跟「好像不便宜耶」是不同的。後者是猶豫，前者是直接要求。學員的第一反應決定了後面誰說話算數。',
+        chat: [
+          { type: 'date', text: '今天' },
+          { type: 'system', text: '愛比價的芸 加入了官方LINE' },
+          { type: 'client', text: '請問你們感情占卜多少錢' },
+          { type: 'you', text: '你好歡迎來✨ 我們感情占卜單題是 NT$800，包含完整文字解析報告喔！\n\n你想問的是哪方面的感情問題呢？' },
+          { type: 'client', text: '可以算便宜一點嗎，我看別人好像比較便宜' },
+        ],
+        analysis: '她說「別人比較便宜」——這是在用比較來施壓，讓你降價。\n\n這個時候學員最常犯的錯誤是立刻說「好啊那我給你算NT$600好了」。一旦你這樣做，你的定價就失去了依據，她也會覺得「原來你的價格是可以隨便殺的」，甚至對服務品質產生懷疑。\n\n你現在要做的不是立刻回應降不降，是先把她的注意力從「價格比較」拉回到「這個服務對她的價值」。',
+        warning: '⚠️ 最大錯誤：她說貴，你立刻說「那我給你便宜一點」。這樣做讓她感覺你的定價沒有根據，反而更不信任你的服務。',
+        tips: ['不要立刻回應降不降，先問她想問什麼問題', '把話題從「比價格」帶回「她的問題有多重要」'],
+        keyPhrases: [],
+      },
+      {
+        title: '不降價的說法',
+        pill: '階段 2 · 守住定價',
+        purpose: '直接告訴她為什麼你不降價，但說法要讓她感覺是在幫她，不是在堅持立場。',
+        chat: [
+          { type: 'client', text: '可以算便宜一點嗎，我看別人好像比較便宜' },
+          { type: 'you', text: '我理解你會做比較，這很正常😊\n\n我說明一下我們的NT$800包含什麼：解牌後你會拿到一份完整的文字報告，我會針對你的問題做深度解析，不是一兩句話帶過。\n\n我沒有辦法在這個基礎上再降價，因為這樣我沒有辦法給你一個我認為夠好的品質。\n\n如果你想先感受一下我的解牌風格，可以先從比較簡單的單題問起，不一定要做最完整的方案。\n\n你現在最想問的問題是什麼呢？' },
+          { type: 'client', text: '好啦，那我問感情方向好了' },
+        ],
+        analysis: '不降價的說法有三個要素：\n\n① 說明NT$800包含什麼，讓她感覺「這不是貴，是值這個價」\n② 說明不降的原因是「我沒辦法給你夠好的品質」——這是在保護她，不是堅持要賺她的錢\n③ 給她一個「入門選擇」（先從單題問起），讓她有一個比較低的入場門檻，但不是降價\n\n注意：你說的是「我沒有辦法在這個基礎上再降價」，不是「我們不打折」——語氣是有理由的，不是規定。',
+        warning: '⚠️ 不要說「我們的品質比別人好所以比較貴」——這讓她感覺你在批評別人，有點防禦性。要說你的服務包含什麼，讓她自己感受到差異。',
+        tips: ['說明服務包含什麼，讓她感覺物有所值', '「我沒有辦法在這個基礎上再降價，因為我沒辦法給你夠好的品質」——把不降價說成是在保護她'],
+        keyPhrases: ['我沒有辦法在這個基礎上再降價，因為這樣我沒有辦法給你一個我認為夠好的品質', '如果你想先感受一下我的解牌風格，可以先從比較簡單的單題問起'],
+      },
+      {
+        title: '她繼續堅持要便宜',
+        pill: '階段 3 · 再次施壓',
+        purpose: '你守住了定價，但她繼續說「可是真的有點超預算」。這時候要判斷：她是真的沒預算，還是習慣性砍價？處理方式不同。',
+        chat: [
+          { type: 'client', text: '可是我真的預算有限，NT$800對我來說有點多' },
+          { type: 'you', text: '我懂，預算有限是很真實的考量😊\n\n這樣好了，我問你一個問題——你說想問感情方向，這個問題在你心裡卡多久了？' },
+          { type: 'client', text: '大概一兩個月了，一直很困擾' },
+          { type: 'you', text: '一兩個月，每天都在想——這個心理消耗其實比NT$800大很多。\n\n我們這邊沒有辦法降價，但如果你願意，可以先做【單題解析】NT$500，只問一個最核心的問題。這是我們入門的方案，雖然沒有完整報告，但可以讓你先得到一個方向。\n\n你覺得你最想先知道的那一個問題是什麼？' },
+          { type: 'client', text: '好，那我先做單題好了' },
+        ],
+        analysis: '她說「真的預算有限」，你做了兩件事：\n\n① 先把她拉回問題的代價（一兩個月每天都在想）——這讓她感覺NT$800相對合理\n② 然後才提出入門方案（NT$500單題）——不是降價，是給她一個真實存在的較低方案\n\n這兩件事的順序非常重要。如果你先說「那我給你NT$500的方案」，她會覺得你在降價。但如果你先讓她感覺一兩個月的消耗很大，再說有NT$500的方案，她感覺到的是「你在幫她找到一個她負擔得起的方式」。',
+        warning: '⚠️ 入門方案要是真實存在的服務，不是即興打折。如果你沒有NT$500的方案，不要為了成交臨時說有。這樣做長期會讓定價崩掉。',
+        tips: ['先讓她感覺問題的代價，再提出較低的方案', '入門方案是真實的服務選項，不是臨時降價'],
+        keyPhrases: ['一兩個月每天都在想——這個心理消耗其實比NT$800大很多', '可以先做【單題解析】NT$500，只問一個最核心的問題'],
+      },
+      {
+        title: '「第一次算有沒有優惠」',
+        pill: '階段 4 · 第一次客人',
+        purpose: '「我第一次來算，有沒有新客優惠？」這跟單純砍價稍微不同——她給了你一個「理由」。學員要知道怎麼處理這個理由。',
+        chat: [
+          { type: 'client', text: '我第一次來算，有沒有新客優惠啊' },
+          { type: 'you', text: '歡迎你第一次來✨\n\n我們目前沒有固定的新客折扣，不過我可以告訴你——第一次來的客人，我在解牌的時候通常會多說一點背景和脈絡，讓你對塔羅解析的方式更有感覺，算是我自己的服務習慣😊\n\n你想問的是哪個方向的問題呢？' },
+          { type: 'client', text: '喔好，那我問感情好了' },
+        ],
+        analysis: '她問新客優惠，你沒有給折扣，但你給了她一個「感覺更好的理由」——第一次來的客人我會多說一點背景和脈絡。\n\n這讓她感覺：雖然沒有打折，但第一次來還是有「特別的東西」。這是一個心理上的補償，不是金錢上的讓步。\n\n如果你本來就有新客優惠方案，可以直接給。但如果沒有，不要為了成交臨時說「好啦給你算便宜一點」——這樣你的定價長期就崩了。',
+        warning: '⚠️ 如果你沒有新客優惠，不要臨時說「好啦給你九折」。設定清楚的價格策略比每次個別處理更重要。',
+        tips: ['沒有折扣沒關係，給她一個「第一次來的附加價值」作為補償', '如果你有固定的新客方案，現在是設計它的好時機'],
+        keyPhrases: ['我們目前沒有固定的新客折扣', '第一次來的客人，我在解牌的時候通常會多說一點背景和脈絡'],
+      },
+    ]
+  },
+
+  // ══ SCENARIO K：回頭客特殊要求 ══
+  returning: {
+    clientName: '熟客小玲',
+    navInfo: '情境 K · 回頭客要求特殊待遇',
+    stages: [
+      {
+        title: '「我算過了，可以便宜嗎」',
+        pill: '階段 1 · 回頭客折扣',
+        purpose: '她說「我之前有算過，這次可以算便宜一點嗎」——她給了你一個情感上的理由（我是老客人）。學員要讓她感覺被重視，同時守住定價。',
+        chat: [
+          { type: 'date', text: '今天' },
+          { type: 'client', text: '你好，我上次有找你算過，這次想再問，可以給我便宜一點嗎' },
+          { type: 'you', text: '歡迎回來！很高興你又來找我😊\n\n上次算完之後，最近狀況有比較清楚了嗎？' },
+          { type: 'client', text: '有一點點，但有新的問題想問' },
+          { type: 'you', text: '好，那我們來看看這次想問什麼～\n\n費用的部分，我們目前的方案跟之前一樣，沒有另外的回頭客折扣，不過你回來找我代表你對上次的解析有信任感，這對我來說很重要，我也會認真幫你看這次的問題😊\n\n你這次最想問的是什麼方向？' },
+        ],
+        analysis: '回頭客要折扣，處理方式跟新客一樣——不降價，但給她情感上的回應。\n\n你說「你回來找我代表你對上次的解析有信任感，這對我來說很重要」——這讓她感覺被重視，而且這句話是真實的，不是話術。\n\n然後你立刻把話題帶到「這次想問什麼」——不在折扣上停留太久，讓她的注意力回到她的問題上。\n\n如果你本來就有回頭客方案（例如累積三次打九折），可以在這裡說。如果沒有，這是一個提醒你去設計的訊號。',
+        warning: '⚠️ 不要說「因為你是老客人所以我破例給你便宜」——「破例」這個詞讓她以後每次來都會期待你再破例一次。',
+        tips: ['給情感上的回應（「你回來代表你有信任感，這對我很重要」），不是金錢上的讓步', '如果你有回頭客方案，現在說。如果沒有，考慮設計一個固定的方案'],
+        keyPhrases: ['你回來找我代表你對上次的解析有信任感，這對我來說很重要', '費用的部分跟之前一樣，我們目前沒有另外的回頭客折扣'],
+      },
+      {
+        title: '「我介紹朋友來，可以送我一次嗎」',
+        pill: '階段 2 · 介紹獎勵',
+        purpose: '她說「我介紹朋友來找你，可以送我一次占卜嗎」——這是一個合理的要求，但學員要有清楚的標準，不能每次都隨口答應，否則後來說話不算數會很麻煩。',
+        chat: [
+          { type: 'client', text: '我有介紹我朋友來找你算，可以送我一次免費的嗎' },
+          { type: 'you', text: '謝謝你介紹朋友來，真的很感謝你的信任😊\n\n關於介紹獎勵，我目前有一個固定的方式：朋友完成付款之後，你可以獲得一題免費的單題解析。這個是我感謝你帶來新客人的方式。\n\n你的朋友最近有來找我算了嗎？' },
+          { type: 'client', text: '她說她之後會來' },
+          { type: 'you', text: '好的！那等她完成之後，你再告訴我，我就幫你登記那一題免費單題😊\n\n這樣的方式你覺得OK嗎？' },
+        ],
+        analysis: '介紹獎勵的處理有兩個關鍵：\n\n① 要有固定的方案，不是每次隨口說——「朋友完成付款後，你可以獲得一題免費單題」，這是一個清楚的條件和回報\n② 條件是「朋友完成付款後」，不是「介紹了就算」——這保護你不會被濫用\n\n如果你目前沒有設計介紹獎勵方案，這個情境是一個提醒：設計一個固定的、說出來你自己也願意執行的方案，才不會每次都臨時決定。',
+        warning: '⚠️ 不要說「好啊那我送你一次」，然後沒有記錄、沒有條件——她下次又說介紹了朋友，你不知道要不要再給，就很尷尬。',
+        tips: ['介紹獎勵要有固定的條件（朋友完成付款）和固定的回報（一題免費單題）', '說完條件後讓她確認，確保雙方都清楚'],
+        keyPhrases: ['朋友完成付款之後，你可以獲得一題免費的單題解析', '等她完成之後，你再告訴我，我就幫你登記那一題免費單題'],
+      },
+      {
+        title: '「上次解析不準，這次要補算」',
+        pill: '階段 3 · 售後糾紛',
+        purpose: '「你上次說的跟實際發生的不一樣，我覺得不準，可以幫我重算嗎」——這是最棘手的回頭客情況。學員要處理她的不滿，同時守住不免費重算的立場。',
+        chat: [
+          { type: 'client', text: '你上次幫我算他會回來，但他沒有回來，感覺不太準，可以幫我重算嗎' },
+          { type: 'you', text: '我聽到你說的，這個結果讓你失望了，我能理解😔\n\n我想跟你說明一下：塔羅解析看的是當下的能量走向，不是一個固定的預言——如果在那之後有任何行動或決定改變了，牌面的走向也會跟著變。\n\n所以不是「算錯了」，而是中間可能有什麼改變了這個走向。\n\n你願意說說看，這段時間你們之間發生了什麼嗎？我比較能理解現在的狀況。' },
+          { type: 'client', text: '就是他突然說要分手，我沒有想到' },
+          { type: 'you', text: '原來如此，這個變化確實很突然，很難接受😔\n\n他主動說分手是一個很大的能量轉變，這也說明了為什麼牌面的走向跟後來的發展有落差。\n\n現在你最想知道的是什麼？是這段感情還有沒有機會，還是你現在應該怎麼面對？\n\n這次重新排牌我們一樣是正常費用，但我會針對現在的新狀況幫你深度解析。' },
+        ],
+        analysis: '這是最難的情況，要同時做三件事：\n\n① 接住她的情緒（「這個結果讓你失望了，我能理解」）——不要先解釋，先讓她感覺被聽見\n② 說明塔羅的性質（「看的是當下能量，不是固定預言」）——這是在教育她怎麼理解塔羅，不是在推卸責任\n③ 問清楚發生了什麼——讓她說出來，你才能判斷是能量改變了，還是真的有其他問題\n\n最後你說「這次重新排牌我們一樣是正常費用」——你沒有因為她不滿意就免費重算，因為這樣做會讓所有客人都用「不準」來要求免費重算。',
+        warning: '⚠️ 不要說「對不起，我幫你重算一次」——免費重算讓你的服務失去價值，而且無法解決根本問題。要說明塔羅的性質，再提供正常收費的新解析。',
+        tips: ['先接住情緒，再說明塔羅的性質，不要一開始就解釋和辯解', '不要免費重算，但要讓她感覺這次新的解析是針對她現在的新狀況'],
+        keyPhrases: ['塔羅解析看的是當下的能量走向，不是一個固定的預言', '這次重新排牌我們一樣是正常費用，但我會針對現在的新狀況幫你深度解析'],
+      },
+      {
+        title: '熟客長期關係維護',
+        pill: '階段 4 · 長期關係',
+        purpose: '她已經算過幾次了，是真正的熟客。學員怎麼在不打折的情況下，讓她感覺這段關係是有價值的，讓她繼續回來。',
+        chat: [
+          { type: 'client', text: '我這樣算下來好像找你算很多次了哈哈' },
+          { type: 'you', text: '對啊，我都記得你之前問過的狀況😊 看著你一路走過來，每次都在面對不同的課題。\n\n你這次想問的問題，我在解牌的時候也會結合你之前的狀況一起看，這樣解析會更準確。\n\n這個是我熟客才有的解析深度，不是每個人都有的😊' },
+          { type: 'client', text: '哇這樣聽起來很不錯耶！那我這次來問工作' },
+        ],
+        analysis: '熟客的維護不是打折，是「讓她感覺你記得她、了解她」。\n\n你說「我都記得你之前問過的狀況」——這讓她感覺你不是在跑業務，是真的在乎她的生命歷程。\n\n「結合你之前的狀況一起看」——這是真實的加值服務，不是話術。你確實可以因為了解她的背景而提供更精準的解析。\n\n最後說「這個是我熟客才有的解析深度」——讓她感覺長期找你是有好處的，但這個好處不是折扣，是更深度的理解。',
+        warning: null,
+        tips: ['用「我記得你的狀況」讓她感覺被重視，這比打折更有黏著力', '熟客的真正價值是「你對她的了解越來越深」，讓她感覺到這一點'],
+        keyPhrases: ['我都記得你之前問過的狀況，看著你一路走過來', '結合你之前的狀況一起看，這樣解析會更準確——這個是我熟客才有的解析深度'],
+      },
+    ]
+  },
+
+  // ══ SCENARIO I：算完客人不滿意 ══
+  unhappy: {
+    clientName: '不滿意的小蕾',
+    navInfo: '情境 I · 算完客人說不滿意',
+    stages: [
+      {
+        title: '「你說的跟我想的不一樣」',
+        pill: '階段 1 · 接住情緒',
+        purpose: '她剛收到報告，立刻說「跟我想的不一樣」。這一刻學員的第一反應最關鍵——接錯了，後面就很難收。',
+        chat: [
+          { type: 'date', text: '今天' },
+          { type: 'client', text: '我看完報告了，但感覺跟我想的不太一樣耶' },
+          { type: 'you', text: '謝謝你告訴我你的感受😊\n\n你說「跟想的不一樣」——可以多說一點嗎？是有哪個部分讓你覺得奇怪，還是整體的方向都跟你預期的不同？' },
+          { type: 'client', text: '就是我原本以為他還有心，但你說的感覺他已經放下了' },
+          { type: 'you', text: '我了解，這個結果確實不是你希望看到的，聽到這樣的牌面很難受😔\n\n讓我跟你說明一下這張牌在這個位置代表的意思……' },
+        ],
+        analysis: '她說「跟我想的不一樣」——注意，她不是說「你算錯了」，她是說「和我預期的不同」。這兩件事完全不同。\n\n你的第一反應不是解釋、不是道歉，是問她「哪個部分讓你覺得奇怪」。\n\n這個問題做了兩件事：① 讓你知道她的核心不滿在哪，才能針對性說明 ② 讓她重新說一次，她說的過程中往往自己會開始整理思緒，情緒會稍微下來。\n\n然後你確認她的感受（「這個結果確實不是你希望看到的」）——先共情，再說明。',
+        warning: '⚠️ 最常見的錯誤：她說不滿意，你立刻說「那我幫你再算一次」或「可能我當時狀態不好」。這兩句話都在否定你自己的解析，等於告訴她第一次算的不算數。',
+        tips: ['先問她「哪個部分」讓她有這個感受，不要假設你知道她在說什麼', '先共情再說明，不要還沒接住情緒就開始解釋'],
+        keyPhrases: ['你說「跟想的不一樣」——可以多說一點嗎？是有哪個部分，還是整體方向？', '這個結果確實不是你希望看到的，聽到這樣的牌面很難受'],
+      },
+      {
+        title: '說明解析的根據',
+        pill: '階段 2 · 守住解析',
+        purpose: '她說了她不理解的地方，現在你要說明你的解析根據——不是在說她錯，是在讓她理解牌面的意思。',
+        chat: [
+          { type: 'client', text: '但我覺得他應該還有心啊，我們昨天還有在聊天' },
+          { type: 'you', text: '我理解你有這樣的感覺，你們昨天還有聊天，所以這個結果讓你很困惑。\n\n不過我解釋一下這張牌在「對方心意」這個位置的意思——它反映的是他「內在的能量狀態」，不是他的行為。\n\n有時候一個人還在聯絡，不代表他心裡還在這段感情裡。牌面呈現的是他目前內心的位置，而不是他表面上做了什麼。\n\n這個說明有幫助你理解嗎？' },
+          { type: 'client', text: '嗯……好像有一點道理，但我還是很難接受' },
+        ],
+        analysis: '她說「我覺得他應該還有心」——她在用她的觀察（昨天還在聊天）來質疑你的解析。\n\n你做的不是說「你的觀察是錯的」，而是說明「行為和內心能量是兩件不同的事」。這是在幫她理解塔羅的運作，不是在跟她辯論。\n\n最後問「這個說明有幫助你理解嗎？」——這讓她有機會說她還有什麼不懂，不是讓她悶在心裡。\n\n她說「我還是很難接受」——這個時候你要知道：她不是說你錯了，她是在處理情緒。這是不同的事情，處理方式也不同。',
+        warning: '⚠️ 不要被她的情緒帶著走，開始懷疑自己的解析然後說「也許是這樣也說不定」——這讓她更混亂，也讓你的專業形象崩掉。',
+        tips: ['解釋牌面意思要有具體根據（「這張牌在這個位置代表……」），不是重新猜測', '說完解釋後問她「這樣說明有幫助你理解嗎」，給她繼續說的機會'],
+        keyPhrases: ['牌面反映的是他「內在的能量狀態」，不是他的行為', '有時候一個人還在聯絡，不代表他心裡還在這段感情裡'],
+      },
+      {
+        title: '「這個結果我不接受」',
+        pill: '階段 3 · 最強抵抗',
+        purpose: '她從「不滿意」升級到「我不接受」——這是情緒最高的時刻。學員要守住，不崩潰，不道歉，不重算。',
+        chat: [
+          { type: 'client', text: '我不接受這個結果，我覺得你算錯了，我要你幫我重算' },
+          { type: 'you', text: '我聽到你說的，你現在一定很難受😔\n\n我想跟你說一件很重要的事：塔羅解析反映的是當下的能量走向，不是一個你喜不喜歡的預測。\n\n如果牌面呈現的方向你不希望看到，我完全理解那個感受——但這不代表解析是錯的，它代表的是現在這個時間點的能量狀態。\n\n免費重算我沒有辦法提供，因為重算一次不會讓牌面變成你想要的答案，那樣做對你其實沒有幫助。\n\n但如果你想更深入了解「接下來你可以怎麼做」，這個方向我可以幫你再排一次，這是新的問題，正常收費。' },
+          { type: 'client', text: '……好啦，那我想問我可以為這段感情做什麼' },
+        ],
+        analysis: '她說「我不接受、我要你重算」——這是最激烈的情況。\n\n你做了三件事，順序很重要：\n\n① 先接住情緒（「你現在一定很難受」）——不是在道歉，是在說你理解她的感受\n② 說明塔羅的性質（「反映當下能量，不是你喜不喜歡的預測」）——清楚說明，不含糊\n③ 說清楚免費重算為什麼你不做，理由要站在她的角度（「重算不會讓牌面變成你想要的，那對你沒有幫助」）——不是你吝嗇，是因為對她沒有意義\n\n最後給她一個出口：「接下來你可以怎麼做」這是新問題，新問題正常收費。\n\n她說「那我想問我可以為這段感情做什麼」——情緒下來了，而且她找到了下一步。',
+        warning: '⚠️ 這個時刻最容易犯的錯：她一施壓你就說「好啦那我幫你重算一次」。你以為這樣她會滿意，但她拿到第二次解析，如果還是不是她想要的答案，她會繼續不滿意，然後你就沒有邊界可言了。',
+        tips: ['說清楚免費重算為什麼不做，理由要站在她的角度說——「對你沒有幫助」比「這是規定」更有說服力', '給她一個新的出口（新問題可以算），讓對話往前走而不是停在對抗'],
+        keyPhrases: ['塔羅解析反映的是當下的能量走向，不是一個你喜不喜歡的預測', '免費重算我沒有辦法提供，因為重算一次不會讓牌面變成你想要的答案，那樣做對你其實沒有幫助'],
+      },
+      {
+        title: '她要去留負評',
+        pill: '階段 4 · 負評威脅',
+        purpose: '她說「我要去留負評」——這是最後的施壓手段。學員要冷靜回應，不被恐嚇，但也不激化衝突。',
+        chat: [
+          { type: 'client', text: '算了，你這樣的態度我要去留負評' },
+          { type: 'you', text: '我理解你現在很失望，你有留評價的權利，我尊重。\n\n不過我想讓你知道，我今天的回應是基於對這份解析的負責，不是要讓你不高興。\n\n如果你冷靜下來之後，有任何關於報告內容想再討論的地方，我都願意跟你說明。\n\n希望你今天能好好休息一下，這樣的消息確實很難消化😔' },
+        ],
+        analysis: '她說要留負評——這是情緒的最後一個出口，通常說的人不一定真的會去做，但你的反應決定了她最後的感受。\n\n你做的三件事：\n\n① 尊重她的權利（「你有留評價的權利，我尊重」）——不要求她不要留，也不威脅她，這讓你站在有品格的位置\n② 說明你的立場（「我的回應是基於對這份解析的負責」）——讓她知道你不是在刁難她，是有原因的\n③ 留一個善後的門（「冷靜下來如果有想討論的我都願意說明」）——給她一個台階，讓她可以回來而不覺得尷尬\n\n很多時候這樣說完，她反而不會去留了。因為她感覺到你沒有被她嚇到，但你也沒有對她不好。',
+        warning: '⚠️ 兩個極端都要避免：① 求她不要留負評（讓她感覺你心虛）② 說「那你去留啊」（激化衝突）。正確的是：尊重她的權利，清楚說明你的立場，給她一個出口。',
+        tips: ['說「你有留評價的權利，我尊重」——這讓你站在有品格的位置，而不是防禦', '給她一個回來的門（「冷靜後想討論我都願意說明」），讓她有台階下'],
+        keyPhrases: ['你有留評價的權利，我尊重', '我今天的回應是基於對這份解析的負責，不是要讓你不高興', '冷靜下來之後，有任何關於報告內容想再討論的地方，我都願意跟你說明'],
+      },
+      {
+        title: '她冷靜後回來了',
+        pill: '階段 5 · 善後與挽回',
+        purpose: '第二天她回來了，說「昨天我有點激動，我想再問一個問題」。這是最好的結局——學員怎麼讓她感覺繼續來是對的決定。',
+        chat: [
+          { type: 'date', text: '隔天' },
+          { type: 'client', text: '昨天我有點激動，對不起。我想問如果他真的放下了，我現在可以做什麼' },
+          { type: 'you', text: '謝謝你回來😊 這個問題問得很好，代表你開始在想「接下來我能做什麼」，這個方向比一直等對方回頭要對你更有幫助。\n\n這是一個新的問題，費用一樣是NT$800，我來幫你看「在這段感情裡，你現在能做什麼對自己最好」。\n\n你方便現在進行嗎？' },
+          { type: 'client', text: '好，我來算' },
+        ],
+        analysis: '她回來道歉了——這是一個很好的結局，也是你昨天的回應方式帶來的。\n\n你的第一句話是「謝謝你回來」，不是「沒關係」也不是「我就說吧」——讓她感覺回來是被歡迎的，沒有尷尬。\n\n然後你說「這個問題問得很好」——肯定她從「我不接受」走到「我能做什麼」，這個轉變值得被看見。\n\n費用一樣是NT$800，沒有因為昨天的事給她折扣——因為那樣做會讓她感覺「鬧一下就有優惠」，反而不好。\n\n這整個情境最重要的課題是：守住邊界，反而讓客人回來；立刻妥協，反而讓客人更不信任你。',
+        warning: null,
+        tips: ['她回來道歉，說「謝謝你回來」讓她感覺不尷尬，不說「沒關係」（因為她的行為其實是有影響到你的）', '費用不因為昨天的事打折——守住定價才是對她長期的尊重'],
+        keyPhrases: ['謝謝你回來', '這個問題問得很好，代表你開始在想「接下來我能做什麼」', '守住邊界，反而讓客人回來；立刻妥協，反而讓客人更不信任你'],
+      },
+    ]
+  }
+
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let scenario = 'love';
+let stageIdx = 0;
+
+function setScenario(s) {
+  scenario = s;
+  stageIdx = 0;
+  ['love','price','silent','vague','forbidden','bargain','returning','unhappy'].forEach(k => {
+    const el = document.getElementById('scn-'+k);
+    if (el) el.classList.toggle('active', k === s);
+  });
+  render();
+}
+
+function navigate(d) {
+  const total = scenarios[scenario].stages.length;
+  stageIdx = Math.max(0, Math.min(total-1, stageIdx+d));
+  render();
+}
+
+function goStage(i) { stageIdx = i; render(); }
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const sc = scenarios[scenario];
+  const st = sc.stages[stageIdx];
+  const total = sc.stages.length;
+
+  // client name
+  document.getElementById('client-name').textContent = sc.clientName;
+  document.getElementById('stage-pill').textContent = st.pill;
+  document.getElementById('nav-info').textContent = sc.navInfo;
+
+  // progress
+  const pct = Math.round(((stageIdx+1)/total)*100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-lbl').textContent = `${stageIdx+1} / ${total} 階段`;
+
+  // stage list
+  document.getElementById('stage-list').innerHTML = sc.stages.map((s,i) => `
+    <div class="stage-btn ${i===stageIdx?'active':i<stageIdx?'done':''}" onclick="goStage(${i})">
+      <div class="stage-num">${i+1}</div>
+      <div>${s.title}</div>
+    </div>
+  `).join('');
+
+  // chat
+  const chatEl = document.getElementById('chat-area');
+  let msgHTML = '';
+  st.chat.forEach((m, i) => {
+    const delay = (i*0.04).toFixed(2);
+    if (m.type === 'date') {
+      msgHTML += `<div class="chat-date fade-in" style="animation-delay:${delay}s">${m.text}</div>`;
+    } else if (m.type === 'system') {
+      msgHTML += `<div class="system-msg fade-in" style="animation-delay:${delay}s">${m.text}</div>`;
+    } else if (m.type === 'client') {
+      msgHTML += `
+        <div class="msg-row client fade-in" style="animation-delay:${delay}s">
+          <div class="client-avatar">👤</div>
+          <div class="bubble-wrap client">
+            <div class="sender-name">${sc.clientName}</div>
+            <div class="bubble client">${m.text.replace(/\n/g,'<br>')}</div>
+            <div class="bubble-time">${getTime(i)}</div>
+          </div>
+        </div>`;
+    } else if (m.type === 'you') {
+      msgHTML += `
+        <div class="msg-row you fade-in" style="animation-delay:${delay}s">
+          <div class="bubble-wrap you">
+            <div class="sender-name">你</div>
+            <div class="bubble you">${m.text.replace(/\n/g,'<br>')}</div>
+            <div class="bubble-time">${getTime(i)}</div>
+          </div>
+        </div>`;
+    }
+  });
+  chatEl.innerHTML = msgHTML;
+  chatEl.scrollTop = 0;
+
+  // analysis
+  let aHTML = `
+    <div class="analysis-block">
+      <div class="a-label a-purpose"><span class="dot"></span>這個階段的目的</div>
+      <div class="purpose-box">${st.purpose}</div>
+    </div>
+    <div class="analysis-block">
+      <div class="a-label a-analysis"><span class="dot"></span>為什麼這樣說</div>
+      <div class="a-text">${st.analysis.replace(/\n/g,'<br>')}</div>
+    </div>
+  `;
+  if (st.warning) {
+    aHTML += `
+      <div class="analysis-block">
+        <div class="a-label a-warning"><span class="dot"></span>常見錯誤</div>
+        <div class="warn-box">${st.warning}</div>
+      </div>`;
+  }
+  if (st.tips && st.tips.length) {
+    aHTML += `
+      <div class="analysis-block">
+        <div class="a-label a-tips"><span class="dot"></span>關鍵技巧</div>
+        ${st.tips.map(t=>`<div class="tip-item">${t}</div>`).join('')}
+      </div>`;
+  }
+  if (st.keyPhrases && st.keyPhrases.length) {
+    aHTML += `
+      <div class="analysis-block">
+        <div class="a-label a-analysis"><span class="dot"></span>可以直接用的句子</div>
+        <div>${st.keyPhrases.map(p=>`<span class="key-phrase">「${p}」</span>`).join('')}</div>
+      </div>`;
+  }
+  document.getElementById('analysis-panel').innerHTML = aHTML;
+
+  // nav btns
+  document.getElementById('nav-prev').disabled = stageIdx === 0;
+  document.getElementById('nav-next').disabled = stageIdx === total-1;
+}
+
+function getTime(i) {
+  const base = 10*60+23+i*2;
+  const h = Math.floor(base/60);
+  const m = base%60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
+render();
+</script>
+</body>
+</html>
