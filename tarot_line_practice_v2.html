@@ -287,7 +287,19 @@ header {
 
 <!-- LEFT SIDEBAR -->
 <aside class="sidebar-left">
+
   <div class="sb-section">
+    <div class="sb-label">整體進度</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:20%"></div></div>
+    <div class="prog-lbl" id="prog-lbl">1 / 5 階段</div>
+  </div>
+
+  <div class="sb-section" style="flex:1;overflow-y:auto;">
+    <div class="sb-label">對話流程</div>
+    <div class="stage-list" id="stage-list"></div>
+  </div>
+
+  <div class="sb-section" style="overflow-y:auto; max-height: 45vh;">
     <div class="sb-label">客人情境</div>
     <div class="scenario-list">
       <button class="scenario-btn active" onclick="setScenario('love')" id="scn-love">
@@ -333,16 +345,6 @@ header {
     </div>
   </div>
 
-  <div class="sb-section">
-    <div class="sb-label">整體進度</div>
-    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:20%"></div></div>
-    <div class="prog-lbl" id="prog-lbl">1 / 5 階段</div>
-  </div>
-
-  <div class="sb-section" style="flex:1;overflow-y:auto;">
-    <div class="sb-label">對話流程</div>
-    <div class="stage-list" id="stage-list"></div>
-  </div>
 </aside>
 
 <!-- CENTER - LINE CHAT -->
