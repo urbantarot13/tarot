@@ -202,6 +202,15 @@ body{background:var(--cream);font-family:'Noto Serif TC',serif;color:var(--dark)
   <div class="section">
     <div class="sec-label">選擇服務方案</div>
 
+    <!-- 免費占卜 -->
+    <div class="svc-card" onclick="pickSvc(this,'free')">
+      <div class="svc-top"><div><div class="svc-name">🔮 免費占卜體驗</div><div class="tags"><span class="tag">完全免費</span><span class="tag">限時體驗</span></div></div><div class="check">✓</div></div>
+      <div class="svc-body">
+        <div class="sub-desc" style="font-size:12px;line-height:1.8;color:var(--dark);margin-bottom:10px;">想先體驗看看？小都提供免費占卜體驗，讓你感受塔羅解讀的準確度與溫度 🔮<br><span style="font-size:10px;color:var(--muted);">點下一步即可前往免費體驗頁面</span></div>
+        <div class="info-note">✦ 免費體驗名額有限，把握機會！</div>
+      </div>
+    </div>
+
     <!-- 文字占卜 -->
     <div class="svc-card" onclick="pickSvc(this,'text')">
       <div class="svc-top"><div><div class="svc-name">✦ 文字占卜</div><div class="tags"><span class="tag">離線文字</span><span class="tag">無需同時在線</span></div></div><div class="check">✓</div></div>
@@ -424,7 +433,7 @@ body{background:var(--cream);font-family:'Noto Serif TC',serif;color:var(--dark)
 </div><!-- end wrap -->
 
 <script>
-let state={svc:null,svcName:'',subName:'',price:'',textSubId:null,o1SubId:null};
+let state={svc:null,svcName:'',subName:'',price:'',textSubId:null,o1SubId:null,freeUrl:'https://reurl.cc/N2eM6m'};
 const DRAW={
   ts1:`<div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:13px 14px;margin-top:12px;"><div style="font-size:12px;font-weight:500;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">單題選牌<span class="nbadge">抽 3 張牌</span></div><div class="cards-row"><div class="tarot-card">✦</div><div class="tarot-card">✦</div><div class="tarot-card">✦</div></div><div class="draw-steps" style="margin-top:6px;"><div><b>步驟一</b>閉上眼，內心冷靜下來</div><div><b>步驟二</b>默想你的問題畫面</div><div><b>步驟三</b>在 1～78 中選出 3 個數字</div></div><div class="draw-note">數字請勿重複，不要選 0 或 79 以上</div></div>`,
   ts2:`<div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:13px 14px;margin-top:12px;"><div style="font-size:12px;font-weight:500;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">套組選牌<span class="nbadge">抽 6 張牌</span></div><div class="cards-row"><div class="tarot-card">✦</div><div class="tarot-card">✦</div><div class="tarot-card">✦</div></div><div class="cards-row"><div class="tarot-card">✦</div><div class="tarot-card">✦</div><div class="tarot-card">✦</div></div><div class="draw-steps" style="margin-top:6px;"><div><b>步驟一</b>閉上眼，內心冷靜下來</div><div><b>步驟二</b>默想你的問題畫面</div><div><b>步驟三</b>在 1～78 中選出 6 個數字</div></div><div class="draw-note">數字請勿重複，不要選 0 或 79 以上</div></div>`
@@ -440,7 +449,8 @@ function pickSvc(el,id){
   document.querySelectorAll('#ts1,#ts2,#os1,#os2').forEach(o=>o.classList.remove('picked'));
   document.getElementById('draw-area').innerHTML='';
   ['demo-os1','demo-os2'].forEach(d=>document.getElementById(d).classList.remove('show'));
-  if(id==='text'){state.svcName='文字占卜';state.subName='';state.price='';}
+  if(id==='free'){state.svcName='免費占卜體驗';state.subName='';state.price='';}
+  else if(id==='text'){state.svcName='文字占卜';state.subName='';state.price='';}
   else{state.svcName='一對一深度占卜諮詢';state.subName='';state.price='';}
   checkNext1();
 }
@@ -448,16 +458,18 @@ function pickTextSub(e,id,name,price){e.stopPropagation();['ts1','ts2'].forEach(
 function pickO1Sub(e,id,name,price){e.stopPropagation();['os1','os2'].forEach(i=>{document.getElementById(i).classList.remove('picked');document.getElementById('demo-'+i).classList.remove('show');});document.getElementById(id).classList.add('picked');document.getElementById('demo-'+id).classList.add('show');state.o1SubId=id;state.subName=name;state.price=price;checkNext1();}
 
 function checkNext1(){
-  const ok=(state.svc==='text'&&state.textSubId)||(state.svc==='oneon1'&&state.o1SubId);
+  const ok=(state.svc==='free')||(state.svc==='text'&&state.textSubId)||(state.svc==='oneon1'&&state.o1SubId);
   document.getElementById('btn-next1').disabled=!ok;
   const btn=document.getElementById('btn-next1');
-  if(state.svc==='oneon1'&&state.o1SubId)btn.textContent='下一步：前往匯款 →';
+  if(state.svc==='free')btn.textContent='下一步：前往免費體驗 →';
+  else if(state.svc==='oneon1'&&state.o1SubId)btn.textContent='下一步：前往匯款 →';
   else if(state.svc==='text'&&state.textSubId)btn.textContent='下一步：填寫占卜問卷 →';
   else btn.textContent='下一步：填寫資料 →';
 }
 
 function handleNext1(){
-  if(state.svc==='text')goPage('2b');
+  if(state.svc==='free'){window.open(state.freeUrl,'_blank');}
+  else if(state.svc==='text')goPage('2b');
   else if(state.svc==='oneon1'){
     document.getElementById('o1-summary').innerHTML=`<div class="summary-row"><span class="sum-label">服務</span><span class="sum-val">${state.svcName}</span></div><div class="summary-row"><span class="sum-label">方案</span><span class="sum-val">${state.subName}</span></div><div class="summary-row" style="border:none;padding-top:10px;"><span class="sum-label" style="font-size:13px;">費用</span><span class="sum-price">${state.price}</span></div>`;
     document.getElementById('o1-pay-amount').textContent=state.price;
