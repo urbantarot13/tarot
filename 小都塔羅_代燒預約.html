@@ -169,28 +169,26 @@
   /* ---------- date cards ---------- */
   .dateintro{font-size:12px;color:#8a7d68;line-height:1.7;margin-top:12px;
     background:#FBF6EC;border:1px solid var(--gold-soft);border-radius:12px;padding:11px 14px}
-  .datecard .star .pz{color:#a9854a}
-  .datecard .star .sgn{font-size:12.5px;color:#9a8d76;font-weight:500;margin-left:8px}
-  .dates{margin-top:14px;display:flex;flex-direction:column;gap:10px}
-  .datecard{cursor:pointer;background:#fff;border:1px solid var(--line);
-    border-radius:14px;padding:14px 16px;display:flex;align-items:center;
-    gap:14px;transition:.18s}
-  .datecard:active{transform:scale(.99)}
-  .datecard.sel{border-color:var(--gold);background:#FBF6EC;
-    box-shadow:0 4px 16px rgba(201,169,110,.16)}
-  .datecard .day{font-family:"Cormorant Garamond",serif;font-weight:600;
-    font-size:30px;line-height:.95;color:var(--ink);min-width:48px;text-align:center}
-  .datecard .day small{display:block;font-family:"Noto Serif TC";font-size:11px;
-    font-weight:500;color:#9a8d76;letter-spacing:.1em;margin-top:3px}
-  .datecard .info .ym{font-size:13px;color:#7a6f5b}
-  .datecard .info .star{font-size:14.5px;font-weight:600;margin-top:1px}
-  .datecard .badge{margin-left:auto;font-size:11px;color:#9a8d76;
-    border:1px solid var(--line);border-radius:999px;padding:3px 10px}
-  .datecard.sel .badge{border-color:var(--gold-soft);color:#a9854a;background:#fff}
-  .datecard .tick{margin-left:6px;width:20px;height:20px;border-radius:50%;
-    border:1.5px solid var(--line);display:grid;place-items:center;flex-shrink:0}
-  .datecard.sel .tick{border-color:var(--gold);background:var(--gold)}
-  .datecard.sel .tick::after{content:"✓";color:#fff;font-size:12px;line-height:1}
+  /* horizontal date carousel */
+  .dates{margin-top:14px;display:flex;gap:10px;overflow-x:auto;padding:2px 0 10px;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .dates::-webkit-scrollbar{height:0;display:none}
+  .datecard{flex:0 0 auto;width:116px;scroll-snap-align:start;cursor:pointer;
+    background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px 10px 12px;
+    text-align:center;transition:.18s}
+  .datecard:active{transform:scale(.98)}
+  .datecard .dc-day{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:30px;
+    line-height:1;color:var(--ink)}
+  .datecard .dc-day small{display:block;font-family:"Noto Serif TC",serif;font-size:11px;
+    font-weight:500;color:#9a8d76;letter-spacing:.08em;margin-top:3px}
+  .datecard .dc-ph{font-size:13px;font-weight:600;margin-top:10px;letter-spacing:.02em;color:var(--ink)}
+  .datecard .dc-sign{font-size:11px;color:#9a8d76;margin-top:3px}
+  .datecard .dc-badge{font-size:10.5px;color:#a99c85;margin-top:10px;padding-top:9px;
+    border-top:1px solid var(--line)}
+  .datecard.sel{border-color:var(--gold);background:#FBF6EC;box-shadow:0 6px 18px rgba(201,169,110,.18)}
+  .datecard.sel .dc-day,.datecard.sel .dc-ph{color:#a9854a}
+  .datecard.sel .dc-badge{border-top-color:var(--gold-soft);color:#a9854a}
+  .dates-hint{text-align:center;font-size:11px;color:#a99c85;letter-spacing:.12em;margin-top:2px}
 
   /* ---------- form ---------- */
   .field{margin-top:18px}
@@ -311,6 +309,27 @@
   .paystep .ps-d{font-size:12px;color:#9a8d76;margin-top:3px;line-height:1.6}
   .btn-form{margin-top:13px;background:#fff;border:1.5px solid var(--gold);color:#a9854a}
   .btn-form:active{transform:translateY(1px)}
+  /* ---------- builder add button + cart ---------- */
+  .btn-add{margin-top:14px;background:var(--ink);color:#fff;border:none;font-size:14.5px}
+  .btn-add[disabled]{background:#E7E0D3;color:#a99c85;pointer-events:none}
+  .cart{margin-top:14px}
+  .cart-empty{font-size:12px;color:#9a8d76;line-height:1.7;text-align:center;
+    padding:16px;border:1px dashed var(--line);border-radius:12px}
+  .cart-h{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;
+    font-weight:700;color:var(--ink);letter-spacing:.04em;margin-bottom:9px}
+  .cart-h span{font-size:12px;color:#a9854a;font-weight:600}
+  .ci{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:10px 12px;margin-bottom:8px}
+  .ci-main{flex:1;min-width:0}
+  .ci-t{font-size:13.5px;font-weight:600;color:var(--ink);letter-spacing:.02em}
+  .ci-s{font-size:11px;color:#9a8d76;margin-top:2px}
+  .ci-fix{font-size:13px;color:#9a8d76;padding:0 6px;flex-shrink:0}
+  .stepper.sm{flex-shrink:0}
+  .stepper.sm button{width:30px;height:30px;font-size:16px}
+  .stepper.sm .qn{width:32px;font-size:14px}
+  .ci-x{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
+    background:#F3EDE2;color:#9a8d76;font-size:16px;line-height:1}
+  .ci-x:active{background:#E7E0D3}
 </style>
 </head>
 <body>
@@ -362,30 +381,32 @@
       </div>
     </div>
 
-    <!-- step 1 : choose wish theme -->
+    <!-- step 1 : build candles -->
     <div class="sec-head">
-      <span class="no">01</span><span class="t">選擇願望主題</span>
-      <span class="hint">先選大方向</span>
+      <span class="no">01</span><span class="t">選擇蠟燭</span>
+      <span class="hint">可加入多種功效／尺寸</span>
     </div>
     <div class="toggle3" id="themeRow"></div>
     <div id="subWrap"></div>
+    <div id="planWrap"></div>
+    <button class="btn btn-add" id="addBtn" onclick="addToCart()" disabled>選好功效與尺寸後加入</button>
+    <div class="cart" id="cartBox"></div>
 
-    <!-- step 2 : choose candle plan -->
+    <!-- step 2 : order totals -->
     <div class="sec-head">
-      <span class="no">02</span><span class="t">選擇蠟燭方案</span>
-      <span class="hint" id="planHint">低消 NT$2000</span>
+      <span class="no">02</span><span class="t">訂單總計</span>
+      <span class="hint">低消 NT$2000</span>
     </div>
-    <div id="planWrap">
-      <div class="placeholder-note">請先於上方選好願望主題，<br>系統會帶出對應的蠟燭方案與價格。</div>
-    </div>
+    <div id="totalWrap"></div>
 
     <!-- step 3 : choose date -->
     <div class="sec-head">
       <span class="no">03</span><span class="t">選擇代燒吉日</span>
       <span class="hint">最近的排在最前</span>
     </div>
-    <p class="dateintro">新月與滿月都是代燒吉日，不必特別挑——選最近、最順的日子就好，時間一到小都就替你點燃。</p>
+    <p class="dateintro">新月與滿月都是吉日，不必特別挑——選最近、最順的日子即可。</p>
     <div class="dates" id="dateList"></div>
+    <div class="dates-hint">← 左右滑動看更多吉日 →</div>
 
       <button class="btn btn-gold" id="nextBtn" onclick="goNext()">下一步：填寫許願資料 →</button>
 
@@ -640,13 +661,14 @@ const PLAN_COMBO=[
   {id:'cs',n:'複合組合包 · 小',price:1999,reco:true,d:'淨化＋複合＋維納斯　共三顆'},
   {id:'cl',n:'複合組合包 · 大',price:2999,d:'淨化＋複合＋維納斯　容量加大'},
 ];
-let order={themeKey:null,sub:null,planId:null,qty:1};
+let cart=[];
+let bld={themeKey:null,sub:null,planId:null,qty:1};
 let identity=null; // 'new' | 'old'
 let rush=false;
 const OLD_DISC=0.95;
 const RUSH_FEE=500;
 
-function toggleRush(){rush=!rush;renderPlans();render();}
+function toggleRush(){rush=!rush;renderTotals();render();}
 
 function setIdentity(v){
   identity=v;
@@ -655,82 +677,111 @@ function setIdentity(v){
   const perk=document.getElementById('idPerk');
   if(v==='old'){perk.className='perk old show';perk.innerHTML='✓ 舊客戶回饋已套用：本次自動 <b>95 折</b>，並由小都為你加做 <b>塔羅解析</b>，搭配蠟燭做更精準的能量判讀。';}
   else{perk.className='perk new show';perk.innerHTML='歡迎你第一次來代燒 ✦ 完成這次後就成為舊客，下次回購即享 <b>95 折＋塔羅解析</b>。';}
-  renderPlans();render();
+  renderTotals();render();
 }
 function isOld(){return identity==='old';}
 
 function fmtNT(n){return 'NT$'+n.toLocaleString('en-US');}
 function findTheme(k){return THEMES.find(t=>t.key===k);}
-function curPlans(){
-  if(!order.sub) return [];
-  return order.sub.combo
+function isComboId(id){return id==='cs'||id==='cl';}
+function isCombo(p){return !!p&&isComboId(p.id);}
+function bldPlans(){
+  if(!bld.sub) return [];
+  return bld.sub.combo
     ? PLAN_COMBO.concat(PLAN_SINGLE.map(p=>({...p,n:'複合蠟燭 · '+(p.id==='s'?'小':'大')})))
     : PLAN_SINGLE;
 }
-function findPlan(id){return curPlans().find(p=>p.id===id);}
-function isCombo(p){return !!p&&(p.id==='cs'||p.id==='cl');}
-function orderSubtotal(){const p=findPlan(order.planId);if(!p)return 0;return isCombo(p)?p.price:p.price*order.qty;}
-function discSubtotal(){const s=orderSubtotal();return isOld()?Math.round(s*OLD_DISC):s;}
-function orderDisc(){return orderSubtotal()-discSubtotal();}
+function findBldPlan(id){return bldPlans().find(p=>p.id===id);}
+
+/* ---- cart totals ---- */
+function cartSubtotal(){return cart.reduce((s,it)=>s+it.price*it.qty,0);}
+function cartCount(){return cart.reduce((s,it)=>s+it.qty,0);}
+function cartHasCombo(){return cart.some(it=>it.combo);}
+function lowMet(){return cart.length>0 && (cartSubtotal()>=LOWSPEND || cartHasCombo());}
+function discSubtotal(){const s=cartSubtotal();return isOld()?Math.round(s*OLD_DISC):s;}
+function orderDisc(){return cartSubtotal()-discSubtotal();}
 function rushFee(){return rush?RUSH_FEE:0;}
 function orderFinal(){return discSubtotal()+rushFee();}
 
+/* ---- builder ---- */
 function buildThemeRow(){
   document.getElementById('themeRow').innerHTML=THEMES.map(t=>
-    `<button id="th_${t.key}" class="${order.themeKey===t.key?'active':''}" onclick="setTheme('${t.key}')">${t.img?`<span class="ic-img"><img src="${t.img}" alt=""></span>`:`<span class="ic">${t.icon}</span>`}<span class="nm">${t.name}</span><span class="ds">${t.ds}</span></button>`).join('');
+    `<button id="th_${t.key}" class="${bld.themeKey===t.key?'active':''}" onclick="setTheme('${t.key}')">${t.img?`<span class="ic-img"><img src="${t.img}" alt=""></span>`:`<span class="ic">${t.icon}</span>`}<span class="nm">${t.name}</span><span class="ds">${t.ds}</span></button>`).join('');
 }
-
-function setTheme(k){
-  order.themeKey=k;order.sub=null;order.planId=null;order.qty=1;
-  buildThemeRow();
-  const t=findTheme(k);
-  document.getElementById('subWrap').innerHTML=`<div class="subgrid">`+t.subs.map(s=>
-    `<div class="subcard" id="sub_${s.id}" onclick="setSub('${s.id}')"><div class="sn">${s.n}</div><div class="sd">${s.d}</div>${s.combo?'<div class="ph">含三顆組合包方案</div>':''}</div>`).join('')+`</div>`;
-  renderPlans();render();
+function setTheme(k){bld.themeKey=k;bld.sub=null;bld.planId=null;bld.qty=1;buildThemeRow();renderSub();renderSize();updateAddBtn();}
+function renderSub(){
+  const w=document.getElementById('subWrap');
+  if(!bld.themeKey){w.innerHTML='';return;}
+  const t=findTheme(bld.themeKey);
+  w.innerHTML=`<div class="subgrid">`+t.subs.map(s=>
+    `<div class="subcard ${bld.sub&&bld.sub.id===s.id?'sel':''}" id="sub_${s.id}" onclick="setSub('${s.id}')"><div class="sn">${s.n}</div><div class="sd">${s.d}</div>${s.combo?'<div class="ph">含三顆組合包方案</div>':''}</div>`).join('')+`</div>`;
 }
-
-function setSub(id){
-  const t=findTheme(order.themeKey);
-  order.sub=t.subs.find(s=>s.id===id);order.planId=null;order.qty=1;
-  document.querySelectorAll('#subWrap .subcard').forEach(c=>c.classList.toggle('sel',c.id==='sub_'+id));
-  renderPlans();render();
-}
-
-function renderPlans(){
-  const wrap=document.getElementById('planWrap');
-  if(!order.sub){wrap.innerHTML=`<div class="placeholder-note">請先於上方選好願望主題，<br>系統會帶出對應的蠟燭方案與價格。</div>`;return;}
-  const plans=curPlans();
-  let html=`<div class="plans">`+plans.map(p=>
-    `<div class="plan ${order.planId===p.id?'sel':''}" onclick="setPlan('${p.id}')">${p.reco?'<span class="reco">最受歡迎</span>':''}<div><div class="pn">${p.n}</div><div class="pd">${p.d}</div></div><div class="pp"><div class="now">${fmtNT(p.price)}</div><div class="cur">${isCombo(p)?'整組':'／顆'}</div></div></div>`).join('')+`</div>`;
-  const sel=findPlan(order.planId);
-  if(sel&&!isCombo(sel)){
-    html+=`<div class="qtyrow"><div class="ql">數量<small>單顆品項低消 ${fmtNT(LOWSPEND)}</small></div><div class="stepper"><button ${order.qty<=1?'disabled':''} onclick="chQty(-1)">−</button><span class="qn">${order.qty}</span><button ${order.qty>=9?'disabled':''} onclick="chQty(1)">＋</button></div></div>`;
+function setSub(id){const t=findTheme(bld.themeKey);bld.sub=t.subs.find(s=>s.id===id);bld.planId=null;bld.qty=1;renderSub();renderSize();updateAddBtn();}
+function renderSize(){
+  const w=document.getElementById('planWrap');
+  if(!bld.sub){w.innerHTML='';return;}
+  let html=`<div class="plans">`+bldPlans().map(p=>
+    `<div class="plan ${bld.planId===p.id?'sel':''}" onclick="setPlan('${p.id}')">${p.reco?'<span class="reco">最受歡迎</span>':''}<div><div class="pn">${p.n}</div><div class="pd">${p.d}</div></div><div class="pp"><div class="now">${fmtNT(p.price)}</div><div class="cur">${isComboId(p.id)?'整組':'／顆'}</div></div></div>`).join('')+`</div>`;
+  const sel=findBldPlan(bld.planId);
+  if(sel&&!isComboId(sel.id)){
+    html+=`<div class="qtyrow"><div class="ql">數量</div><div class="stepper"><button ${bld.qty<=1?'disabled':''} onclick="chQty(-1)">−</button><span class="qn">${bld.qty}</span><button ${bld.qty>=9?'disabled':''} onclick="chQty(1)">＋</button></div></div>`;
   }
-  if(sel){
-    html+=`<div class="addon ${rush?'on':''}" onclick="toggleRush()"><div class="ax-main"><div class="ax-t">⚡ 加急單代燒　<span class="ax-p">+NT$500</span></div><div class="ax-d">不等月相吉日，小都會在 <b>3–5 天內</b>為你製作、祝福並提前點燃，適合很急、想盡快推動的狀況。</div></div><div class="ax-check"></div></div>`;
-    const sub=orderSubtotal(),combo=isCombo(sel),met=combo||sub>=LOWSPEND,old=isOld(),fin=orderFinal();
-    let minLine;
-    if(combo)minLine=`<div class="min ok">✓ 組合包方案，不受低消限制</div>`;
-    else if(met)minLine=`<div class="min ok">✓ 已達低消 ${fmtNT(LOWSPEND)}，可送出預約</div>`;
-    else minLine=`<div class="min under">尚未達低消，還差 <b>${fmtNT(LOWSPEND-sub)}</b>（請增加數量或改大顆）</div>`;
-    let rows=`<div class="trow"><span>方案小計</span><span>${fmtNT(sub)}</span></div>`;
-    if(old)rows+=`<div class="trow disc"><span>舊客回饋 95 折</span><span>−${fmtNT(orderDisc())}</span></div>`;
-    if(rush)rows+=`<div class="trow rush"><span>加急單代燒</span><span>+${fmtNT(RUSH_FEE)}</span></div>`;
-    html+=`<div class="totalbar">${rows}<div class="tt"><div class="lbl">應付金額</div><div class="amt"><small>NT$</small>${fin.toLocaleString('en-US')}</div></div>${minLine}</div>`;
-  }
-  wrap.innerHTML=html;
+  w.innerHTML=html;
+}
+function setPlan(id){bld.planId=id;bld.qty=1;renderSize();updateAddBtn();}
+function chQty(d){bld.qty=Math.max(1,Math.min(9,bld.qty+d));renderSize();}
+function updateAddBtn(){
+  const b=document.getElementById('addBtn');const ok=bld.themeKey&&bld.sub&&bld.planId;
+  b.disabled=!ok;b.textContent=ok?'＋ 加入清單':'選好功效與尺寸後加入';
+}
+function addToCart(){
+  if(!(bld.themeKey&&bld.sub&&bld.planId))return;
+  const t=findTheme(bld.themeKey),p=findBldPlan(bld.planId),combo=isComboId(p.id),qty=combo?1:bld.qty;
+  const key=bld.themeKey+'|'+bld.sub.id+'|'+bld.planId;
+  const ex=cart.find(it=>it.key===key);
+  if(ex)ex.qty=Math.min(99,ex.qty+qty);
+  else cart.push({key,themeName:t.name,subName:bld.sub.n,planName:p.n,combo,price:p.price,qty});
+  bld.sub=null;bld.planId=null;bld.qty=1;
+  renderSub();renderSize();updateAddBtn();renderCart();renderTotals();render();
 }
 
-function setPlan(id){order.planId=id;order.qty=1;renderPlans();render();}
-function chQty(d){order.qty=Math.max(1,Math.min(9,order.qty+d));renderPlans();render();}
+/* ---- cart ---- */
+function renderCart(){
+  const w=document.getElementById('cartBox');
+  if(cart.length===0){w.innerHTML=`<div class="cart-empty">尚未加入蠟燭——選好「功效＋尺寸」後按「＋ 加入清單」，可加入多種不同的蠟燭一起燒。</div>`;return;}
+  let html=`<div class="cart-h">你的蠟燭清單<span>${cartCount()} 顆</span></div>`;
+  html+=cart.map((it,i)=>
+    `<div class="ci"><div class="ci-main"><div class="ci-t">${it.themeName}・${it.subName}</div><div class="ci-s">${it.planName}　${fmtNT(it.price)}${it.combo?'／組':'／顆'}</div></div>`
+    +`<div class="stepper sm"><button onclick="ciQty(${i},-1)">−</button><span class="qn">${it.qty}</span><button onclick="ciQty(${i},1)">＋</button></div>`
+    +`<button class="ci-x" onclick="ciDel(${i})">×</button></div>`).join('');
+  w.innerHTML=html;
+}
+function ciQty(i,d){const it=cart[i];if(!it)return;it.qty=Math.max(1,Math.min(99,it.qty+d));renderCart();renderTotals();render();}
+function ciDel(i){cart.splice(i,1);renderCart();renderTotals();render();}
+
+/* ---- totals (step 02) ---- */
+function renderTotals(){
+  const w=document.getElementById('totalWrap');
+  if(cart.length===0){w.innerHTML=`<div class="placeholder-note">加入蠟燭後，這裡會顯示低消、急單加購與應付金額。</div>`;return;}
+  let html=`<div class="addon ${rush?'on':''}" onclick="toggleRush()"><div class="ax-main"><div class="ax-t">⚡ 加急單代燒　<span class="ax-p">+NT$500</span></div><div class="ax-d">不等月相吉日，小都會在 <b>3–5 天內</b>為你製作、祝福並提前點燃，適合很急、想盡快推動的狀況。</div></div><div class="ax-check"></div></div>`;
+  const sub=cartSubtotal(),old=isOld(),fin=orderFinal(),met=lowMet(),combo=cartHasCombo();
+  let minLine;
+  if(met&&combo&&sub<LOWSPEND)minLine=`<div class="min ok">✓ 含組合包，不受低消限制</div>`;
+  else if(met)minLine=`<div class="min ok">✓ 已達低消 ${fmtNT(LOWSPEND)}，可送出預約</div>`;
+  else minLine=`<div class="min under">尚未達低消，還差 <b>${fmtNT(LOWSPEND-sub)}</b>（請再加入蠟燭或選大顆）</div>`;
+  let rows=`<div class="trow"><span>蠟燭小計（${cartCount()} 顆）</span><span>${fmtNT(sub)}</span></div>`;
+  if(old)rows+=`<div class="trow disc"><span>舊客回饋 95 折</span><span>−${fmtNT(orderDisc())}</span></div>`;
+  if(rush)rows+=`<div class="trow rush"><span>加急單代燒</span><span>+${fmtNT(RUSH_FEE)}</span></div>`;
+  html+=`<div class="totalbar">${rows}<div class="tt"><div class="lbl">應付金額</div><div class="amt"><small>NT$</small>${fin.toLocaleString('en-US')}</div></div>${minLine}</div>`;
+  w.innerHTML=html;
+}
 
 function orderSummary(){
-  if(!order.themeKey||!order.sub||!order.planId)return null;
-  const t=findTheme(order.themeKey),p=findPlan(order.planId),combo=isCombo(p),sub=orderSubtotal(),old=isOld(),fin=orderFinal();
-  let s=`願望主題：${t.name} · ${order.sub.n}\n`;
-  s+=`蠟燭方案：${p.n}\n`;
-  if(combo){s+=`內容：${p.d.replace(/\s+/g,' ')}\n`;s+=`小計：${fmtNT(sub)}\n`;}
-  else{s+=`數量：${order.qty} 顆\n`;s+=`小計：${fmtNT(p.price)} × ${order.qty} ＝ ${fmtNT(sub)}\n`;}
+  if(cart.length===0)return null;
+  const old=isOld(),fin=orderFinal();
+  let s=`願望蠟燭清單：\n`;
+  s+=cart.map(it=>`・${it.themeName}·${it.subName}　${it.planName} ${fmtNT(it.price)} ×${it.qty}`).join('\n')+`\n`;
+  s+=`小計：${fmtNT(cartSubtotal())}\n`;
   if(old)s+=`舊客回饋：95 折（−${fmtNT(orderDisc())}）\n`;
   if(rush)s+=`加急單代燒：+${fmtNT(RUSH_FEE)}\n`;
   s+=`應付金額：${fmtNT(fin)}\n`;
@@ -752,11 +803,10 @@ function buildDates(){
     const p=tpParts(e.date);const du=daysUntil(e.date);
     const ph=e.phase==='new'?'🌙 新月':'🌕 滿月';
     return `<div class="datecard ${i===state.selIdx?'sel':''}" onclick="selDate(${i})">
-      <div class="day">${String(parseInt(p.d,10)).padStart(2,'0')}<small>${parseInt(p.m,10)}月</small></div>
-      <div class="info"><div class="ym">${p.y} · 星期${p.wd} · ${p.hh}:${p.mm}</div>
-        <div class="star"><span class="pz">${ph}</span><span class="sgn">${e.sign}座</span></div></div>
-      <span class="badge">${du<=0?'今天':'還有 '+du+' 天'}</span>
-      <span class="tick"></span></div>`;
+      <div class="dc-day">${parseInt(p.d,10)}<small>${parseInt(p.m,10)}月</small></div>
+      <div class="dc-ph">${ph}</div>
+      <div class="dc-sign">${e.sign}座 · 週${p.wd}</div>
+      <div class="dc-badge">${du<=0?'今天':'還有 '+du+' 天'}</div></div>`;
   }).join('');
   document.getElementById('dateList').innerHTML=html;
 }
@@ -792,13 +842,11 @@ function buildMsg(){
   return m;
 }
 function val(id){return document.getElementById(id).value.trim();}
-function planLabel(){const p=findPlan(order.planId);if(!p)return '—';let t=p.n;if(!isCombo(p))t+=` × ${order.qty}`;if(rush)t+='（急單代燒）';return t;}
+function planLabel(){if(cart.length===0)return '—';return `蠟燭 ${cartCount()} 顆`+(rush?'（含急單）':'');}
 function selectionReason(){
   if(!identity)return '請先選擇「我是新客戶 / 我是舊客戶」';
-  if(!order.themeKey||!order.sub)return '請選擇「願望主題」與細項';
-  if(!order.planId)return '請選擇「蠟燭方案」';
-  const p=findPlan(order.planId);
-  if(p&&!isCombo(p)&&orderSubtotal()<LOWSPEND)return '未達低消 '+fmtNT(LOWSPEND)+'，請增加數量';
+  if(cart.length===0)return '請至少加入一項蠟燭';
+  if(!lowMet())return '未達低消 '+fmtNT(LOWSPEND)+'，請再加入蠟燭';
   return '';
 }
 function fillReason(){
@@ -816,8 +864,8 @@ function goNext(){ if(!selectionReason()) goPage(2); }
 function render(){
   document.getElementById('preview').textContent=buildMsg();
   // payment fields
-  const hasPlan=!!order.planId, amt=hasPlan?fmtNT(orderFinal()):'—';
-  document.getElementById('payPlan').textContent=hasPlan?planLabel():'—';
+  const has=cart.length>0, amt=has?fmtNT(orderFinal()):'—';
+  document.getElementById('payPlan').textContent=has?planLabel():'—';
   document.getElementById('payAmt').textContent=amt;
   document.getElementById('payAmt2').textContent=amt;
   // page1 next button
@@ -846,7 +894,7 @@ function copyMsg(){
 }
 
 /* init */
-buildThemeRow();
+buildThemeRow();renderSub();renderSize();updateAddBtn();renderCart();renderTotals();
 buildDates();
 render();
 </script>
