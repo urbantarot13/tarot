@@ -232,7 +232,7 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
       <button class="btn" id="btnCopyPrompt">複製提示詞</button>
     </div>
     <div class="status" id="status"></div>
-    <p class="hint" id="aiHint">單檔版：在下面「AI 連線設定」填入自己的 API Key，按測試連線成功後就能直接生成。</p>
+    <p class="hint" id="aiHint">單檔版：在下面「AI 連線設定」填入自己的 API Key 或老師的代理網址，測試連線成功後就能直接生成。</p>
 
     <div id="titleWrap" hidden>
       <h3>標題候選（點一下換封面標題）</h3>
@@ -838,7 +838,55 @@ function moodPrompt(){
 請從這些底圖風格挑一個最搭的：${ALL().map(t=>t.id+'（'+t.name+'）').join('、')}
 只輸出 JSON：{"mood":"","why":"一句話說明為什麼"}`;
 }
-function parseJSON(t){ t=String(t).replace(/```json|```/g,'').trim(); const a=Math.min(...['{','['].map(c=>{const i=t.indexOf(c);return i<0?1e9:i})); const b=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']')); return JSON.parse(t.slice(a,b+1)) }
+function repairJSON(s){
+  let out='',inStr=false,esc=false; const stack=[];
+  for(let i=0;i<s.length;i++){
+    const ch=s[i];
+    if(inStr){
+      if(esc){ out+=ch; esc=false; continue }
+      if(ch==='\\'){ out+=ch; esc=true; continue }
+      if(ch==='"'){
+        // 只有後面接著 , } ] : 或字串結束時，才當成引號結尾；否則是內文裡的引號
+        let j=i+1; while(j<s.length && /\s/.test(s[j])) j++;
+        if(j>=s.length || ',}]:'.includes(s[j])){ inStr=false; out+=ch } else { out+='\\"' }
+        continue;
+      }
+      if(ch==='\n'){ out+='\\n'; continue }
+      if(ch==='\r'){ out+='\\r'; continue }
+      if(ch==='\t'){ out+='\\t'; continue }
+      out+=ch; continue;
+    }
+    if(ch==='"'){ inStr=true; out+=ch; continue }
+    if(ch==='{') stack.push('}'); else if(ch==='[') stack.push(']');
+    else if(ch==='}'||ch===']') stack.pop();
+    out+=ch;
+  }
+  if(inStr) out+='"';
+  out=out.replace(/,\s*$/,'');
+  while(stack.length) out+=stack.pop();
+  return out;
+}
+
+function parseJSON(t){
+  t=String(t).replace(/```json|```/g,'').trim();
+  const a=Math.min(...['{','['].map(c=>{const i=t.indexOf(c);return i<0?1e9:i}));
+  const b=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));
+  const body=t.slice(a, b>a?b+1:undefined);
+  try{ return JSON.parse(body) }catch(e){}
+  try{ return JSON.parse(repairJSON(body)) }catch(e2){
+    // 最後手段：從出錯的位置往前砍到最近一個完整的元素，再把括號補回去
+    const m=/position (\d+)/.exec(e2.message||'');
+    let cut=m?+m[1]:Math.floor(body.length*0.8);
+    for(let i=0;i<6 && cut>40;i++){
+      let s2=body.slice(0,cut);
+      const last=Math.max(s2.lastIndexOf('}'),s2.lastIndexOf(']'),s2.lastIndexOf('"'));
+      if(last<40) break;
+      s2=s2.slice(0,last+1);
+      try{ return JSON.parse(repairJSON(s2)) }catch(e3){ cut=last-1 }
+    }
+    throw e2;
+  }
+}
 async function callAPI(prompt){
   const a=state.ai||{};
   if(a.mode==='proxy'){
@@ -851,7 +899,7 @@ async function callAPI(prompt){
   if(!a.key) throw new Error('還沒填 API Key');
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
     headers:{'Content-Type':'application/json','x-api-key':a.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:a.model||'claude-sonnet-5',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+    body:JSON.stringify({model:a.model||'claude-sonnet-5',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
   if(!r.ok){ const t=await r.text(); throw new Error('API 錯誤 '+r.status+'：'+t.slice(0,140)) }
   const j=await r.json();
   return (j.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n');
@@ -860,8 +908,8 @@ async function ask(prompt,btn){
   const mode=(state.ai||{}).mode||'auto';
   if(mode!=='auto'){
     if(btn) btn.disabled=true; setStatus('生成中…');
-    try{ return parseJSON(await callAPI(prompt)) }
-    catch(e){ setStatus('生成失敗：'+(e.message||e),true); return null }
+    try{ const raw=await callAPI(prompt); window.LAST_RAW=raw; return parseJSON(raw) }
+    catch(e){ setStatus('生成失敗：'+(e.message||e)+'（可按「看原始回覆」檢查）',true); if(window.LAST_RAW) showRaw(); return null }
     finally{ if(btn) btn.disabled=false }
   }
   const s=await sampleCap();
@@ -941,6 +989,7 @@ function openModal(h){ $('modalBox').innerHTML=h; $('modal').classList.add('on')
 function closeModal(){ $('modal').classList.remove('on') }
 $('modal').onclick=e=>{ if(e.target.id==='modal') closeModal() };
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal() });
+function showRaw(){ openText('Claude 的原始回覆（可複製貼給老師看）', window.LAST_RAW||'（沒有內容）') }
 function openText(t,x){ openModal(`<h2>${esc(t)}</h2><textarea rows="12" readonly>${esc(x)}</textarea><div class="row" style="margin-top:10px"><button class="btn" onclick="closeModal()">關閉</button></div>`) }
 $('btnDeckFile').onclick=async()=>{
   setStatus('讀取 deck.json…');
