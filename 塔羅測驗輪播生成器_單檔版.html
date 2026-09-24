@@ -82,6 +82,12 @@ input[type=text],textarea,select{width:100%;border:1px solid var(--line);backgro
 textarea{resize:vertical;min-height:60px;line-height:1.55}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .hint{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.prog{margin-top:10px}
+.prog .bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;position:relative}
+.prog .bar i{position:absolute;left:0;top:0;bottom:0;width:34%;border-radius:99px;background:var(--brand,var(--deep));animation:progslide 1.1s ease-in-out infinite}
+.prog .bar.det i{animation:none;transition:width .25s}
+.prog .ptxt{display:block;margin-top:5px;font-size:12.5px;color:var(--muted)}
+@keyframes progslide{0%{left:-34%}50%{left:50%}100%{left:100%}}
 .status{font-size:13px;color:var(--brand);min-height:20px;margin-top:8px}
 .status.err{color:var(--danger)}
 .topics{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -91,6 +97,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.55}
 .topic .meta{display:flex;gap:6px;align-items:center;margin-top:4px;font-size:12px;color:var(--muted)}
 .topic .sc{background:var(--brand2);color:#fff;border-radius:20px;padding:0 8px;font-weight:600}
 .topic .why{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.topic .post{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:12.5px;line-height:1.6;white-space:pre-line;color:var(--ink);opacity:.85}
 .topic.picked{border-color:var(--brand);box-shadow:inset 3px 0 0 var(--brand)}
 .hsec{font-size:13px;font-weight:600;color:var(--brand);margin:14px 0 2px}
 .hsec small{font-weight:400;color:var(--muted)}
@@ -215,6 +222,7 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
       <button class="btn" id="btnHooks">生成 20 個 Hook</button>
       <button class="btn small" id="btnCopyHookPrompt">複製提示詞</button>
     </div>
+    <div class="prog" id="hookProg" hidden><div class="bar"><i></i></div><span class="ptxt"></span></div>
     <div class="topics" id="topics"></div>
 
     <h2 style="margin-top:24px">② 生成測驗輪播</h2>
@@ -232,8 +240,9 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
       <button class="btn primary" id="btnGen">生成輪播</button>
       <button class="btn" id="btnCopyPrompt">複製提示詞</button>
     </div>
+    <div class="prog" id="deckProg" hidden><div class="bar"><i></i></div><span class="ptxt"></span></div>
     <div class="status" id="status"></div>
-    <p class="hint" id="aiHint">單檔版：在下面「AI 連線設定」填入自己的 API Key 或老師的代理網址，測試連線成功後就能直接生成。</p>
+    <p class="hint" id="aiHint">單檔版：在下面「AI 連線設定」填自己的 API Key 或代理網址，測試連線成功後就能直接生成。</p>
 
     <div id="titleWrap" hidden>
       <h3>標題候選（點一下換封面標題）</h3>
@@ -724,7 +733,36 @@ $('btnBgAI').onclick=async e=>{
   const b=BGLIB[d.pick]; state.bgId=b.id; state.bgImg=''; state.bgLib=''; renderBgs(); refreshAll(); save(); setStatus(`挑了「${b.n}」${d.why?'：'+d.why:''}`);
 };
 
-async function copy(t,msg){ try{ await navigator.clipboard.writeText(t); setStatus(msg) }catch(e){ openText('複製下面的文字',t) } }
+function openPost(text, hook){
+  const h=(hook||'').trim();
+  let body=String(text||'').trim();
+  if(h){ const flat=body.replace(/\s/g,''); const hf=h.replace(/\s/g,''); if(!flat.startsWith(hf.slice(0,Math.min(8,hf.length)))) body=h+'\n\n'+body }
+  const text2=body;
+  openModal(`<h2>Threads 貼文</h2><p class="hint" style="margin:0 0 6px">第一行就是首行 Hook，整段可以直接發。</p><textarea id="postTa" rows="14">${esc(text2)}</textarea><div class="row" style="margin-top:10px"><button class="btn primary" id="postCp">複製整則</button><button class="btn" id="postCp1">只複製首行</button><button class="btn" onclick="closeModal()">關閉</button><span class="status" id="postSt"></span></div>`);
+  const ta=$('postTa'); if(ta){ ta.focus(); ta.select() }
+  const grab=async(v,label)=>{
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){ await Promise.race([navigator.clipboard.writeText(v), new Promise((_,rej)=>setTimeout(()=>rej(0),1200))]); $('postSt').textContent=label; return }
+      throw 0;
+    }catch(e){ if(typeof legacyCopy==='function'&&legacyCopy(v)){ $('postSt').textContent=label } else { ta.value=v; ta.focus(); ta.select(); $('postSt').textContent='請按 Ctrl/Cmd+C 複製' } }
+  };
+  $('postCp').onclick=()=>{ ta.value=text2; grab(text2,'已複製整則') };
+  $('postCp1').onclick=()=>{ const first=(h||text2.split('\n').filter(x=>x.trim())[0]||''); grab(first,'已複製首行') };
+}
+function legacyCopy(t){ try{ const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0,t.length); const ok=document.execCommand('copy'); ta.remove(); return ok }catch(e){ return false } }
+async function copy(t,msg){
+  if(!t){ setStatus('這一則沒有可複製的內容。',true); return }
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      await Promise.race([navigator.clipboard.writeText(t), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),1200))]);
+      setStatus(msg); return;
+    }
+    throw new Error('no clipboard');
+  }catch(e){
+    if(legacyCopy(t)){ setStatus(msg); return }
+    openText('複製下面的文字（已幫你全選）',t);
+  }
+}
 
 $('libUp').onchange=async e=>{
   const fs=[...e.target.files]; if(!fs.length) return;
@@ -761,14 +799,25 @@ $('libMatch').onclick=async e=>{
 };
 /* ============ AI ============ */
 let _sample=undefined;
-async function getCap(name){
-  for(let i=0;i<24;i++){
-    if(window.claude&&claude.use){ try{ return await claude.use(name) }catch(e){ return null } }
-    await new Promise(r=>setTimeout(r,250));
+async function waitClaude(){ for(let i=0;i<48;i++){ if(window.claude&&claude.use) return true; await new Promise(r=>setTimeout(r,250)) } return false }
+async function getCap(name){ if(!(await waitClaude())) return null; try{ return await claude.use(name) }catch(e){ return null } }
+async function sampleCap(){
+  if(_sample===undefined){
+    _sample=await getCap('sample');
+    if(!_sample && window.claude && claude.use){
+      try{ const p=await claude.use('permissions'); if(p&&p.request){ await p.request(['sample']); _sample=await claude.use('sample') } }catch(e){}
+    }
   }
-  return null;
+  return _sample;
 }
-async function sampleCap(){ if(_sample===undefined) _sample=await getCap('sample'); return _sample }
+async function capDiag(){
+  if(!window.claude||!claude.use) return '這個頁面不是在 Claude 網頁裡開啟（例如自己的網站或本機檔案），所以沒有內建連線。請在「AI 連線設定」填自己的 API Key 或代理網址。';
+  try{
+    const p=await claude.use('permissions');
+    if(p&&p.state){ const st=await p.state('sample'); if(/deny|denied|false/i.test(JSON.stringify(st||''))) return '你先前拒絕了這個頁面使用 Claude 的授權。重新整理頁面後再按一次生成就會重新詢問；或在「AI 連線設定」改用自己的 API Key。' }
+  }catch(e){}
+  return '這個檢視沒有提供 Claude 連線（用公開分享連結開啟時常見）。請從 Claude 對話裡打開這個 artifact，或在「AI 連線設定」填自己的 API Key 或代理網址。';
+}
 const VOICE=()=>`你是 IG 短內容企劃，專門寫「塔羅測驗型輪播」。
 利基：${state.hook.niche||'塔羅'}
 目標受眾：${state.hook.aud||'塔羅新手'}
@@ -793,10 +842,19 @@ function hookPrompt(){
 - Hook 全部要能變成「測驗」：A、B、C 選一張牌，或三題 ABC 選擇題
 - Carousel Hook ≤ 20 字，能直接當封面標題
 - 每個 Hook 加一個 quizIdea：這題測什麼、A/B/C 三個結果大概是什麼（一句話）
+- Threads 的每一則要多給一個 post 欄位：完整的 Threads 內文，第一行就是那句 Hook。這段要照「小都 Threads 寫法」寫：
+  · 像小都本人剛發生一件事、打開手機幾分鐘寫下來的貼文，不是作文、不是上課、不是演講稿
+  · 全篇 120~250 字；一句 4~14 字，超過 16 字就拆句；每段 1~3 句，用空行分段，不要每句都空行
+  · 節奏：一件真實的小事開頭 → 一個短而明確的觀點 → 自己的經驗或感受（用第一人稱，不要教訓讀者）→ 後來的改變 → 一句可以被截圖的話 → 自然收尾
+  · 收尾停在一個感受、一個畫面或一句想法就好，不要 CTA、不要叫人留言分享、不要推課
+  · 標點簡單：少用冒號、引號、括號、破折號、分號；不要 Markdown、不要星號、不要編號、不要 hashtag、不要表情符號
+  · 少用這些 AI 句型：但其實、然而、因此、事實上、換句話說、值得注意的是、更重要的是、你不是…你只是…、真正的不是…而是…、直到那一刻我才明白、這讓我深刻體會到
+  · 一篇最多一個金句，不要堆疊排比，不要為了深度硬塞人生、宇宙、能量、靈魂、療癒這類字
+  · 不捏造學生案例、不捏造收入數字、不寫沒發生過的事，寫塔羅創業與接案路上真實會遇到的處境就好
 - top5 的 text 要和上面某一個 Hook 完全相同，where 填 reels / carousel / threads
 
 只輸出 JSON，不要說明或 markdown：
-{"reels":[{"text":"","type":"","score":8,"quizIdea":""}],"carousel":[{"text":"","type":"","score":8,"quizIdea":""}],"threads":[{"text":"","type":"","score":8,"quizIdea":""}],"top5":[{"text":"","where":"carousel","reason":""}]}`;
+{"reels":[{"text":"","type":"","score":8,"quizIdea":""}],"carousel":[{"text":"","type":"","score":8,"quizIdea":""}],"threads":[{"text":"","type":"","score":8,"quizIdea":"","post":"完整 Threads 內文，用 \\n 換行，\\n\\n 分段"}],"top5":[{"text":"","where":"carousel","reason":""}]}`;
 }
 const FORMS={
  pick:'選一張牌：cover（封面 Hook）→ rule（怎麼玩，3~4 行）→ pick（三個選項，每個 opts.label 是 2~4 字的意象名稱，例如 月亮／星星／鑰匙）→ cta，共 4 張',
@@ -926,7 +984,14 @@ async function callAPI(prompt){
   const j=await r.json();
   return (j.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n');
 }
-async function ask(prompt,btn){
+function progEl(id){ return document.getElementById(id) }
+function progShow(id,txt){ const w=progEl(id); if(!w) return; w.hidden=false; const b=w.querySelector('.bar'); b.classList.remove('det'); b.querySelector('i').style.width=''; w.querySelector('.ptxt').textContent=txt||'Claude 思考中…' }
+function progText(id,txt,chars){ const w=progEl(id); if(!w||w.hidden) return; w.querySelector('.ptxt').textContent=txt;
+  if(chars!=null){ const b=w.querySelector('.bar'); b.classList.add('det'); b.querySelector('i').style.width=Math.min(97,8+chars/45)+'%' } }
+function progDone(id,txt){ const w=progEl(id); if(!w) return; const b=w.querySelector('.bar'); b.classList.add('det'); b.querySelector('i').style.width='100%'; w.querySelector('.ptxt').textContent=txt||'完成'; setTimeout(()=>{ w.hidden=true },1400) }
+function progFail(id){ const w=progEl(id); if(w) w.hidden=true }
+async function ask(prompt,btn,progId){
+  progId=progId||'deckProg';
   const mode=(state.ai||{}).mode||'auto';
   if(mode!=='auto'){
     if(btn) btn.disabled=true; setStatus('生成中…');
@@ -935,9 +1000,9 @@ async function ask(prompt,btn){
     finally{ if(btn) btn.disabled=false }
   }
   const s=await sampleCap();
-  if(!s){ setStatus(LOCAL?'離線版不能直接呼叫 Claude。請在 Claude Code 說「幫我生成一篇◯◯主題的測驗輪播」，再按「讀取 deck.json」。':'目前連不上 Claude。可以重新整理這個頁面再試一次；或按「複製提示詞」貼到 Claude 聊天，再把 JSON 匯入。',true); return null }
+  if(!s){ setStatus(LOCAL?'離線版不能直接呼叫 Claude。請在「AI 連線設定」填 API Key 或代理網址；或在 Claude Code 生成 deck.json 再讀取。':(await capDiag()),true); return null }
   if(btn) btn.disabled=true; setStatus('Claude 思考中…');
-  try{ const r=await s(prompt,{modelTier:'default',cache:false,onText:({text})=>setStatus(`生成中… 已寫 ${text.length} 字`)}); return parseJSON(r.text) }
+  try{ const r=await s(prompt,{modelTier:'default',cache:false,onText:({text})=>{ setStatus(`生成中… 已寫 ${text.length} 字`); progText(progId,`生成中… 已寫 ${text.length} 字`,text.length) }}); return parseJSON(r.text) }
   catch(e){ setStatus(e&&e.code==='not_granted'?'沒有取得 Claude 權限，可以改用複製提示詞。':'生成失敗，再試一次或改用複製提示詞。',true); return null }
   finally{ if(btn) btn.disabled=false }
 }
@@ -976,17 +1041,18 @@ function renderHooks(){
   const box=$('topics'), d=state.hooks; box.innerHTML=''; if(!d) return;
   const sec=(t,s)=>{ const h=document.createElement('div'); h.className='hsec'; h.innerHTML=`${esc(t)} <small>${esc(s)}</small>`; box.appendChild(h) };
   const item=(t,where,why)=>{ const b=document.createElement('button'); b.className='topic'+($('topic').value.startsWith(t.text)?' picked':'');
-    b.innerHTML=`<b>${esc(t.text)}</b><div class="meta">${t.type?`<span>${esc(t.type)}</span>`:''}${t.score!=null?`<span class="sc">${esc(t.score)} 分</span>`:''}</div>${why?`<span class="why">${esc(why)}</span>`:''}${t.quizIdea?`<span class="why">測驗：${esc(t.quizIdea)}</span>`:''}`;
-    b.onclick=()=>{ if(where==='carousel'){ $('topic').value=t.text+(t.quizIdea?`（測驗方向：${t.quizIdea}）`:''); renderHooks(); setStatus('已帶入主題，按「生成輪播」。') } else copy(t.text,'已複製這句 Hook。') };
+    b.innerHTML=`<b>${esc(t.text)}</b><div class="meta">${t.type?`<span>${esc(t.type)}</span>`:''}${t.score!=null?`<span class="sc">${esc(t.score)} 分</span>`:''}</div>${why?`<span class="why">${esc(why)}</span>`:''}${t.quizIdea?`<span class="why">測驗：${esc(t.quizIdea)}</span>`:''}${t.post?`<span class="why">點一下看全文（${[...String(t.post).replace(/\s/g,'')].length} 字）</span>`:''}`;
+    b.onclick=()=>{ if(where==='carousel'){ $('topic').value=t.text+(t.quizIdea?`（測驗方向：${t.quizIdea}）`:''); renderHooks(); setStatus('已帶入主題，按「生成輪播」。') } else if(where==='threads'){ if(t.post) openPost(t.post, t.text); else setStatus('這則是舊版生成的，只有首行。請重新按「生成 20 個 Hook」，新的就會附整則內文。',true) }
+      else copy(t.text,'已複製這句 Hook。') };
     box.appendChild(b) };
   const all={reels:d.reels||[],carousel:d.carousel||[],threads:d.threads||[]};
   const find=tp=>(all[tp.where]||[]).find(x=>x.text===tp.text)||Object.values(all).flat().find(x=>x.text===tp.text)||{text:tp.text};
   if((d.top5||[]).length){ sec('前 5 強推薦','點輪播 Hook 帶入主題，其他點一下複製'); d.top5.forEach(tp=>item(find(tp),tp.where||'x',tp.reason)) }
   sec('Carousel 第一張',`${all.carousel.length} 個｜點一下帶入主題`); all.carousel.forEach(t=>item(t,'carousel'));
   sec('Reels 開場',`${all.reels.length} 個｜點一下複製`); all.reels.forEach(t=>item(t,'reels'));
-  sec('Threads 首行',`${all.threads.length} 個｜點一下複製`); all.threads.forEach(t=>item(t,'threads'));
+  sec('Threads 貼文',`${all.threads.length} 則｜點一下打開全文`); all.threads.forEach(t=>item(t,'threads'));
 }
-$('btnHooks').onclick=async e=>{ const d=await ask(hookPrompt(),e.currentTarget); if(!d) return; state.hooks=d; save(); renderHooks(); setStatus('20 個 Hook 完成。') };
+$('btnHooks').onclick=async e=>{ const d=await ask(hookPrompt(),e.currentTarget,'hookProg'); if(!d) return; state.hooks=d; save(); renderHooks(); setStatus('20 個 Hook 完成。') };
 $('btnCopyHookPrompt').onclick=()=>copy(hookPrompt(),'Hook 提示詞已複製。');
 $('btnGen').onclick=async e=>{ const d=await ask(deckPrompt(),e.currentTarget); if(!d) return; try{ loadDeck(d); setStatus(`完成，共 ${state.slides.length} 張。`) }catch(err){ setStatus('格式有誤，再生成一次。',true) } };
 $('btnCopyPrompt').onclick=()=>copy(deckPrompt(),'提示詞已複製，貼到 Claude 聊天後把 JSON 匯入。');
@@ -998,7 +1064,7 @@ function aiUI(){ const m=state.ai.mode; $('proxyWrap').hidden=m!=='proxy'; $('ke
 aiUI();
 $('aiTest').onclick=async e=>{
   const btn=e.currentTarget;
-  if(state.ai.mode==='auto'){ const s=await sampleCap(); setStatus(s?'可以直接生成。':'這個畫面沒有內建連線，請改選代理網址或自己的 API Key。',!s); return }
+  if(state.ai.mode==='auto'){ const s=await sampleCap(); setStatus(s?'可以直接生成。':(await capDiag()),!s); return }
   btn.disabled=true; setStatus('測試中…');
   try{ const t=await callAPI('只輸出 JSON：{"ok":true}'); parseJSON(t); setStatus('連線正常，可以開始生成。') }
   catch(err){ setStatus('連線失敗：'+(err.message||err),true) }
@@ -1012,7 +1078,7 @@ function closeModal(){ $('modal').classList.remove('on') }
 $('modal').onclick=e=>{ if(e.target.id==='modal') closeModal() };
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal() });
 function showRaw(){ openText('Claude 的原始回覆（可複製貼給老師看）', window.LAST_RAW||'（沒有內容）') }
-function openText(t,x){ openModal(`<h2>${esc(t)}</h2><textarea rows="12" readonly>${esc(x)}</textarea><div class="row" style="margin-top:10px"><button class="btn" onclick="closeModal()">關閉</button></div>`) }
+function openText(t,x){ openModal(`<h2>${esc(t)}</h2><textarea id="otTa" rows="12">${esc(x)}</textarea><div class="row" style="margin-top:10px"><button class="btn primary" id="otCp">複製</button><button class="btn" onclick="closeModal()">關閉</button><span class="status" id="otSt"></span></div>`); const ta=$('otTa'); ta.focus(); ta.select(); $('otCp').onclick=()=>{ ta.select(); const ok=legacyCopy(ta.value); $('otSt').textContent=ok?'已複製':'請按 Ctrl/Cmd + C' } }
 $('btnDeckFile').onclick=async()=>{
   setStatus('讀取 deck.json…');
   try{
@@ -1038,15 +1104,26 @@ async function renderCanvas(i){
   return html2canvas(host.firstElementChild,{scale:1,width:1080,height:1350,backgroundColor:bc,logging:false});
 }
 const toBlob=c=>new Promise(r=>c.toBlob(r,'image/png'));
+function fileBase(){
+  const cov=(state.slides||[]).find(s=>s.type==='cover')||(state.slides||[])[0]||{};
+  let raw=(cov.title||'')+' '+(cov.tag||'');
+  if(!raw.replace(/\s/g,'')) raw=($('topic')?$('topic').value:'')||'';
+  raw=String(raw).split('（')[0].split('(')[0];
+  let n=raw.replace(/[\\\/:*?"<>|\n\r\t]+/g,' ').replace(/[，。！？、；：「」『』…·]+/g,' ').replace(/\s+/g,'_').replace(/^_+|_+$/g,'');
+  n=[...n].slice(0,24).join('');
+  if(!n) n='carousel';
+  const d=new Date(), pad=x=>String(x).padStart(2,'0');
+  return `${n}_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+}
 async function deliver(files){
   const dl=await dlCap();
   if(dl){ try{
     if(files.length===1) await dl.save({filename:files[0].name,data:files[0].blob});
-    else { const z=new JSZip(); files.forEach(f=>z.file(f.name,f.blob)); await dl.save({filename:'quiz-carousel.zip',data:await z.generateAsync({type:'blob'})}) }
+    else { const z=new JSZip(); files.forEach(f=>z.file(f.name,f.blob)); await dl.save({filename:fileBase()+'.zip',data:await z.generateAsync({type:'blob'})}) }
     setStatus('已下載。'); return;
   }catch(e){ if(e&&e.code==='declined'){ setStatus('已取消下載。'); return } } }
   try{
-    const out = files.length===1 ? files[0] : {name:'quiz-carousel.zip', blob: await (()=>{const z=new JSZip(); files.forEach(f=>z.file(f.name,f.blob)); return z.generateAsync({type:'blob'})})()};
+    const out = files.length===1 ? files[0] : {name:fileBase()+'.zip', blob: await (()=>{const z=new JSZip(); files.forEach(f=>z.file(f.name,f.blob)); return z.generateAsync({type:'blob'})})()};
     const a=document.createElement('a'); a.href=URL.createObjectURL(out.blob); a.download=out.name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(a.href),4000); setStatus('已下載。'); return;
   }catch(e){}
@@ -1057,7 +1134,7 @@ async function exportIdx(idxs,btn){
   if(typeof html2canvas==='undefined'){ setStatus('匯出工具沒載入，請重新整理。',true); return }
   btn.disabled=true;
   try{ const files=[];
-    for(const i of idxs){ setStatus(`輸出第 ${i+1} 張…`); const c=await renderCanvas(i); files.push({name:`quiz_${String(i+1).padStart(2,'0')}.png`,blob:await toBlob(c),url:c.toDataURL('image/png')}) }
+    for(const i of idxs){ setStatus(`輸出第 ${i+1} 張…`); const c=await renderCanvas(i); files.push({name:`${fileBase()}_${String(i+1).padStart(2,'0')}.png`,blob:await toBlob(c),url:c.toDataURL('image/png')}) }
     $('exportHost').innerHTML=''; await deliver(files);
   }catch(e){ setStatus('輸出失敗：'+(e.message||e),true) } finally{ btn.disabled=false }
 }
