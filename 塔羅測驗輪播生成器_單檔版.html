@@ -307,8 +307,7 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
         <option value="key">自己的 API Key</option>
       </select>
       <div id="proxyWrap" hidden>
-        <label class="f" for="proxyUrl">代理網址</label>
-        <input type="text" id="proxyUrl" placeholder="https://xxx.workers.dev">
+        <input type="hidden" id="proxyUrl">
         <label class="f" for="proxyPass">通行碼（老師給的）</label>
         <input type="text" id="proxyPass">
       </div>
@@ -368,12 +367,11 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
     <div class="row" style="margin-top:12px"><button class="btn primary" id="gGo">進入</button></div>
     <span class="gst" id="gSt"></span>
     <details>
-      <summary>我有自己的 API Key / 自訂代理網址</summary>
-      <label class="f" for="gKey">Anthropic API Key（費用算在你自己帳號）</label>
+      <summary>進不去？點這裡</summary>
+      <p class="hint" style="margin-top:6px">先按「檢查連線」，把結果整段複製給老師。如果你有自己的 Anthropic API Key，也可以直接用自己的進入（費用算在你的帳號）。</p>
+      <label class="f" for="gKey">Anthropic API Key（選填）</label>
       <input type="password" id="gKey" placeholder="sk-ant-..." autocomplete="off">
-      <label class="f" for="gUrl">代理網址（老師另外給的才需要改）</label>
-      <input type="text" id="gUrl" placeholder="https://xxx.workers.dev">
-      <div class="row" style="margin-top:10px"><button class="btn small" id="gKeyGo">用我自己的 Key 進入</button><button class="btn small" id="gDiag">檢查連線</button></div>
+      <div class="row" style="margin-top:10px"><button class="btn small" id="gDiag">檢查連線</button><button class="btn small" id="gKeyGo">用我自己的 Key 進入</button></div>
     </details>
   </div>
 </div>
@@ -1154,7 +1152,7 @@ function parseJSON(t){
 async function callAPI(prompt){
   const a=state.ai||{};
   if(a.mode==='proxy'){
-    const purl=(typeof normProxy==='function'?normProxy(a.proxy):String(a.proxy||'').trim())||(typeof DEFAULT_PROXY!=='undefined'?DEFAULT_PROXY:'');
+    const purl=(typeof pickProxy==='function')?pickProxy():String(a.proxy||'').trim();
     if(!purl) throw new Error('還沒填代理網址');
     const r=await fetch(purl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,pass:a.pass||''})});
     if(r.status===405) throw new Error('代理網址不是有效的 Worker（405）。請在通行碼畫面按「檢查連線」，把結果給老師。');
@@ -1382,10 +1380,7 @@ function normProxy(u){
   try{ const x=new URL(u); if(!x.hostname.includes('.')) return ''; return x.origin+x.pathname.replace(/\/+$/,'') }
   catch(e){ return '' }
 }
-function pickProxy(){
-  const el=$('gUrl');
-  return normProxy(el&&el.value) || normProxy(state.ai&&state.ai.proxy) || normProxy(DEFAULT_PROXY);
-}
+function pickProxy(){ return normProxy(DEFAULT_PROXY) }
 function gateLoad(){ try{ return JSON.parse(localStorage.getItem(GKEY)) }catch(e){ return null } }
 function gateStore(o){ try{ localStorage.setItem(GKEY,JSON.stringify(o)) }catch(e){} }
 function gateClear(){ try{ localStorage.removeItem(GKEY) }catch(e){} }
@@ -1395,15 +1390,16 @@ function gateSt(t,bad){ const el=$('gSt'); if(!el) return; el.textContent=t||'';
 function gateApply(g){
   state.ai=state.ai||JSON.parse(JSON.stringify(DEFAULT.ai));
   if(state.ai.mode!=='key'){
-    if(g.remote){ state.ai.mode='proxy'; state.ai.proxy=g.proxy||DEFAULT_PROXY; state.ai.pass=g.pass||'' }
-    else { state.ai.pass=g.pass||''; if(!state.ai.proxy) state.ai.proxy=g.proxy||DEFAULT_PROXY }
+    state.ai.proxy=DEFAULT_PROXY;
+    state.ai.pass=g.pass||'';
+    if(g.remote) state.ai.mode='proxy';
   }
   save();
   [['aiMode','mode'],['proxyUrl','proxy'],['proxyPass','pass']].forEach(([id,k])=>{ const el=$(id); if(el) el.value=state.ai[k]||'' });
   if(typeof aiUI==='function') aiUI();
 }
 async function gateVerify(url,code){
-  if(!url) return {ok:false,msg:'代理網址不正確，請展開下方「自訂代理網址」確認。'};
+  if(!url) return {ok:false,msg:'工具設定有問題，請聯絡老師。'};
   let r, body='';
   try{
     r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:'只輸出 JSON：{"ok":true}',pass:code})});
@@ -1447,7 +1443,6 @@ function gateInit(){
   if(state.ai.mode==='key'&&state.ai.key){ gateClose(); return }
   const g=gateLoad();
   if(g&&g.ok){ gateApply(g); gateClose(); return }
-  const gu=$('gUrl'); if(gu) gu.value=normProxy(state.ai.proxy)||DEFAULT_PROXY;
   gateOpen();
 }
 if($('gGo')) $('gGo').onclick=async e=>{
