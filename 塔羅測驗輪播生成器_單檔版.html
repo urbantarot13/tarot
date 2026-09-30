@@ -70,6 +70,14 @@ textarea{resize:vertical;min-height:60px;line-height:1.55}
 .topic .why{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
 .topic .post{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:12.5px;line-height:1.6;white-space:pre-line;color:var(--ink);opacity:.85}
 .topic.picked{border-color:var(--brand);box-shadow:inset 3px 0 0 var(--brand)}
+.titem{position:relative}
+.titem .topic{width:100%;padding-right:82px}
+.titem .use{position:absolute;right:7px;top:7px;border:1px solid var(--line);background:var(--panel);border-radius:20px;font-size:11.5px;padding:2px 9px;color:var(--muted);line-height:1.5;cursor:pointer}
+.titem .use:hover{border-color:var(--brand);color:var(--brand)}
+.titem.used .topic{opacity:.45}
+.titem.used .topic b{text-decoration:line-through}
+.titem.used .use{background:var(--brand);color:#fff;border-color:var(--brand)}
+.hsec .filt{float:right;font-weight:400;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline}
 .hsec{font-size:13px;font-weight:600;color:var(--brand);margin:14px 0 2px}
 .hsec small{font-weight:400;color:var(--muted)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -213,6 +221,7 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
     <div class="row" style="margin-top:10px">
       <button class="btn" id="btnHooks">生成 20 個 Hook</button>
       <button class="btn small" id="btnCopyHookPrompt">複製提示詞</button>
+      <button class="btn small" id="btnUsedClear">清除已發過紀錄</button>
     </div>
     <div class="prog" id="hookProg" hidden><div class="bar"><i></i></div><span class="ptxt"></span></div>
     <div class="topics" id="topics"></div>
@@ -318,7 +327,7 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
         <input type="text" id="apiModel">
         <p class="hint">金鑰只存在你自己的瀏覽器，不會傳給別人。費用算在這把金鑰的帳號上。</p>
       </div>
-      <div class="row" style="margin-top:8px"><button class="btn small" id="aiTest">測試連線</button><button class="btn small" id="gateReset">清除通行碼</button></div>
+      <div class="row" style="margin-top:8px"><button class="btn small" id="aiTest">測試連線</button><button class="btn small" id="gateReset">清除已存的金鑰</button></div>
     </details>
 
     <div id="ansWrap" hidden>
@@ -360,18 +369,18 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
 </div>
 <div id="gate">
   <div class="gbox">
-    <h2>輸入課程通行碼</h2>
-    <p class="hint">這個工具只開放給學員使用。輸入老師給你的通行碼，這台裝置之後就不用再輸入。</p>
-    <label class="f" for="gCode">通行碼</label>
-    <input type="password" id="gCode" autocomplete="off" spellcheck="false">
-    <div class="row" style="margin-top:12px"><button class="btn primary" id="gGo">進入</button></div>
+    <h2>連上你的 Claude API</h2>
+    <p class="hint">這個工具用你自己的 Anthropic API Key 生成內容。金鑰只存在這台裝置的瀏覽器，不會上傳，也不會被別人看到。這台裝置之後就不用再輸入。</p>
+    <label class="f" for="gKey">Anthropic API Key</label>
+    <input type="password" id="gKey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="gKeyGo">進入</button></div>
     <span class="gst" id="gSt"></span>
     <details>
-      <summary>進不去？點這裡</summary>
-      <p class="hint" style="margin-top:6px">先按「檢查連線」，把結果整段複製給老師。如果你有自己的 Anthropic API Key，也可以直接用自己的進入（費用算在你的帳號）。</p>
-      <label class="f" for="gKey">Anthropic API Key（選填）</label>
-      <input type="password" id="gKey" placeholder="sk-ant-..." autocomplete="off">
-      <div class="row" style="margin-top:10px"><button class="btn small" id="gDiag">檢查連線</button><button class="btn small" id="gKeyGo">用我自己的 Key 進入</button></div>
+      <summary>金鑰要去哪裡拿？</summary>
+      <p class="hint" style="margin-top:6px">到 console.anthropic.com 註冊、儲值，左邊選 API keys → Create Key，複製 <code>sk-ant-</code> 開頭那一整串貼進來就好。費用算在你自己的帳號，生成一篇輪播大約幾毛錢。</p>
+      <label class="f" for="gCode">或：老師給的通行碼</label>
+      <input type="password" id="gCode" autocomplete="off" spellcheck="false">
+      <div class="row" style="margin-top:10px"><button class="btn small" id="gGo">用通行碼進入</button><button class="btn small" id="gDiag">檢查連線</button></div>
     </details>
   </div>
 </div>
@@ -484,7 +493,7 @@ const TYPES={
  rule:{name:'流程說明'}, pick:{name:'選一支蠟燭'}, quiz:{name:'ABC 題目'}, cta:{name:'結尾 CTA'}
 };
 const DEFAULT={
- layout:'center', theme:'charcoal', font:'mix', ai:{mode:'proxy',proxy:'https://broad-leaf-2208.cvcv99662.workers.dev',pass:'',key:'',model:'claude-sonnet-5'}, bgId:'', dim:2, blur:0, panel:0,
+ layout:'center', theme:'charcoal', font:'mix', ai:{mode:'key',proxy:'https://broad-leaf-2208.cvcv99662.workers.dev',pass:'',key:'',model:'claude-sonnet-5'}, bgId:'', dim:2, blur:0, panel:0,
  brand:'魔法蠟燭代燒', handle:'@urban_legend_tarot', logo:'', theme:'night', bgImg:'', caption:'', sel:0, answers:null, titles:null,
  hook:{niche:'魔法蠟燭代燒服務', aud:'感情卡關、想復合或在等正緣的人，也有想求財運與事業轉機的人', style:'溫暖、有陪伴感、不誇大', goal:'報名代燒：引導留言關鍵字私訊'}, hooks:null,
  slides:[
@@ -1013,7 +1022,7 @@ function hookPrompt(){
   return `${VOICE()}
 
 你是短影音 Hook 文案專家，精通讓人在前3秒停下來的開場公式。
-【請生成 20 個可直接使用的 Hook】
+${avoidBlock()}【請生成 20 個可直接使用的 Hook】
 — 10 個適合 Talking Head Reels 的口語 Hook（第一句話）
 — 6 個適合 Carousel 第一張圖的文字 Hook
 — 4 個適合 Threads 首行的文字 Hook
@@ -1229,24 +1238,62 @@ function renderAnswers(){
     ta.oninput=()=>{ (state.answers[k]=state.answers[k]||{}).dm=ta.value; save() };
     d.querySelector('button').onclick=()=>copy(ta.value,`已複製 ${k} 的私訊內容。`); box.appendChild(d) });
 }
+/* ---------- 已發過的 Hook ---------- */
+const UKEY='xd-used-hooks-tarot-v1';
+let USED=[];
+try{ USED=JSON.parse(localStorage.getItem(UKEY))||[] }catch(e){ USED=[] }
+if(!Array.isArray(USED)) USED=[];
+const hkey=t=>String(t||'').replace(/[\s\u3000，。！？、；：「」『』（）()…·,.!?~～\-—]/g,'').toLowerCase();
+function usedSave(){ try{ localStorage.setItem(UKEY,JSON.stringify(USED.slice(-300))) }catch(e){} }
+function isUsed(t){ const k=hkey(t); return USED.some(u=>hkey(u.text)===k) }
+function markUsed(t,where){ if(!t||isUsed(t)) return false; USED.push({text:String(t),where:where||'',at:new Date().toISOString().slice(0,10)}); usedSave(); return true }
+function unmarkUsed(t){ const k=hkey(t); const n=USED.length; USED=USED.filter(u=>hkey(u.text)!==k); if(USED.length!==n){ usedSave(); return true } return false }
+let hideUsed=false;
+function avoidBlock(){
+  const seen=[];
+  USED.slice(-40).forEach(u=>seen.push('（用過）'+u.text));
+  const d=state.hooks;
+  if(d){ ['carousel','reels','threads'].forEach(k=>(d[k]||[]).forEach(x=>{ if(!isUsed(x.text)) seen.push('（上次生成過）'+x.text) })) }
+  if(!seen.length) return '';
+  return `\n【下面這些已經用過或上次已經生成過，這次不要再出現】
+${seen.slice(-60).map(x=>'- '+x).join('\n')}
+避免重複的規則：新的 20 個必須換切角或換情境，不能只是把上面的句子換同義詞、調換語序、或改成問句。如果某個題目上面已經出現過，就從不同的角度重新切。\n`;
+}
 function renderHooks(){
   const box=$('topics'), d=state.hooks; box.innerHTML=''; if(!d) return;
-  const sec=(t,s)=>{ const h=document.createElement('div'); h.className='hsec'; h.innerHTML=`${esc(t)} <small>${esc(s)}</small>`; box.appendChild(h) };
-  const item=(t,where,why)=>{ const b=document.createElement('button'); b.className='topic'+($('topic').value.startsWith(t.text)?' picked':'');
-    b.innerHTML=`<b>${esc(t.text)}</b><div class="meta">${t.type?`<span>${esc(t.type)}</span>`:''}${t.score!=null?`<span class="sc">${esc(t.score)} 分</span>`:''}</div>${why?`<span class="why">${esc(why)}</span>`:''}${t.quizIdea?`<span class="why">測驗：${esc(t.quizIdea)}</span>`:''}${t.post?`<span class="why">點一下看全文（${[...String(t.post).replace(/\s/g,'')].length} 字）</span>`:''}`;
+  const sec=(t,s,filt)=>{ const h=document.createElement('div'); h.className='hsec'; h.innerHTML=`${esc(t)} <small>${esc(s)}</small>`;
+    if(filt){ const a=document.createElement('span'); a.className='filt'; a.textContent=hideUsed?'顯示用過的':'隱藏用過的'; a.onclick=()=>{ hideUsed=!hideUsed; renderHooks() }; h.appendChild(a) }
+    box.appendChild(h) };
+  const item=(t,where,why)=>{ const on=isUsed(t.text); if(on&&hideUsed) return;
+    const w=document.createElement('div'); w.className='titem'+(on?' used':'');
+    const b=document.createElement('button'); b.className='topic'+($('topic').value.startsWith(t.text)?' picked':'');
+    b.innerHTML=`<b>${esc(t.text)}</b><div class="meta">${t.type?`<span>${esc(t.type)}</span>`:''}${t.score!=null?`<span class="sc">${esc(t.score)} 分</span>`:''}${on?'<span>已發過</span>':''}</div>${why?`<span class="why">${esc(why)}</span>`:''}${t.quizIdea?`<span class="why">測驗：${esc(t.quizIdea)}</span>`:''}${t.post?`<span class="why">點一下看全文（${[...String(t.post).replace(/\s/g,'')].length} 字）</span>`:''}`;
+    const u=document.createElement('button'); u.className='use'; u.type='button'; u.textContent=on?'已發過':'標記已發';
+    u.title=on?'取消標記':'標記成已經發過，之後生成不會再出現';
+    u.onclick=ev=>{ ev.stopPropagation(); if(on) unmarkUsed(t.text); else markUsed(t.text,where); renderHooks() };
     b.onclick=()=>{ if(where==='carousel'){ $('topic').value=t.text+(t.quizIdea?`（測驗方向：${t.quizIdea}）`:''); renderHooks(); setStatus('已帶入主題，按「生成輪播」。') } else if(where==='threads'){ if(t.post) openPost(t.post, t.text); else setStatus('這則是舊版生成的，只有首行。請重新按「生成 20 個 Hook」，新的就會附整則內文。',true) }
       else openSnippet(where==='reels'?'Reels 開場（第一句話）':'Hook', t.text) };
-    box.appendChild(b) };
+    w.appendChild(b); w.appendChild(u); box.appendChild(w) };
   const all={reels:d.reels||[],carousel:d.carousel||[],threads:d.threads||[]};
   const find=tp=>(all[tp.where]||[]).find(x=>x.text===tp.text)||Object.values(all).flat().find(x=>x.text===tp.text)||{text:tp.text};
-  if((d.top5||[]).length){ sec('前 5 強推薦','點輪播 Hook 帶入主題，其他點一下複製'); d.top5.forEach(tp=>item(find(tp),tp.where||'x',tp.reason)) }
+  if((d.top5||[]).length){ sec('前 5 強推薦',`點輪播 Hook 帶入主題，其他點一下複製${USED.length?`｜已發過 ${USED.length} 則`:''}`,true); d.top5.forEach(tp=>item(find(tp),tp.where||'x',tp.reason)) }
   sec('Carousel 第一張',`${all.carousel.length} 個｜點一下帶入主題`); all.carousel.forEach(t=>item(t,'carousel'));
   sec('Reels 開場',`${all.reels.length} 個｜點一下打開`); all.reels.forEach(t=>item(t,'reels'));
   sec('Threads 貼文',`${all.threads.length} 則｜點一下打開全文`); all.threads.forEach(t=>item(t,'threads'));
 }
 $('btnHooks').onclick=async e=>{ const d=await ask(hookPrompt(),e.currentTarget,'hookProg'); if(!d) return; state.hooks=d; save(); renderHooks(); setStatus('20 個 Hook 完成。') };
 $('btnCopyHookPrompt').onclick=()=>copy(hookPrompt(),'Hook 提示詞已複製。');
-$('btnGen').onclick=async e=>{ const d=await ask(deckPrompt(),e.currentTarget); if(!d) return; try{ loadDeck(d); setStatus(`完成，共 ${state.slides.length} 張。`) }catch(err){ setStatus('格式有誤，再生成一次。',true) } };
+$('btnGen').onclick=async e=>{
+  const topicNow=$('topic').value.trim();
+  const d=await ask(deckPrompt(),e.currentTarget); if(!d) return;
+  try{
+    loadDeck(d);
+    const src=(((state.hooks||{}).carousel)||[]).find(x=>topicNow.startsWith(String(x.text).slice(0,12)));
+    if(src) markUsed(src.text,'carousel'); else if(topicNow) markUsed(topicNow.split('（')[0],'carousel');
+    renderHooks();
+    setStatus(`完成，共 ${state.slides.length} 張。`);
+  }catch(err){ setStatus('格式有誤，再生成一次。',true) }
+};
 $('btnCopyPrompt').onclick=()=>copy(deckPrompt(),'提示詞已複製，貼到 Claude 聊天後把 JSON 匯入。');
 $('btnTitles').onclick=async e=>{ const d=await ask(titlePrompt(),e.currentTarget); if(!d||!Array.isArray(d.titles)) return; state.titles=d.titles; renderTitles(); save(); setStatus('換了 5 個標題，點一下就換上封面。') };
 
@@ -1261,6 +1308,11 @@ $('aiTest').onclick=async e=>{
   try{ const t=await callAPI('只輸出 JSON：{"ok":true}'); parseJSON(t); setStatus('連線正常，可以開始生成。') }
   catch(err){ setStatus('連線失敗：'+(err.message||err),true) }
   finally{ btn.disabled=false }
+};
+$('btnUsedClear').onclick=()=>{
+  if(!USED.length){ setStatus('目前沒有已發過的紀錄。'); return }
+  if(!confirm(`要清掉 ${USED.length} 則「已發過」的紀錄嗎？清掉之後這些 Hook 可能會再被生成出來。`)) return;
+  USED=[]; usedSave(); renderHooks(); setStatus('已發過紀錄清空了。');
 };
 $('topic').addEventListener('input',()=>{ if(state.hooks) renderHooks() });
 
@@ -1438,11 +1490,27 @@ async function gateDiag(){
   L.push('　　　GET/POST 回 405 或回傳一段網頁 ＝這個網址不是 Worker，部署方式要重看。');
   return L.join('\n');
 }
-function gateInit(){
+async function keyCheck(k){
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:(state.ai&&state.ai.model)||'claude-sonnet-5',max_tokens:1,messages:[{role:'user',content:'hi'}]})});
+    if(r.status===401||r.status===403) return {ok:false,msg:'這把金鑰無效或已被刪除，請到 console.anthropic.com 重新建立一把。'};
+    if(r.status===400){ const t=await r.text(); if(/credit|balance|quota/i.test(t)) return {ok:false,msg:'金鑰正確，但帳戶餘額不足，請先到 Console 儲值。'}; return {ok:true} }
+    if(r.status===429) return {ok:true};
+    if(r.ok) return {ok:true};
+    const t=await r.text();
+    if(/credit balance|insufficient/i.test(t)) return {ok:false,msg:'金鑰正確，但帳戶餘額不足，請先到 Console 儲值。'};
+    return {ok:false,msg:'驗證失敗（'+r.status+'）：'+t.slice(0,80)};
+  }catch(e){ return {ok:true,offline:true} }
+}
+async function gateInit(){
   state.ai=state.ai||JSON.parse(JSON.stringify(DEFAULT.ai));
   if(state.ai.mode==='key'&&state.ai.key){ gateClose(); return }
+  if(state.ai.mode==='proxy'&&state.ai.pass){ gateClose(); return }
   const g=gateLoad();
-  if(g&&g.ok){ gateApply(g); gateClose(); return }
+  if(g&&g.ok&&g.pass){ gateApply(g); gateClose(); return }
+  if(state.ai.mode==='auto'){ gateClose(); const sc=await sampleCap(); if(sc) return }
   gateOpen();
 }
 if($('gGo')) $('gGo').onclick=async e=>{
@@ -1458,22 +1526,32 @@ if($('gGo')) $('gGo').onclick=async e=>{
   setStatus('通行碼正確，開始使用吧。');
 };
 if($('gCode')) $('gCode').addEventListener('keydown',ev=>{ if(ev.key==='Enter') $('gGo').click() });
-if($('gKeyGo')) $('gKeyGo').onclick=()=>{
+if($('gKeyGo')) $('gKeyGo').onclick=async e=>{
+  const btn=e.currentTarget;
   const k=(($('gKey')&&$('gKey').value)||'').trim();
-  if(!/^sk-ant-/.test(k)){ gateSt('這看起來不是 Anthropic 的 API Key。',true); return }
+  if(!/^sk-ant-/.test(k)){ gateSt('這看起來不是 Anthropic 的 API Key，應該是 sk-ant- 開頭的一長串。',true); return }
+  btn.disabled=true; gateSt('驗證中…');
+  const r=await keyCheck(k);
+  btn.disabled=false;
+  if(!r.ok){ gateSt(r.msg,true); return }
   state.ai.mode='key'; state.ai.key=k; save();
   const am=$('aiMode'); if(am) am.value='key';
   const ak=$('apiKey'); if(ak) ak.value=k;
   if(typeof aiUI==='function') aiUI();
   gateStore({ok:1,own:1}); gateSt(''); gateClose();
-  setStatus('已改用你自己的 API Key，費用算在你的帳號上。');
+  setStatus(r.offline?'金鑰已儲存（這次沒能連上驗證，生成時會再試）。':'金鑰驗證成功，可以開始生成了。');
 };
 if($('gDiag')) $('gDiag').onclick=async e=>{
   const b=e.currentTarget; b.disabled=true; gateSt('檢查中…');
   const txt=await gateDiag(); b.disabled=false; gateSt('');
   openText('連線檢查結果（複製整段給老師）', txt);
 };
-if($('gateReset')) $('gateReset').onclick=()=>{ gateClear(); state.ai.pass=''; state.ai.gateOk=false; save(); const pp=$('proxyPass'); if(pp) pp.value=''; gateOpen(); setStatus('已清除這台裝置的通行碼。') };
+if($('gateReset')) $('gateReset').onclick=()=>{
+  gateClear(); state.ai.pass=''; state.ai.key=''; state.ai.gateOk=false; save();
+  const pp=$('proxyPass'); if(pp) pp.value=''; const ak=$('apiKey'); if(ak) ak.value='';
+  const gk=$('gKey'); if(gk) gk.value='';
+  gateOpen(); setStatus('已清除這台裝置存的金鑰與通行碼。');
+};
 /* ===== /通行碼 ===== */
 fillModeOptions(); syncInputs();
 renderBgs(); renderGrid(); renderMini(); renderEditor(); renderAnswers(); renderTitles(); renderHooks(); renderLib(); libLoad(); renderProofs(); proofLoad();
