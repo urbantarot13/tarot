@@ -116,7 +116,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.55}
 .addbar select{width:auto}
 details{border-top:1px solid var(--line);margin-top:18px;padding-top:10px}
 summary{cursor:pointer;font-weight:600;color:var(--brand)}
-.modal{position:fixed;inset:0;background:rgba(20,20,25,.55);display:none;align-items:center;justify-content:center;z-index:20;padding:20px}
+.modal{position:fixed;inset:0;background:rgba(20,20,25,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
 .modal.on{display:flex}
 .modal .box{background:var(--panel);border-radius:12px;max-width:760px;width:100%;max-height:90%;overflow:auto;padding:20px}
 .modal .imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
@@ -198,6 +198,90 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
 #gate summary{cursor:pointer;font-size:13px;opacity:.8}
 #gate .gst{display:block;margin-top:10px;min-height:20px;line-height:1.6}
 #gate .gst.bad{color:#ff9a8a}
+
+/* ===== 見證限動 ===== */
+#stPanel{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+#stPanel[hidden]{display:none}
+#stPanel .stbar{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+#stPanel .stbar b{color:var(--brand);font-size:17px}
+#stPanel .stbar .sp{flex:1}
+#stPanel .stwrap{flex:1;display:grid;grid-template-columns:370px minmax(0,1fr);overflow:hidden}
+#stPanel .stside{padding:16px;overflow:auto;border-right:1px solid var(--line);background:var(--panel)}
+#stPanel .stview{overflow:auto;padding:24px;display:flex;justify-content:center;align-items:flex-start}
+#stCanvas{width:min(390px,92%);position:relative}
+#stCanvas .stcard{transform-origin:0 0}
+@media (max-width:900px){#stPanel .stwrap{grid-template-columns:1fr;overflow:auto}#stPanel .stside{border-right:0;border-bottom:1px solid var(--line)}}
+.stthumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.stthumbs .stth{position:relative;width:74px}
+.stthumbs .stth img{width:74px;height:74px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block;background:#eee}
+.stthumbs .stth .x{position:absolute;right:2px;top:2px;border:0;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;width:20px;height:20px;line-height:1;font-size:13px;cursor:pointer;padding:0}
+.stchips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.stchips button{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:3px 10px;font-size:12.5px;cursor:pointer;color:inherit}
+.stchips button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.stbgs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:250px;overflow:auto;padding:2px}
+.stbgs button{padding:0;border:2px solid transparent;border-radius:6px;overflow:hidden;cursor:pointer;aspect-ratio:4/5;background:#eee}
+.stbgs button img{width:100%;height:100%;object-fit:cover;display:block}
+.stbgs button.on{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand)}
+#stAlts button{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+/* ---- 1080×1920 ---- */
+.stcard{width:1080px;height:1920px;position:relative;overflow:hidden;background:var(--st-paper);color:var(--st-ink);
+  font-family:var(--st-bf);display:flex;flex-direction:column;justify-content:center;padding:130px 86px;}
+.stcard.stdark{background-image:none}
+.stcard .stbg{position:absolute;inset:0;background-size:cover;background-position:center}
+.stcard .stveil{position:absolute;inset:0;background:var(--st-paper)}
+.stcard .stct{position:relative;z-index:1;width:100%;transform-origin:50% 50%;text-align:center}
+.stcard .stlabel{display:inline-block;font-size:34px;letter-spacing:5px;color:var(--st-brand);border:3px solid var(--st-brand);border-radius:12px;padding:8px 26px;margin-bottom:34px}
+.stcard .sthead{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:40px}
+.stcard .stband{display:inline-block;background:var(--st-band);color:var(--st-bandink);font-family:var(--st-tf);font-weight:700;
+  font-size:62px;line-height:1.32;letter-spacing:3px;padding:14px 32px;border-radius:10px;max-width:100%}
+.stcard .sthead.big .stband{font-size:82px;padding:18px 38px}
+.stcard .stshots{display:flex;justify-content:center;gap:24px;margin:6px 0 34px}
+.stcard .stphoto{background:#fff;padding:18px;border-radius:14px;box-shadow:0 14px 40px rgba(40,40,40,.18);max-width:780px}
+.stcard .stshots.two .stphoto{max-width:400px;padding:12px}
+.stcard .stphoto img{display:block;max-width:100%;width:auto;max-height:820px;border-radius:8px}
+.stcard .stshots.two .stphoto img{width:100%;max-height:720px;object-fit:cover}
+.stcard .stsmall .stphoto img{max-height:520px}
+.stcard .stmiss{border:4px dashed var(--st-brand);border-radius:18px;padding:130px 30px;font-size:40px;color:var(--st-brand);opacity:.55;margin-bottom:34px}
+.stcard .stbody{margin-bottom:38px}
+.stcard .stbody p{margin:0 0 14px;font-size:44px;line-height:1.55}
+.stcard .stcta{display:flex;flex-direction:column;align-items:center;gap:16px}
+.stcard .stkw{background:var(--st-kw);color:var(--st-kwink);font-family:var(--st-tf);font-weight:700;font-size:54px;letter-spacing:3px;border-radius:80px;padding:18px 52px;white-space:nowrap}
+.stcard .stctal{font-size:40px;color:var(--st-muted);font-family:var(--st-bf)}
+.stcard.lay-photo .stshots{margin-top:0;margin-bottom:40px}
+/* 色塊標題的形狀 */
+.stcard.bs-round .stband{border-radius:90px;padding:16px 48px}
+.stcard.bs-sharp .stband{border-radius:0}
+.stcard.bs-outline .stband{background:transparent;color:var(--st-band);border:5px solid var(--st-band);border-radius:10px;padding:12px 30px}
+.stcard.bs-marker .stband{background:linear-gradient(transparent 56%,var(--st-band) 56%);color:var(--st-ink);border-radius:0;padding:4px 14px 10px}
+.stcard.bs-under .stband{background:transparent;color:var(--st-ink);border-radius:0;padding:4px 10px 14px;border-bottom:13px solid var(--st-band)}
+.stcard.bs-tape .stband{border-radius:3px;transform:rotate(-1.7deg);box-shadow:0 10px 24px rgba(0,0,0,.16)}
+.stcard.bs-tape .stband:nth-of-type(2){transform:rotate(1.5deg)}
+.stcard.bs-shadow .stband{border-radius:6px;box-shadow:13px 13px 0 var(--st-brand)}
+.stcard.bs-left .stband{background:transparent;color:var(--st-ink);border-radius:0;border-left:15px solid var(--st-band);padding:4px 0 4px 28px;text-align:left}
+.stcard.bs-left .sthead,.stcard.bs-left .stfoot{align-items:stretch}
+.stcard.bs-ghost .stband{background:color-mix(in srgb,var(--st-band) 22%,transparent);color:var(--st-ink);border-radius:14px;padding:14px 34px}
+.stcard.bs-double .stband{background:transparent;color:var(--st-ink);border-radius:0;padding:10px 6px;border-top:6px solid var(--st-band);border-bottom:6px solid var(--st-band)}
+
+/* 配色與字體設定 */
+.stcols{display:grid;grid-template-columns:repeat(2,1fr);gap:7px 10px;margin-top:8px}
+.stcols label{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);margin:0}
+.stcols label span{flex:1;min-width:0}
+.stcols input[type=color]{flex:none;width:40px;height:27px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer}
+.stswatch{display:flex;gap:4px;margin-top:6px}
+.stswatch i{width:16px;height:16px;border-radius:4px;border:1px solid var(--line);display:block}
+
+
+.myshots{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px;max-height:420px;overflow:auto;padding:2px}
+.myshots .msit{position:relative;border:1px solid var(--line);border-radius:10px;padding:6px;background:var(--bg)}
+.myshots .msit img{width:100%;height:120px;object-fit:cover;object-position:top;border-radius:6px;display:block;background:#eee}
+.myshots .msit input{width:100%;font-size:11.5px;padding:4px 6px;margin-top:5px}
+.myshots .msit .use{position:absolute;left:10px;top:10px;border:0;background:rgba(0,0,0,.6);color:#fff;border-radius:20px;font-size:11px;padding:3px 9px;cursor:pointer}
+.myshots .msit .x{position:absolute;right:10px;top:10px;border:0;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;width:20px;height:20px;font-size:13px;line-height:1;cursor:pointer;padding:0}
+
+
+a.btn{display:inline-block;text-decoration:none;color:inherit;line-height:1.5}
+a.btn.primary{color:#fff}
+#stPanel .stbar .status{margin:0;min-height:0;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -206,7 +290,7 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
   <select id="mode" style="width:auto" hidden></select>
   <span class="hint" style="margin:0">1080 × 1350</span>
   <span class="sp"></span>
-  <button class="btn" id="btnDeckFile">讀取 deck.json</button>
+  <button class="btn" id="btnStory">見證限動</button>
   <button class="btn" id="btnJson">匯入 / 匯出</button>
   <button class="btn" id="btnOne">下載這張</button>
   <button class="btn primary" id="btnAll">下載全部</button>
@@ -383,6 +467,94 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
       <input type="password" id="gCode" autocomplete="off" spellcheck="false">
       <div class="row" style="margin-top:10px"><button class="btn small" id="gGo">用通行碼進入</button><button class="btn small" id="gDiag">檢查連線</button></div>
     </details>
+  </div>
+</div>
+<div id="stPanel" hidden>
+  <div class="stbar">
+    <b>見證限動產生器</b><span class="hint" style="margin:0">1080 × 1920（9:16）</span>
+    <span class="sp"></span>
+    <span class="status" id="stTopSt"></span>
+    <button class="btn primary" id="stDl">下載限動 PNG</button>
+    <button class="btn" id="stClose">關閉</button>
+  </div>
+  <div class="stwrap">
+    <div class="stside">
+      <h3 style="margin-top:0">① 見證圖</h3>
+      <div class="row">
+        <label class="btn small" style="display:inline-block">上傳見證圖<input type="file" id="stFile" accept="image/*" multiple hidden></label>
+        <span class="hint" id="stImgInfo" style="margin:0"></span>
+      </div>
+      <div hidden><label class="f" for="stProofPick">從見證素材庫挑</label><select id="stProofPick"></select></div>
+      <div class="stthumbs" id="stImgs"></div>
+      <label class="f" for="stSeen">這張見證在說什麼（讀不到圖時才需要寫）</label>
+      <textarea id="stSeen" rows="2" placeholder="例：學員回報第一筆占卜收入 400 元，說今天終於開張了"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="stGen">讀圖 → 生成限動文案</button><button class="btn small" id="stDiag" type="button">檢查能不能讀圖</button></div>
+      <div class="prog" id="stProg" hidden><div class="bar"><i></i></div><span class="ptxt"></span></div>
+      <div class="status" id="stStatus"></div>
+      <div class="row" id="stAlts" style="margin-top:6px"></div>
+
+      <h3>② 文字</h3>
+      <label class="f" for="stLabel">上方小標籤（可留空）</label>
+      <input type="text" id="stLabel" placeholder="例：陪跑班見證">
+      <label class="f" for="stH1">色塊標題 第一行</label>
+      <input type="text" id="stH1">
+      <label class="f" for="stH2">色塊標題 第二行</label>
+      <input type="text" id="stH2">
+      <label class="f" for="stBody">說明（每行一句，最多 4 行）</label>
+      <textarea id="stBody" rows="4"></textarea>
+      <label class="f" for="stKw">留言關鍵字</label>
+      <input type="text" id="stKw">
+      <label class="f" for="stCta">留言之後會拿到什麼</label>
+      <input type="text" id="stCta">
+
+      <h3>③ 版面與底圖</h3>
+      <label class="f" for="stLay">排版</label>
+      <select id="stLay"></select>
+      <label class="f" for="stVeil">底圖淡化（越高字越清楚）</label>
+      <input type="range" id="stVeil" min="0" max="95" step="5">
+      <div class="row" style="margin-top:6px">
+        <button class="btn small" id="stBgRnd" type="button">隨機底圖</button>
+        <button class="btn small" id="stBgClear" type="button">不用底圖</button>
+      </div>
+      <div class="bgnow" id="stBgNow" style="font-size:12.5px;color:var(--muted);margin-top:6px"></div>
+      <div class="stchips" id="stBgCats"></div>
+      <div class="stbgs" id="stBgs"></div>
+
+      <h3>④ 配色與字體</h3>
+      <p class="hint" style="margin-top:0">改完立刻套到右邊預覽，下載的 PNG 也一樣。</p>
+      <label class="f" for="stPreset">配色組合</label>
+      <select id="stPreset"></select>
+      <div class="stswatch" id="stSwatch"></div>
+      <label class="f" for="stFont">字型</label>
+      <select id="stFont"></select>
+      <label class="f" for="stBandSty">色塊標題的形狀</label>
+      <select id="stBandSty"></select>
+      <div class="stcols">
+        <label><span>色塊標題 底</span><input type="color" id="st_cBand"></label>
+        <label><span>色塊標題 字</span><input type="color" id="st_cBandInk"></label>
+        <label><span>留言膠囊 底</span><input type="color" id="st_cKw"></label>
+        <label><span>留言膠囊 字</span><input type="color" id="st_cKwInk"></label>
+        <label><span>膠囊下小字</span><input type="color" id="st_cMuted"></label>
+        <label><span>說明文字</span><input type="color" id="st_cInk"></label>
+        <label><span>卡片底色</span><input type="color" id="st_cPaper"></label>
+        <label><span>標籤框線</span><input type="color" id="st_cBrand"></label>
+      </div>
+      <div class="row" style="margin-top:8px"><button class="btn small" id="stColReset" type="button">回到預設配色</button></div>
+
+      <h3>⑤ 我的見證庫</h3>
+      <p class="hint" style="margin-top:0">存在這台裝置的瀏覽器裡，以後要重發同一則見證直接點「用這張」就好。</p>
+      <div class="row">
+        <label class="btn small" style="display:inline-block">加入見證圖<input type="file" id="myShotsFile" accept="image/*" multiple hidden></label>
+        <button class="btn small" id="myShotsSave" type="button">把目前這張存進庫</button>
+        <button class="btn small" id="myShotsTag" type="button">幫我整理</button>
+      </div>
+      <p class="hint" id="myShotsInfo"></p>
+      <div class="myshots" id="myShots"></div>
+      <h3>⑥ 貼文內文（選用）</h3>
+      <textarea id="stCaption" rows="4" placeholder="生成後會出現在這裡"></textarea>
+      <div class="row" style="margin-top:6px"><button class="btn small" id="stCopyCap">複製內文</button></div>
+    </div>
+    <div class="stview"><div id="stCanvas"></div></div>
   </div>
 </div>
 <div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
@@ -1207,7 +1379,7 @@ async function ask(prompt,btn,progId){
   }
   progShow(progId,'連線中…');
   const s=await sampleCap();
-  if(!s){ progFail(progId); setStatus(LOCAL?'離線版不能直接呼叫 Claude。請在「AI 連線設定」填 API Key 或代理網址；或在 Claude Code 生成 deck.json 再讀取。':(await capDiag()),true); return null }
+  if(!s){ progFail(progId); setStatus(LOCAL?'離線版不能直接呼叫 Claude。請在「AI 連線設定」填自己的 API Key。':(await capDiag()),true); return null }
   if(btn) btn.disabled=true; setStatus('Claude 思考中…'); progShow(progId,'Claude 思考中…');
   try{
     const r=await s(prompt,{modelTier:'default',cache:false,onText:({text})=>{ setStatus(`生成中… 已寫 ${text.length} 字`); progText(progId,`生成中… 已寫 ${text.length} 字`,text.length) }});
@@ -1338,13 +1510,6 @@ $('modal').onclick=e=>{ if(e.target.id==='modal') closeModal() };
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal() });
 function showRaw(){ openText('Claude 的原始回覆（可複製貼給老師看）', window.LAST_RAW||'（沒有內容）') }
 function openText(t,x){ openModal(`<h2>${esc(t)}</h2><textarea id="otTa" rows="12">${esc(x)}</textarea><div class="row" style="margin-top:10px"><button class="btn primary" id="otCp">複製</button><button class="btn" onclick="closeModal()">關閉</button><span class="status" id="otSt"></span></div>`); const ta=$('otTa'); ta.focus(); ta.select(); $('otCp').onclick=()=>{ ta.select(); const ok=legacyCopy(ta.value); $('otSt').textContent=ok?'已複製':'請按 Ctrl/Cmd + C' } }
-$('btnDeckFile').onclick=async()=>{
-  setStatus('讀取 deck.json…');
-  try{
-    const r=await fetch('deck.json?t='+Date.now()); if(!r.ok) throw 0;
-    loadDeck(await r.json()); setStatus(`已讀取 deck.json，共 ${state.slides.length} 張。`);
-  }catch(e){ setStatus('找不到 deck.json。請確認是用本機伺服器打開（Claude Code 的安裝指令會幫你開），而且 deck.json 和網頁放在同一個資料夾。',true) }
-};
 $('btnJson').onclick=()=>{
   const out=JSON.stringify({caption:state.caption,titles:state.titles||undefined,answers:state.answers||undefined,slides:state.slides.map(s=>{const c=JSON.parse(JSON.stringify(s)); delete c.bgImg; if(c.opts) c.opts.forEach(o=>delete o.img); delete c.bgLib; return c})},null,2);
   openModal(`<h2>匯入 / 匯出</h2><p class="hint">把 Claude 回覆的 JSON 貼進來按匯入；或複製現在這組留存（不含上傳的圖片）。</p><textarea id="jsonTa" rows="14">${esc(out)}</textarea>
@@ -1573,6 +1738,602 @@ fillModeOptions(); syncInputs();
 renderBgs(); renderGrid(); renderMini(); renderEditor(); renderAnswers(); renderTitles(); renderHooks(); renderLib(); libLoad(); renderProofs(); proofLoad();
 gateInit();
 document.fonts&&document.fonts.ready.then(()=>renderGrid());
+
+const STORY_VOICE=`你是「小都塔羅」的 IG 限動文案企劃。
+語氣直接、溫暖、不誇大，像跟朋友說話的台灣口語。
+這一則限動的目的：用一則真實見證讓陌生人願意留言關鍵字，進到私訊名單。`;
+/* ===================== 見證限動產生器 (1080×1920) ===================== */
+const ST_BANDS={
+  solid:{name:'實心色塊（預設）'},
+  round:{name:'膠囊圓角'},
+  sharp:{name:'直角方塊'},
+  outline:{name:'只有外框線'},
+  marker:{name:'螢光筆（只塗下半）'},
+  under:{name:'粗底線'},
+  double:{name:'上下雙線'},
+  left:{name:'左側粗邊'},
+  tape:{name:'膠帶斜貼'},
+  shadow:{name:'色塊＋位移陰影'},
+  ghost:{name:'淡色底（字用內文色）'}
+};
+const ST_FONTS={
+  jinmix:{name:'金萱標題＋黑體內文',t:"'JinXuan','Noto Serif TC',serif",b:"'Noto Sans TC','Noto Serif TC',sans-serif"},
+  jinxuan:{name:'金萱（手感溫潤）',t:"'JinXuan','Noto Serif TC',serif",b:"'JinXuan','Noto Serif TC',serif"},
+  serifmix:{name:'宋體標題＋黑體內文',t:"'Noto Serif TC',serif",b:"'Noto Sans TC',sans-serif"},
+  serif:{name:'思源宋體（典雅）',t:"'Noto Serif TC',serif",b:"'Noto Serif TC',serif"},
+  sans:{name:'思源黑體（乾淨）',t:"'Noto Sans TC',sans-serif",b:"'Noto Sans TC',sans-serif"}
+};
+const ST_PRESETS={
+  orig:{name:'塔羅原紫',cBand:'#5B4B8A',cBandInk:'#FFFFFF',cKw:'#5B4B8A',cKwInk:'#FFFFFF',cMuted:'#7A7684',cInk:'#33303A',cPaper:'#F7F4FA',cBrand:'#5B4B8A'},
+  night:{name:'夜紫金（深底）',cBand:'#7462B8',cBandInk:'#FFFFFF',cKw:'#C9A86A',cKwInk:'#2A2340',cMuted:'#A09AB0',cInk:'#ECE7F5',cPaper:'#241F33',cBrand:'#C9A86A'},
+  mist:{name:'霧粉',cBand:'#B4788C',cBandInk:'#FFF6F8',cKw:'#8E4F65',cKwInk:'#FFF2F5',cMuted:'#9A8A90',cInk:'#3A3035',cPaper:'#FBF4F6',cBrand:'#8E4F65'},
+  moss:{name:'靜墨綠',cBand:'#46705F',cBandInk:'#F2F8F4',cKw:'#2F5447',cKwInk:'#F2F8F4',cMuted:'#85908A',cInk:'#2E3832',cPaper:'#F5F7F3',cBrand:'#2F5447'},
+  lavender:{name:'薰衣草',cBand:'#9A86C4',cBandInk:'#FFFFFF',cKw:'#6B57A8',cKwInk:'#FFFFFF',cMuted:'#8F89A0',cInk:'#343040',cPaper:'#F8F5FD',cBrand:'#6B57A8'},
+  sand:{name:'金沙米',cBand:'#C9A86A',cBandInk:'#352C18',cKw:'#5A4B33',cKwInk:'#FBF4E6',cMuted:'#9A8F7C',cInk:'#3A342A',cPaper:'#FCF8F0',cBrand:'#5A4B33'},
+  rose:{name:'玫瑰金',cBand:'#C98A96',cBandInk:'#FFFFFF',cKw:'#8E4F5E',cKwInk:'#FFF3F5',cMuted:'#9D8E92',cInk:'#3B3034',cPaper:'#FCF5F6',cBrand:'#8E4F5E'},
+  celadon:{name:'青瓷',cBand:'#8FB5AC',cBandInk:'#1E302C',cKw:'#3F6A60',cKwInk:'#F2F9F6',cMuted:'#8A948F',cInk:'#2F3A37',cPaper:'#F4F8F6',cBrand:'#3F6A60'},
+  midnight:{name:'午夜藍（深底）',cBand:'#5E7FB8',cBandInk:'#FFFFFF',cKw:'#E3C77E',cKwInk:'#1B2436',cMuted:'#98A2B4',cInk:'#E8EDF6',cPaper:'#1C2436',cBrand:'#E3C77E'},
+  mono:{name:'黑白極簡',cBand:'#262626',cBandInk:'#FFFFFF',cKw:'#262626',cKwInk:'#FFFFFF',cMuted:'#8A8A8A',cInk:'#2A2A2A',cPaper:'#FFFFFF',cBrand:'#262626'}
+};
+const ST_FONT_DEF='jinmix';
+const ST_KEY='xd-story-tarot-v1';
+const ST_DEF={lay:'band',label:'',h1:'',h2:'',body:'',keyword:'占卜',cta:'傳送占卜說明給你',imgs:[],bgId:'',veil:70,caption:'',proof:'',font:ST_FONT_DEF,preset:'orig',bandSty:'solid',cBand:ST_PRESETS.orig.cBand,cBandInk:ST_PRESETS.orig.cBandInk,cKw:ST_PRESETS.orig.cKw,cKwInk:ST_PRESETS.orig.cKwInk,cMuted:ST_PRESETS.orig.cMuted,cInk:ST_PRESETS.orig.cInk,cPaper:ST_PRESETS.orig.cPaper,cBrand:ST_PRESETS.orig.cBrand};
+let ST=null;
+try{ ST=JSON.parse(localStorage.getItem(ST_KEY)) }catch(e){}
+if(!ST||typeof ST!=='object') ST=JSON.parse(JSON.stringify(ST_DEF));
+['lay','label','h1','h2','body','keyword','cta','bgId','caption','proof','font','preset','bandSty','cBand','cBandInk','cKw','cKwInk','cMuted','cInk','cPaper','cBrand'].forEach(k=>{ if(ST[k]==null) ST[k]=ST_DEF[k] });
+if(!Array.isArray(ST.imgs)) ST.imgs=[];
+if(typeof ST.veil!=='number') ST.veil=ST_DEF.veil;
+let stSaveT; function stSave(){ clearTimeout(stSaveT); stSaveT=setTimeout(()=>{ try{ localStorage.setItem(ST_KEY,JSON.stringify(ST)) }catch(e){} },400) }
+
+const ST_LAYS={
+  band:{name:'標題在上（圖在中間）'},
+  photo:{name:'圖在上（文字在下）'},
+  big:{name:'大字標題（小圖）'}
+};
+/* ---------- 配色與字體 ---------- */
+function stHex(v){ v=String(v==null?'':v).trim();
+  if(/^#[0-9a-fA-F]{3}$/.test(v)) v='#'+v[1]+v[1]+v[2]+v[2]+v[3]+v[3];
+  return /^#[0-9a-fA-F]{6}$/.test(v)?v:'#000000' }
+function stFontOf(){ return ST_FONTS[ST.font]||ST_FONTS[ST_FONT_DEF]||ST_FONTS.serif }
+function stVars(){ const f=stFontOf();
+  return `--st-paper:${stHex(ST.cPaper)};--st-ink:${stHex(ST.cInk)};--st-band:${stHex(ST.cBand)};`
+    +`--st-bandink:${stHex(ST.cBandInk)};--st-kw:${stHex(ST.cKw)};--st-kwink:${stHex(ST.cKwInk)};`
+    +`--st-muted:${stHex(ST.cMuted)};--st-brand:${stHex(ST.cBrand)};--st-tf:${f.t};--st-bf:${f.b}` }
+function stLum(h){ h=stHex(h);
+  const r=parseInt(h.slice(1,3),16)/255,g=parseInt(h.slice(3,5),16)/255,b=parseInt(h.slice(5,7),16)/255;
+  return .2126*r+.7152*g+.0722*b }
+function stPaperDark(){ return stLum(ST.cPaper)<.5 }
+const ST_COLF=[["cBand", "色塊標題 底"], ["cBandInk", "色塊標題 字"], ["cKw", "留言膠囊 底"], ["cKwInk", "留言膠囊 字"], ["cMuted", "膠囊下小字"], ["cInk", "說明文字"], ["cPaper", "卡片底色"], ["cBrand", "標籤框線"]];
+function stApplyPreset(k){
+  const p=ST_PRESETS[k]; if(!p) return false;
+  Object.keys(p).forEach(n=>{ if(n!=='name') ST[n]=p[n] });
+  ST.preset=k; return true;
+}
+function stSyncStyle(){
+  const ps=document.getElementById('stPreset');
+  if(ps){
+    if(!ps.options.length){ ps.add(new Option('自訂配色','')); Object.entries(ST_PRESETS).forEach(([k,v])=>ps.add(new Option(v.name,k))) }
+    ps.value=ST_PRESETS[ST.preset]?ST.preset:'';
+  }
+  const fs=document.getElementById('stFont');
+  if(fs){
+    if(!fs.options.length) Object.entries(ST_FONTS).forEach(([k,v])=>fs.add(new Option(v.name,k)));
+    fs.value=ST_FONTS[ST.font]?ST.font:ST_FONT_DEF;
+  }
+  const bs=document.getElementById('stBandSty');
+  if(bs){
+    if(!bs.options.length) Object.entries(ST_BANDS).forEach(([k,v])=>bs.add(new Option(v.name,k)));
+    bs.value=ST_BANDS[ST.bandSty]?ST.bandSty:'solid';
+  }
+  ST_COLF.forEach(([k])=>{ const el=document.getElementById('st_'+k); if(el) el.value=stHex(ST[k]) });
+  const sw=document.getElementById('stSwatch');
+  if(sw) sw.innerHTML=['cPaper','cBand','cKw','cInk','cMuted'].map(k=>`<i style="background:${stHex(ST[k])}"></i>`).join('');
+}
+function stWireStyle(){
+  const on=(id,ev,fn)=>{ const el=document.getElementById(id); if(el) el.addEventListener(ev,fn) };
+  on('stPreset','change',e=>{ if(!e.target.value){ stSyncStyle(); return }
+    if(stApplyPreset(e.target.value)){ stSave(); stSyncStyle(); stRender() } });
+  on('stFont','change',e=>{ ST.font=e.target.value; stSave(); stRender() });
+  on('stBandSty','change',e=>{ ST.bandSty=e.target.value; stSave(); stRender() });
+  ST_COLF.forEach(([k])=>{ on('st_'+k,'input',e=>{
+    ST[k]=stHex(e.target.value); ST.preset=''; stSave();
+    const ps=document.getElementById('stPreset'); if(ps) ps.value='';
+    const sw=document.getElementById('stSwatch');
+    if(sw) sw.innerHTML=['cPaper','cBand','cKw','cInk','cMuted'].map(n=>`<i style="background:${stHex(ST[n])}"></i>`).join('');
+    stRender();
+  }) });
+  on('stColReset','click',()=>{ stApplyPreset('orig'); ST.font=ST_FONT_DEF; ST.bandSty='solid'; stSave(); stSyncStyle(); stRender() });
+}
+stWireStyle();
+
+
+function stBg(){
+  if(!ST.bgId) return null;
+  const b=(typeof BGLIB!=='undefined')?BGLIB.find(x=>x.id===ST.bgId):null;
+  return b?b.d:null;
+}
+function stLines(s,max){ return String(s||'').split('\n').map(x=>x.trim()).filter(Boolean).slice(0,max||6) }
+function stEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+
+function stHTML(){
+  const bg=stBg();
+  const v=Math.max(0,Math.min(95,ST.veil))/100;
+  const imgs=(ST.imgs||[]).slice(0,2);
+  const two=imgs.length>1;
+  const shots=imgs.length
+    ? `<div class="stshots${two?' two':''}">${imgs.map(s=>`<div class="stphoto"><img src="${s}" alt=""></div>`).join('')}</div>`
+    : `<div class="stmiss">上傳見證圖後會出現在這裡</div>`;
+  const bands=[ST.h1,ST.h2].filter(x=>String(x||'').trim())
+    .map(t=>`<div class="stband">${stEsc(t)}</div>`).join('');
+  const body=stLines(ST.body,4).map(t=>`<p>${stEsc(t)}</p>`).join('');
+  const cta=`<div class="stcta">${ST.keyword?`<div class="stkw">留言「${stEsc(ST.keyword)}」</div>`:''}${ST.cta?`<div class="stctal">${stEsc(ST.cta)}</div>`:''}</div>`;
+  const label=ST.label?`<div class="stlabel">${stEsc(ST.label)}</div>`:'';
+  let inner;
+  if(ST.lay==='photo')      inner=`${label}${shots}<div class="stfoot">${bands}${body?`<div class="stbody">${body}</div>`:''}${cta}</div>`;
+  else if(ST.lay==='big')   inner=`${label}<div class="sthead big">${bands}</div>${body?`<div class="stbody">${body}</div>`:''}<div class="stsmall">${shots}</div>${cta}`;
+  else                      inner=`${label}<div class="sthead">${bands}</div>${shots}${body?`<div class="stbody">${body}</div>`:''}${cta}`;
+  return `<div class="stcard lay-${ST.lay}${stPaperDark()?' stdark':''} bs-${ST_BANDS[ST.bandSty]?ST.bandSty:'solid'}" style="${stVars()}">
+    ${bg?`<div class="stbg" style="background-image:url('${bg}')"></div><div class="stveil" style="opacity:${v}"></div>`:'<div class="stveil solid"></div>'}
+    <div class="stct">${inner}</div>
+  </div>`;
+}
+
+function stRender(){
+  const host=document.getElementById('stCanvas'); if(!host) return;
+  host.innerHTML=stHTML();
+  stFit();
+}
+function stFit(){
+  const host=document.getElementById('stCanvas'); if(!host) return;
+  const card=host.querySelector('.stcard'); if(!card) return;
+  const w=host.clientWidth||360;
+  card.style.transform=`scale(${w/1080})`;
+  host.style.height=(1920*w/1080)+'px';
+  const ct=card.querySelector('.stct'); if(!ct) return;
+  ct.style.transform='';
+  const avail=1920-200, h=ct.offsetHeight;
+  if(h>avail) ct.style.transform=`scale(${((avail-10)/h).toFixed(3)})`;
+}
+
+function stSyncInputs(){
+  const m={stLay:'lay',stLabel:'label',stH1:'h1',stH2:'h2',stBody:'body',stKw:'keyword',stCta:'cta',stVeil:'veil'};
+  Object.entries(m).forEach(([id,k])=>{ const el=document.getElementById(id); if(el&&el.value!==String(ST[k]??'')) el.value=ST[k]??'' });
+  const cap=document.getElementById('stCaption'); if(cap) cap.value=ST.caption||'';
+  stThumbs();
+  const nowEl=document.getElementById('stBgNow');
+  if(nowEl){ const b=ST.bgId&&typeof BGLIB!=='undefined'?BGLIB.find(x=>x.id===ST.bgId):null; nowEl.textContent=b?('底圖：'+b.n):'底圖：白底' }
+  stSyncStyle();
+}
+function stThumbs(){
+  const box=document.getElementById('stImgs'); if(!box) return;
+  box.innerHTML='';
+  (ST.imgs||[]).forEach((src,i)=>{
+    const d=document.createElement('div'); d.className='stth';
+    d.innerHTML=`<img src="${src}" alt=""><button class="x" type="button" title="移除">×</button>`;
+    d.querySelector('.x').onclick=()=>{ ST.imgs.splice(i,1); stSave(); stThumbs(); stRender() };
+    box.appendChild(d);
+  });
+  const info=document.getElementById('stImgInfo');
+  if(info) info.textContent=(ST.imgs||[]).length?`${ST.imgs.length} 張（最多 2 張）`:'還沒有見證圖';
+}
+
+function stReadImg(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>{ const im=new Image(); im.onload=()=>{
+      const max=1200, sc=Math.min(1,max/Math.max(im.width,im.height));
+      const c=document.createElement('canvas'); c.width=Math.round(im.width*sc); c.height=Math.round(im.height*sc);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      res(c.toDataURL('image/jpeg',.88));
+    }; im.onerror=rej; im.src=r.result }; r.onerror=rej; r.readAsDataURL(file);
+  });
+}
+function stDataToBlob(u){
+  const [h,b]=String(u).split(','); const mt=(h.match(/data:([^;]+)/)||[])[1]||'image/jpeg';
+  const bin=atob(b); const arr=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:mt});
+}
+
+/* ---------- 看圖生成 ---------- */
+async function stAskVision(prompt, dataUrls){
+  const a=state.ai||{}, mode=a.mode||'auto';
+  if(mode==='key'&&a.key){
+    const content=dataUrls.map(u=>({type:'image',source:{type:'base64',media_type:(String(u).match(/data:([^;]+)/)||[])[1]||'image/jpeg',data:String(u).split(',')[1]}}));
+    content.push({type:'text',text:prompt});
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':a.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:a.model||'claude-sonnet-5',max_tokens:4000,messages:[{role:'user',content}]})});
+    if(!r.ok){ const t=await r.text(); throw new Error('API 錯誤 '+r.status+'：'+t.slice(0,140)) }
+    const j=await r.json();
+    return (j.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n');
+  }
+  if(mode==='proxy'){
+    const purl=(typeof pickProxy==='function')?pickProxy():String(a.proxy||'').trim();
+    if(!purl) throw new Error('還沒設定代理網址');
+    const r=await fetch(purl,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt,pass:a.pass||'',images:dataUrls})});
+    if(r.status===400||r.status===422) throw new Error('NOVISION');
+    if(!r.ok) throw new Error('代理回傳錯誤 '+r.status+'：'+(await r.text()).slice(0,120));
+    const j=await r.json();
+    if(j && j.error && /image/i.test(String(j.error))) throw new Error('NOVISION');
+    return j.text||'';
+  }
+  if(mode==='auto'){
+    const s=await sampleCap();
+    if(!s) throw new Error('目前連不上 Claude');
+    let lim=null; try{ lim=await s.limits() }catch(e){}
+    if(!lim||!lim.images) throw new Error('NOVISION');
+    const blobs=dataUrls.map(stDataToBlob);
+    const r=await s(prompt,{images:blobs,modelTier:'default',cache:false,
+      onText:({text})=>progText('stProg',`讀圖中… 已寫 ${text.length} 字`,text.length)});
+    return r.text;
+  }
+  throw new Error('NOVISION');
+}
+
+function stPrompt(seen){
+  const h=state.hook||{};
+  return `${STORY_VOICE}
+
+任務：把一則學員見證做成 IG 限時動態（1080×1920）的文案。
+${seen? '這是老師補充的見證內容：'+seen : '上面附的是學員傳給老師的見證截圖。先看懂它在證明什麼，再往下寫。'}
+
+受眾：${h.aud||'想把塔羅變成收入的新手塔羅師'}
+語氣：${h.style||'直接、溫暖、不誇大'}
+留言關鍵字固定用：${ST.keyword||'占卜'}
+
+限動文案的結構（這是限動不是輪播，整張畫面字很少）：
+- h1、h2：兩行色塊標題，是整張限動的 Hook。每行 ≤ 12 字，看一眼就懂發生了什麼事
+- body：2~3 行說明，每行 ≤ 16 字，講這件事對讀者的意義，不是重述截圖
+- cta：一行，說留言之後會收到什麼（≤ 14 字）
+- caption：如果這則也要發成貼文，給一段 60~100 字的內文
+
+寫作規則（違反就重寫）：
+- 全部繁體中文台灣用語，絕對不能出現簡體字
+- 只能根據看到的見證內容寫，不可以捏造對話、姓名、頭銜或收入數字
+- 截圖裡若有名字或帳號，一律寫成「學員」「一位學員」，不要寫出來
+- 不要保證成效（不能寫「一定接得到」「保證月入」「跟著做就會賺」）
+- 不要製造恐懼或急迫（不能寫「再不學就來不及」「名額剩最後幾個」）
+- h1、h2 不要只是重複截圖上的字，要讓沒看過截圖的人也有感
+- proof 欄位用一句話寫這張截圖在證明什麼（給老師自己看的，≤ 20 字）
+
+只輸出 JSON，不要任何說明或 markdown：
+{"proof":"","h1":"","h2":"","body":["",""],"cta":"","caption":"","alts":[{"h1":"","h2":""},{"h1":"","h2":""}]}
+alts 是另外兩組標題方向，讓老師換著用。`;
+}
+
+async function stGenerate(btn){
+  const seen=(document.getElementById('stSeen')||{}).value||'';
+  if(!(ST.imgs||[]).length && !seen.trim()){ stStatus('先上傳見證圖，或在下面寫這張見證在說什麼。',true); return }
+  btn.disabled=true; stStatus('讀圖中…'); progShow('stProg','讀圖中…');
+  let raw=null;
+  try{
+    if((ST.imgs||[]).length) raw=await stAskVision(stPrompt(seen.trim()), ST.imgs.slice(0,2));
+    else raw=await (async()=>{
+      const a=state.ai||{}, mode=a.mode||'auto';
+      if(mode==='auto'){ const s=await sampleCap(); if(!s) throw new Error('目前連不上 Claude');
+        const r=await s(stPrompt(seen.trim()),{modelTier:'default',cache:false,onText:({text})=>progText('stProg',`生成中… 已寫 ${text.length} 字`,text.length)}); return r.text }
+      return await callAPI(stPrompt(seen.trim()));
+    })();
+  }catch(e){
+    progFail('stProg'); btn.disabled=false;
+    if(String(e.message)==='NOVISION'){ stStatus('沒辦法讀圖。'+stVisionWhy()+'請在「這張見證在說什麼」寫兩行，再按一次生成。',true); const el=document.getElementById('stSeen'); if(el) el.focus(); return }
+    stStatus('生成失敗：'+(e.message||e),true); return;
+  }
+  btn.disabled=false;
+  let d=null; try{ d=parseJSON(raw) }catch(e){ progFail('stProg'); stStatus('回傳格式有誤，再試一次。',true); return }
+  if(!d||!d.h1){ progFail('stProg'); stStatus('回傳格式有誤，再試一次。',true); return }
+  progDone('stProg','完成');
+  ST.proof=d.proof||''; ST.h1=d.h1||''; ST.h2=d.h2||'';
+  ST.body=(Array.isArray(d.body)?d.body:String(d.body||'').split('\n')).filter(Boolean).join('\n');
+  if(d.cta) ST.cta=d.cta;
+  ST.caption=d.caption||'';
+  ST.alts=Array.isArray(d.alts)?d.alts:[];
+  stSave(); stSyncInputs(); stRender(); stAlts();
+  stStatus(ST.proof?('這張在證明：'+ST.proof):'完成。');
+}
+function stAlts(){
+  const box=document.getElementById('stAlts'); if(!box) return;
+  box.innerHTML='';
+  (ST.alts||[]).forEach(a=>{
+    if(!a||!a.h1) return;
+    const b=document.createElement('button'); b.type='button'; b.className='btn small';
+    b.textContent=a.h1+(a.h2?' / '+a.h2:'');
+    b.onclick=()=>{ ST.h1=a.h1||''; ST.h2=a.h2||''; stSave(); stSyncInputs(); stRender() };
+    box.appendChild(b);
+  });
+}
+
+/* ---------- 讀圖能力診斷 ---------- */
+async function stCheckVision(btn){
+  if(btn) btn.disabled=true;
+  const L=[];
+  const a=state.ai||{};
+  L.push('時間：'+new Date().toLocaleString('zh-TW'));
+  L.push('網址：'+location.href);
+  L.push('連線方式：'+(a.mode||'auto'));
+  L.push('頁面裡有 window.claude：'+!!(window.claude&&window.claude.use));
+  let verdict='';
+  if(a.mode==='key'){
+    verdict = a.key ? '金鑰模式：會直接呼叫 Anthropic API 讀圖。注意：在 Claude 網頁的預覽視窗裡，網頁通常不能對外連線，金鑰模式只有在自己的網站（GitHub Pages）或本機開啟時才會成功。'
+                    : '金鑰模式但還沒填 API Key。';
+  }else if(a.mode==='proxy'){
+    verdict='代理模式：讀圖要代理是支援圖片的版本（v3 以上）。';
+  }else{
+    if(!(window.claude&&window.claude.use)){
+      verdict='這個頁面不是在 Claude 裡開啟，沒有內建的 Claude 連線，所以不能讀圖。';
+    }else{
+      let s=null;
+      try{ s=await sampleCap() }catch(e){ L.push('取得 sample 出錯：'+(e&&e.message||e)) }
+      L.push('拿到 sample：'+!!s);
+      if(!s){ verdict='這個檢視拿不到 Claude 連線（可能是拒絕了授權，重新整理再按一次允許）。'; }
+      else if(typeof s.limits!=='function'){ L.push('sample.limits：這個版本沒有'); verdict='這個檢視的 Claude 連線是舊版，查不到能不能讀圖。'; }
+      else{
+        let lim=null;
+        try{ lim=await s.limits() }catch(e){ L.push('limits() 出錯：'+(e&&e.message||e)) }
+        L.push('limits()：'+JSON.stringify(lim));
+        if(lim&&lim.images){
+          verdict='可以讀圖。一次最多 '+lim.images.maxCount+' 張，單檔上限約 '
+            +Math.round((lim.images.maxInputBytes||0)/1048576)+' MB，接受 '+(lim.images.mediaTypes||[]).join('、')+'。';
+        }else{
+          verdict='這個檢視的 Claude 連線沒有開放讀圖（limits() 裡沒有 images）。這是檢視環境決定的，不是網頁的問題。可以先用「這張見證在說什麼」手寫兩行來測其他功能。';
+        }
+      }
+    }
+  }
+  L.push('');
+  L.push('判斷：'+verdict);
+  const txt=L.join('\n');
+  openModal(`<h2>讀圖能力檢查</h2><p class="hint">${stEsc(verdict)}</p>`
+    +`<textarea id="dgTa" rows="10" readonly style="width:100%;font-size:12.5px">${stEsc(txt)}</textarea>`
+    +`<div class="row" style="margin-top:10px"><button class="btn primary" id="dgCp">複製整段</button>`
+    +`<button class="btn" onclick="closeModal()">關閉</button><span class="status" id="dgSt"></span></div>`);
+  const ta=document.getElementById('dgTa');
+  const cp=document.getElementById('dgCp');
+  if(cp) cp.onclick=()=>{ ta.select(); const ok=legacyCopy(ta.value); const st=document.getElementById('dgSt'); if(st) st.textContent=ok?'已複製':'請按 Ctrl/Cmd + C' };
+  if(btn) btn.disabled=false;
+}
+function stStatus(t,err){
+  ['stStatus','stTopSt'].forEach(id=>{ const el=document.getElementById(id); if(!el) return;
+    el.textContent=t||''; el.className='status'+(err?' err':'') });
+}
+
+/* ---------- 匯出 ---------- */
+async function stExport(btn){
+  if(typeof html2canvas==='undefined'){ stStatus('匯出工具沒載入，請重新整理。',true); return }
+  btn.disabled=true; const _lab=btn.textContent; btn.textContent='輸出中…'; stStatus('輸出中…');
+  try{
+    const host=document.getElementById('exportHost');
+    host.innerHTML=`<div id="stOut" style="width:1080px;height:1920px">${stHTML()}</div>`;
+    const card=host.querySelector('.stcard'); card.style.transform='none';
+    try{ await document.fonts.ready }catch(e){}
+    await Promise.all([...host.querySelectorAll('img')].map(im=>im.complete?1:new Promise(r=>{im.onload=im.onerror=r})));
+    const ct=card.querySelector('.stct'); ct.style.transform='';
+    const avail=1920-200, hh=ct.offsetHeight;
+    if(hh>avail) ct.style.transform=`scale(${((avail-10)/hh).toFixed(3)})`;
+    const cv=await html2canvas(card,{scale:1,width:1080,height:1920,backgroundColor:stHex(ST.cPaper),logging:false});
+    host.innerHTML='';
+    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+    const name=(String(ST.h1||'限動').replace(/[\\/:*?"<>|\n\r\t]+/g,'').slice(0,16)||'限動')+'_story.png';
+    let why='';
+    const dl=(window.claude&&window.claude.use)?await dlCap():null;
+    if(dl){
+      try{ await dl.save({filename:name,data:blob}); stStatus('已下載。'); return }
+      catch(e){
+        if(e&&e.code==='declined'){ stStatus('已取消下載。'); return }
+        why='（系統下載沒成功：'+((e&&(e.code||e.message))||'原因不明')+'，改用下面的按鈕）';
+      }
+    }else{ why='（這個環境沒有系統下載，改用下面的按鈕）'; }
+    const url=cv.toDataURL('image/png');
+    openModal(`<h2>限動已產生</h2>`
+      +`<p class="hint">${stEsc(why)}按「存成 PNG」就會下載；手機也可以長按圖片另存。</p>`
+      +`<div style="text-align:center;margin:10px 0"><img src="${url}" alt="" style="max-width:100%;max-height:56vh;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.18)"></div>`
+      +`<div class="row" style="margin-top:12px"><a class="btn primary" href="${url}" download="${stEsc(name)}">存成 PNG</a>`
+      +`<button class="btn" onclick="closeModal()">關閉</button></div>`);
+    stStatus('已產生，請在視窗裡按「存成 PNG」。');
+  }catch(e){ stStatus('輸出失敗：'+(e.message||e),true);
+    openModal(`<h2>輸出失敗</h2><p class="hint">把這段訊息傳給老師：</p>`+`<textarea rows="4" readonly style="width:100%">${stEsc(String(e&&e.stack||e&&e.message||e))}</textarea>`+`<div class="row" style="margin-top:10px"><button class="btn" onclick="closeModal()">關閉</button></div>`);
+  }
+  finally{ btn.disabled=false; btn.textContent=_lab||'下載限動 PNG' }
+}
+
+/* ---------- 底圖選單 ---------- */
+let stBgCat='全部';
+function stRenderBgs(){
+  if(typeof BGLIB==='undefined') return;
+  const cb=document.getElementById('stBgCats'); const box=document.getElementById('stBgs');
+  if(!cb||!box) return;
+  const cats=['全部',...new Set(BGLIB.map(b=>b.c))];
+  cb.innerHTML='';
+  cats.forEach(c=>{ const b=document.createElement('button'); b.type='button'; b.className=(stBgCat===c?'on':''); b.textContent=c; b.onclick=()=>{ stBgCat=c; stRenderBgs() }; cb.appendChild(b) });
+  box.innerHTML='';
+  BGLIB.filter(b=>stBgCat==='全部'||b.c===stBgCat).forEach(b=>{
+    const el=document.createElement('button'); el.type='button'; el.title=b.n; el.className=ST.bgId===b.id?'on':'';
+    el.innerHTML=`<img src="${b.d}" alt="" loading="lazy">`;
+    el.onclick=()=>{ ST.bgId=b.id; stSave(); stRenderBgs(); stSyncInputs(); stRender() };
+    box.appendChild(el);
+  });
+}
+
+/* ---------- 開關面板 ---------- */
+function stOpen(){
+  const p=document.getElementById('stPanel'); if(!p) return;
+  p.hidden=false; document.body.style.overflow='hidden';
+  stRenderBgs(); stSyncInputs(); stRender(); stAlts();
+  stFillProofPick();
+  if(typeof shotsRender==='function') shotsRender();
+}
+function stClose(){ const p=document.getElementById('stPanel'); if(p) p.hidden=true; document.body.style.overflow='' }
+
+function stFillProofPick(){
+  const sel=document.getElementById('stProofPick'); if(!sel) return;
+  const list=(typeof PROOFS!=='undefined'&&Array.isArray(PROOFS))?PROOFS:[];
+  sel.parentElement.hidden=!list.length;
+  if(!list.length) return;
+  sel.innerHTML='<option value="">從見證素材庫挑一張…</option>'+list.map((p,i)=>`<option value="${i}">${i+1}. ${stEsc(p.tag||'（沒寫重點）')}</option>`).join('');
+}
+
+function stWire(){
+  const on=(id,ev,fn)=>{ const el=document.getElementById(id); if(el) el.addEventListener(ev,fn) };
+  on('stLay','change',e=>{ ST.lay=e.target.value; stSave(); stRender() });
+  [['stLabel','label'],['stH1','h1'],['stH2','h2'],['stBody','body'],['stKw','keyword'],['stCta','cta']].forEach(([id,k])=>{
+    on(id,'input',e=>{ ST[k]=e.target.value; stSave(); stRender() });
+  });
+  on('stVeil','input',e=>{ ST.veil=+e.target.value; stSave(); stRender() });
+  on('stCaption','input',e=>{ ST.caption=e.target.value; stSave() });
+  on('stFile','change',async e=>{
+    const fs=[...e.target.files].slice(0,2-(ST.imgs||[]).length);
+    if(!fs.length){ stStatus('最多 2 張，先移除一張再加。',true); return }
+    stStatus('處理圖片中…');
+    for(const f of fs){ ST.imgs.push(await stReadImg(f)) }
+    e.target.value=''; stSave(); stThumbs(); stRender(); stStatus('');
+  });
+  on('stProofPick','change',e=>{
+    const i=parseInt(e.target.value,10);
+    if(isNaN(i)||typeof PROOFS==='undefined'||!PROOFS[i]) return;
+    if((ST.imgs||[]).length>=2){ stStatus('最多 2 張，先移除一張。',true); e.target.value=''; return }
+    ST.imgs.push(PROOFS[i].img); stSave(); stThumbs(); stRender(); e.target.value='';
+  });
+  on('stBgClear','click',()=>{ ST.bgId=''; stSave(); stRenderBgs(); stSyncInputs(); stRender() });
+  on('stBgRnd','click',()=>{ if(typeof BGLIB==='undefined'||!BGLIB.length) return; ST.bgId=BGLIB[Math.floor(Math.random()*BGLIB.length)].id; stSave(); stRenderBgs(); stSyncInputs(); stRender() });
+  on('stGen','click',e=>stGenerate(e.currentTarget));
+  on('stDiag','click',e=>stCheckVision(e.currentTarget));
+  on('stDl','click',e=>stExport(e.currentTarget));
+  on('stCopyCap','click',()=>copy(ST.caption||'','內文已複製'));
+  on('stClose','click',stClose);
+  on('btnStory','click',stOpen);
+  window.addEventListener('resize',()=>{ const p=document.getElementById('stPanel'); if(p&&!p.hidden) stFit() });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const p=document.getElementById('stPanel'); if(p&&!p.hidden) stClose() } });
+}
+stWire();
+
+
+function stVisionWhy(){
+  const a=state.ai||{}, m=a.mode||'auto';
+  if(m==='proxy') return '（目前用老師的代理網址，代理要更新到支援讀圖的版本才行。）';
+  if(m==='key') return '（金鑰模式本來可以讀圖，剛才那次失敗了，請再試一次。）';
+  if(!window.claude||!claude.use) return '（這個頁面不是在 Claude 裡開啟，沒有內建的讀圖能力。請改用自己的 API Key。）';
+  return '（這個檢視的 Claude 連線沒有開放讀圖。請改用自己的 API Key，或自己寫兩行。）';
+}
+
+/* 見證庫轉接：塔羅版自己的圖庫（跟文字見證庫分開） */
+let SHOTS=[]; let shdb=null;
+function shdbOpen(){ return new Promise(res=>{ if(shdb) return res(shdb);
+  let rq; try{ rq=indexedDB.open('xd-story-shots',1) }catch(e){ return res(null) }
+  rq.onupgradeneeded=()=>{ const d=rq.result; if(!d.objectStoreNames.contains('s')) d.createObjectStore('s',{keyPath:'id'}) };
+  rq.onsuccess=()=>{ shdb=rq.result; res(shdb) }; rq.onerror=()=>res(null) }) }
+async function shAll(){ const d=await shdbOpen(); if(!d) return [];
+  return new Promise(res=>{ let rq; try{ rq=d.transaction('s','readonly').objectStore('s').getAll() }catch(e){ return res([]) }
+    rq.onsuccess=()=>res((rq.result||[]).sort((a,b)=>a.id-b.id)); rq.onerror=()=>res([]) }) }
+async function shPut(rec){ const d=await shdbOpen(); if(!d) return;
+  return new Promise(res=>{ let tx; try{ tx=d.transaction('s','readwrite') }catch(e){ return res() }
+    tx.oncomplete=()=>res(); tx.onerror=()=>res(); tx.onabort=()=>res();
+    try{ tx.objectStore('s').put(rec) }catch(e){ res() } }) }
+async function shDel(id){ const d=await shdbOpen(); if(!d) return; try{ d.transaction('s','readwrite').objectStore('s').delete(id) }catch(e){} }
+async function shLoad(){ SHOTS=await shAll(); if(typeof shotsRender==='function') shotsRender() }
+function shotsList(){ return SHOTS.map(r=>({id:r.id,img:r.img,tag:r.tag||''})) }
+async function shotsAdd(dataUrl){ const id=Date.now()+Math.floor(Math.random()*1000); await shPut({id,img:dataUrl,tag:''}); await shLoad(); return id }
+async function shotsSetTag(id,tag){ const r=SHOTS.find(x=>x.id===id); if(!r) return; r.tag=tag; await shPut({id:r.id,img:r.img,tag}) }
+async function shotsDel(id){ await shDel(id); await shLoad() }
+shLoad();
+/* ===================== 我的見證庫（限動用） ===================== */
+/* 由各工具注入四個轉接函式：shotsList / shotsAdd / shotsSetTag / shotsDel */
+
+function shotsRender(){
+  const box=document.getElementById('myShots'); if(!box) return;
+  const list=shotsList();
+  box.innerHTML='';
+  list.forEach(r=>{
+    const d=document.createElement('div'); d.className='msit';
+    d.innerHTML=`<img src="${r.img}" alt=""><button class="use" type="button">用這張</button><button class="x" type="button" title="刪除">×</button>`
+      +`<input type="text" placeholder="這張在證明什麼" value="${stEsc(r.tag||'')}">`;
+    d.querySelector('.use').onclick=()=>{
+      if((ST.imgs||[]).length>=2){ stStatus('最多 2 張，先移除一張。',true); return }
+      ST.imgs.push(r.img); stSave(); stThumbs(); stRender(); stStatus('已加入這張見證。');
+    };
+    d.querySelector('.x').onclick=async()=>{ if(!confirm('要從見證庫刪掉這張嗎？')) return; await shotsDel(r.id); shotsRender() };
+    d.querySelector('input').oninput=e=>shotsSetTag(r.id,e.target.value);
+    box.appendChild(d);
+  });
+  const info=document.getElementById('myShotsInfo');
+  if(info){ const n=list.length, u=list.filter(x=>!String(x.tag||'').trim()).length;
+    info.textContent=n?`${n} 張${u?`，其中 ${u} 張還沒寫重點`:'，都整理好了'}`:'還沒有存任何見證圖'; }
+}
+
+async function shotsUpload(files){
+  const fs=[...files]; if(!fs.length) return;
+  stStatus('存入見證庫中…');
+  for(const f of fs){ await shotsAdd(await stReadImg(f)) }
+  shotsRender(); stStatus(`已存入 ${fs.length} 張。可以按「幫我整理」自動寫重點。`);
+}
+
+const SHOT_CATS=['第一單／開張','穩定接單','突破目標','粉絲成長','學員好評','其他'];
+function shotTagPrompt(n){
+  return `你會看到 ${n} 張學員傳來的見證截圖（LINE 對話、入帳通知、IG 後台等），依照附上的順序編號 1 到 ${n}。
+
+每一張請寫出：
+- tag：這張在證明什麼，一句話，≤ 18 字，寫給老師自己看的索引。例如「學員接到第一個付費客人」「單月收入破萬」「粉絲從 8 漲到 2264」
+- cat：從這幾個分類挑一個最接近的：${SHOT_CATS.join('、')}
+
+規則：
+- 全部繁體中文台灣用語，不能有簡體字
+- 只能寫畫面上真的看得到的事，看不清楚就寫「看不太清楚，請老師自己標」
+- 截圖裡有名字或帳號一律寫成「學員」，不要寫出來
+- 不要加形容詞或推銷語氣，就是客觀描述
+
+只輸出 JSON，不要任何說明：
+{"items":[{"i":1,"tag":"","cat":""}]}`;
+}
+
+async function shotsAutoTag(btn){
+  const all=shotsList();
+  const todo=all.filter(r=>!String(r.tag||'').trim());
+  if(!todo.length){ stStatus('每一張都寫好重點了。'); return }
+  btn.disabled=true;
+  const B=4; let done=0;
+  try{
+    for(let i=0;i<todo.length;i+=B){
+      const batch=todo.slice(i,i+B);
+      progShow('stProg',`整理中… 第 ${i+1}~${i+batch.length} 張`);
+      let raw;
+      try{ raw=await stAskVision(shotTagPrompt(batch.length), batch.map(r=>r.img)) }
+      catch(e){
+        progFail('stProg'); btn.disabled=false;
+        stStatus(String(e.message)==='NOVISION'?('沒辦法讀圖，無法自動整理。'+stVisionWhy()):('整理失敗：'+(e.message||e)),true);
+        shotsRender(); return;
+      }
+      let d=null; try{ d=parseJSON(raw) }catch(e){}
+      const items=(d&&Array.isArray(d.items))?d.items:[];
+      for(const it of items){
+        const k=(parseInt(it.i,10)||0)-1;
+        const rec=batch[k];
+        if(rec&&it.tag){ const t=String(it.tag).slice(0,30); await shotsSetTag(rec.id, it.cat?`${it.cat}｜${t}`:t); done++ }
+      }
+      shotsRender();
+    }
+    progDone('stProg','完成');
+    stStatus(`整理好 ${done} 張，重點可以自己再改。`);
+  }finally{ btn.disabled=false }
+}
+
+function shotsWire(){
+  const on=(id,ev,fn)=>{ const el=document.getElementById(id); if(el) el.addEventListener(ev,fn) };
+  on('myShotsFile','change',async e=>{ await shotsUpload(e.target.files); e.target.value='' });
+  on('myShotsTag','click',e=>shotsAutoTag(e.currentTarget));
+  on('myShotsSave','click',async()=>{
+    const imgs=(ST.imgs||[]); if(!imgs.length){ stStatus('目前這則限動沒有圖。',true); return }
+    const have=new Set(shotsList().map(r=>r.img));
+    let n=0; for(const u of imgs){ if(!have.has(u)){ await shotsAdd(u); n++ } }
+    shotsRender(); stStatus(n?`已存入見證庫 ${n} 張。`:'這些圖已經在見證庫裡了。');
+  });
+}
+
+shotsWire();
+
+(function(){const sel=document.getElementById('stLay');if(sel&&!sel.options.length){Object.entries(ST_LAYS).forEach(([k,v])=>sel.add(new Option(v.name,k)));sel.value=ST.lay}})();
+
 </script>
 </body>
 </html>
