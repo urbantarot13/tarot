@@ -294,7 +294,7 @@ a.btn.primary{color:#fff}
 <header class="topbar">
   <h1>塔羅測驗輪播生成器</h1>
   <select id="mode" style="width:auto" hidden></select>
-  <span class="hint" style="margin:0">1080 × 1350</span>
+  <span class="hint" style="margin:0">1080 × 1350 · v2026.10.03</span>
   <span class="sp"></span>
   <button class="btn" id="btnStory">見證限動</button>
   <button class="btn" id="btnJson">匯入 / 匯出</button>
@@ -1526,11 +1526,25 @@ $('btnJson').onclick=()=>{
 };
 let _dl=undefined;
 async function dlCap(){ if(_dl===undefined) _dl=await getCap('downloads'); return _dl }
+
+const EXP_VER='v2026.10.03';
+function expTimeout(pr,ms,label){
+  return Promise.race([pr, new Promise((_,rej)=>setTimeout(()=>rej(new Error(label+'（超過 '+Math.round(ms/1000)+' 秒沒有回應）')),ms))]);
+}
+function waitImgs(root,ms){
+  const ims=[...root.querySelectorAll('img')].filter(im=>!im.complete);
+  if(!ims.length) return Promise.resolve();
+  return Promise.race([
+    Promise.all(ims.map(im=>new Promise(r=>{im.onload=im.onerror=r}))),
+    new Promise(r=>setTimeout(r,ms||8000))
+  ]);
+}
 async function renderCanvas(i){
   const host=$('exportHost'); host.innerHTML=slideHTML(state.slides[i]);
   try{ if(state.font&&state.font.startsWith('jin')) await Promise.all(['400','500','700'].map(w=>document.fonts.load(`${w} 40px JinXuan`,'塔羅測驗'))) }catch(e){}
-  await document.fonts.ready; fitSlide(host.firstElementChild);
-  await Promise.all([...host.querySelectorAll('img')].map(im=>im.complete?1:new Promise(r=>{im.onload=im.onerror=r})));
+  try{ await expTimeout(document.fonts.ready,8000,"字型載入") }catch(e){}
+  fitSlide(host.firstElementChild);
+  await waitImgs(host,8000);
   const sl=state.slides[i]; const bc=bgSrc(sl)?'#111318':theme(sl.theme||state.theme).base;
   return html2canvas(host.firstElementChild,{scale:1,width:1080,height:1350,backgroundColor:bc,logging:false});
 }
@@ -1586,13 +1600,13 @@ async function deliverFallback(files,why){
 }
 async function exportIdx(idxs,btn){
   if(typeof html2canvas==='undefined'){ setStatus('匯出工具沒載入，請重新整理。',true); return }
-  btn.disabled=true;
+  btn.disabled=true; const _lab=btn.textContent; btn.textContent='輸出中…';
   try{ const files=[];
-    for(const i of idxs){ setStatus(`輸出第 ${i+1} 張…`); const c=await renderCanvas(i); files.push({name:`${fileBase()}_${String(i+1).padStart(2,'0')}.png`,blob:await toBlob(c),url:c.toDataURL('image/png')}) }
+    for(const i of idxs){ setStatus(`輸出第 ${i+1} 張…`); const c=await expTimeout(renderCanvas(i),45000,`第 ${i+1} 張輸出`); files.push({name:`${fileBase()}_${String(i+1).padStart(2,'0')}.png`,blob:await toBlob(c),url:c.toDataURL('image/png')}) }
     $('exportHost').innerHTML=''; await deliver(files);
   }catch(e){ setStatus('輸出失敗：'+(e.message||e),true);
     openModal(`<h2>輸出失敗</h2><p class="hint">把這段訊息傳給老師：</p>`+`<textarea rows="4" readonly style="width:100%">${esc(String(e&&e.stack||e&&e.message||e))}</textarea>`+`<div class="row" style="margin-top:10px"><button class="btn" onclick="closeModal()">關閉</button></div>`);
-  } finally{ btn.disabled=false }
+  } finally{ btn.disabled=false; if(_lab) btn.textContent=_lab }
 }
 $('btnOne').onclick=e=>exportIdx([state.sel],e.currentTarget);
 $('btnAll').onclick=e=>exportIdx(state.slides.map((_,i)=>i),e.currentTarget);
@@ -2145,8 +2159,8 @@ async function stExport(btn){
     const host=document.getElementById('exportHost');
     host.innerHTML=`<div id="stOut" style="width:1080px;height:1920px">${stHTML()}</div>`;
     const card=host.querySelector('.stcard'); card.style.transform='none';
-    try{ await document.fonts.ready }catch(e){}
-    await Promise.all([...host.querySelectorAll('img')].map(im=>im.complete?1:new Promise(r=>{im.onload=im.onerror=r})));
+    try{ await expTimeout(document.fonts.ready,8000,"字型載入") }catch(e){}
+    await waitImgs(host,8000);
     const ct=card.querySelector('.stct'); ct.style.transform='';
     const avail=1920-200, hh=ct.offsetHeight;
     if(hh>avail) ct.style.transform=`scale(${((avail-10)/hh).toFixed(3)})`;
