@@ -282,6 +282,12 @@ summary{cursor:pointer;font-weight:600;color:var(--brand)}
 a.btn{display:inline-block;text-decoration:none;color:inherit;line-height:1.5}
 a.btn.primary{color:#fff}
 #stPanel .stbar .status{margin:0;min-height:0;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.dlgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:4px}
+.dlgrid .dlit{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.dlgrid .dlit img{width:100%;border-radius:6px;border:1px solid var(--line);display:block}
+.dlgrid .dlit a{text-align:center}
+.topbar .status{margin:0;min-height:0;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -292,6 +298,7 @@ a.btn.primary{color:#fff}
   <span class="sp"></span>
   <button class="btn" id="btnStory">見證限動</button>
   <button class="btn" id="btnJson">匯入 / 匯出</button>
+  <span class="status" id="status2"></span>
   <button class="btn" id="btnOne">下載這張</button>
   <button class="btn primary" id="btnAll">下載全部</button>
 </header>
@@ -838,7 +845,7 @@ const LOCAL=location.protocol==='file:'||/^(localhost|127\.|0\.0\.0\.0)/.test(lo
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const br=s=>esc(s).replace(/\n/g,'<br>');
 const lines=s=>String(s??'').split('\n').map(x=>x.trim()).filter(Boolean);
-function setStatus(t,err){ const s=$('status'); s.textContent=t||''; s.className='status'+(err?' err':'') }
+function setStatus(t,err){ ['status','status2'].forEach(id=>{ const el=$(id); if(!el) return; el.textContent=t||''; el.className='status'+(err?' err':'') }) }
 const LETTERS=['A','B','C','D'];
 
 /* ============ slide render ============ */
@@ -1540,14 +1547,42 @@ function fileBase(){
   return `${n}_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
 }
 async function deliver(files){
-  const dl=await dlCap();
-  if(dl){ try{
-    if(files.length===1) await dl.save({filename:files[0].name,data:files[0].blob});
-    else { const z=new JSZip(); files.forEach(f=>z.file(f.name,f.blob)); await dl.save({filename:fileBase()+'.zip',data:await z.generateAsync({type:'blob'})}) }
-    setStatus('已下載。'); return;
-  }catch(e){ if(e&&e.code==='declined'){ setStatus('已取消下載。'); return } } }
-  openModal(`<h2>圖片已產生</h2><p class="hint">手機長按、電腦右鍵就能另存。</p><div class="imgs">${files.map(f=>`<img src="${f.url}" alt="${esc(f.name)}">`).join('')}</div><div class="row" style="margin-top:12px"><button class="btn" onclick="closeModal()">關閉</button></div>`);
-  setStatus('');
+  let why='';
+  const dl=(window.claude&&window.claude.use)?await dlCap():null;
+  if(dl){
+    try{
+      if(files.length===1){ await dl.save({filename:files[0].name,data:files[0].blob}) }
+      else { const z=new JSZip(); files.forEach(f=>z.file(f.name,f.blob)); await dl.save({filename:fileBase()+'.zip',data:await z.generateAsync({type:'blob'})}) }
+      setStatus('已下載。'); return;
+    }catch(e){
+      if(e&&e.code==='declined'){ setStatus('已取消下載。'); return }
+      why='（系統下載沒成功：'+((e&&(e.code||e.message))||'原因不明')+'）';
+    }
+  }
+  await deliverFallback(files,why);
+}
+let _dlUrls=[];
+function dlRevoke(){ _dlUrls.forEach(u=>{ try{ URL.revokeObjectURL(u) }catch(e){} }); _dlUrls=[] }
+function dlHref(blob){ const u=URL.createObjectURL(blob); _dlUrls.push(u); return u }
+async function deliverFallback(files,why){
+  dlRevoke();
+  let zipBtn='';
+  if(files.length>1 && typeof JSZip!=='undefined'){
+    try{
+      const z=new JSZip(); files.forEach(f=>z.file(f.name,f.blob));
+      const zb=await z.generateAsync({type:'blob'});
+      zipBtn=`<a class="btn primary" href="${dlHref(zb)}" download="${esc(fileBase())}.zip">下載全部（ZIP）</a>`;
+    }catch(e){}
+  }
+  const one=files.length===1
+    ? `<a class="btn primary" href="${dlHref(files[0].blob)}" download="${esc(files[0].name)}">存成 PNG</a>` : '';
+  const grid=files.map((f,i)=>`<div class="dlit"><img src="${f.url}" alt="${esc(f.name)}">`
+    +`<a class="btn small" href="${dlHref(f.blob)}" download="${esc(f.name)}">存第 ${i+1} 張</a></div>`).join('');
+  openModal(`<h2>圖片已產生（${files.length} 張）</h2>`
+    +`<p class="hint">${esc(why||'')}按下面的按鈕存檔；手機也可以長按圖片另存。</p>`
+    +`<div class="row" style="margin:10px 0">${zipBtn}${one}<button class="btn" onclick="closeModal();dlRevoke()">關閉</button></div>`
+    +`<div class="dlgrid">${grid}</div>`);
+  setStatus(files.length>1?'已產生，請在視窗裡按「下載全部（ZIP）」。':'已產生，請在視窗裡按「存成 PNG」。');
 }
 async function exportIdx(idxs,btn){
   if(typeof html2canvas==='undefined'){ setStatus('匯出工具沒載入，請重新整理。',true); return }
@@ -1555,7 +1590,9 @@ async function exportIdx(idxs,btn){
   try{ const files=[];
     for(const i of idxs){ setStatus(`輸出第 ${i+1} 張…`); const c=await renderCanvas(i); files.push({name:`${fileBase()}_${String(i+1).padStart(2,'0')}.png`,blob:await toBlob(c),url:c.toDataURL('image/png')}) }
     $('exportHost').innerHTML=''; await deliver(files);
-  }catch(e){ setStatus('輸出失敗：'+(e.message||e),true) } finally{ btn.disabled=false }
+  }catch(e){ setStatus('輸出失敗：'+(e.message||e),true);
+    openModal(`<h2>輸出失敗</h2><p class="hint">把這段訊息傳給老師：</p>`+`<textarea rows="4" readonly style="width:100%">${esc(String(e&&e.stack||e&&e.message||e))}</textarea>`+`<div class="row" style="margin-top:10px"><button class="btn" onclick="closeModal()">關閉</button></div>`);
+  } finally{ btn.disabled=false }
 }
 $('btnOne').onclick=e=>exportIdx([state.sel],e.currentTarget);
 $('btnAll').onclick=e=>exportIdx(state.slides.map((_,i)=>i),e.currentTarget);
