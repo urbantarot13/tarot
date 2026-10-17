@@ -52,6 +52,24 @@ mark{background:linear-gradient(transparent 62%,var(--gold) 62%);color:inherit;p
 
 /* sections */
 section.sec,.br{scroll-margin-top:124px}
+section.fold-sec .sec-head{cursor:pointer;margin-bottom:0}
+section.fold-sec.open .sec-head{margin-bottom:18px}
+section.fold-sec:not(.open) .sec-body{display:none}
+section.fold-sec:not(.open){padding:22px 0}
+section.fold-sec:not(.open) .sec-head p{display:none}
+section.fold-sec:not(.open) .sec-img{width:84px;height:84px}
+.sec-toggle{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:0;background:none;padding:0;cursor:pointer;text-align:left}
+.sec-toggle .sum{font-size:13.5px;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:2px 12px}
+.sec-toggle .sum.has{color:#fff;background:var(--accent);border-color:var(--accent);font-weight:700}
+.sec-toggle .chev{font-size:13px;color:var(--accent);font-weight:700;letter-spacing:.06em}
+details.pv{margin-top:10px}
+details.pv summary{cursor:pointer;font-size:13.5px;color:var(--accent);font-weight:700}
+.br.fold>:not(.br-head){display:none!important}
+.br.fold .br-head{margin:0;padding:0;border:0;cursor:pointer}
+.br-head .icon-btn,.br-head .mini{white-space:nowrap}
+@media (max-width:480px){.br-head .p{font-size:16px}.br-head{align-items:flex-start}}
+.br-sum{display:block;font-size:13px;color:var(--ink-2);font-weight:400;letter-spacing:0;margin-top:2px}
+.br:not(.fold) .br-sum{display:none}
 section.sec{padding:36px 0;border-bottom:1px solid var(--line)}
 .sec-head{display:grid;gap:8px;margin-bottom:18px}
 .sec-head.with-img{grid-template-columns:1fr auto;align-items:center;gap:16px}
@@ -111,22 +129,27 @@ textarea.input:focus{border-color:var(--gold)}
 .tpl-head .mini{font-size:13px;padding:3px 14px;background:var(--accent);color:#fff}
 pre.tpl.ex{color:var(--ink-2);background:var(--accent-soft)}
 pre.tpl{margin:0;padding:12px;white-space:pre-wrap;font:13.5px/1.75 var(--font);color:var(--ink);max-height:300px;overflow:auto}
+.burn .same.rush{font-size:14px;font-weight:500;padding:8px 10px;background:#fff;border:1px solid var(--line);border-radius:8px}
 .burn-fee{font-size:13.5px;color:var(--ink-2)}
 .burn-fee b{color:var(--accent);font-size:16px}
 .subtotal{display:flex;justify-content:flex-end;align-items:baseline;gap:8px;margin-top:12px;font-size:14px;color:var(--ink-2)}
 .subtotal b{color:var(--accent);font-size:18px}
 
 /* bracelet */
-.plans{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-bottom:14px}
-@media (max-width:560px){.plans{grid-template-columns:1fr}}
-.plan{position:relative;padding:16px 16px 14px;display:grid;gap:2px;border-right:1px solid var(--line)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.plan{padding:12px;display:grid;gap:3px;align-content:start;justify-items:start;border-right:1px solid var(--line)}
 .plan:last-child{border-right:0}
-@media (max-width:560px){.plan{border-right:0;border-bottom:1px solid var(--line)}.plan:last-child{border-bottom:0}}
-.plan i,.tier i{position:absolute;right:10px;top:10px;font-style:normal;font-size:10.5px;font-weight:500;background:var(--gold);color:var(--ink);border-radius:4px;padding:1px 7px}
+.plan:nth-child(2){background:var(--accent-soft)}
+.plan i{position:static;font-style:normal;font-size:10.5px;font-weight:500;background:var(--gold);color:var(--ink);border-radius:4px;padding:1px 7px;min-height:18px}
+.plan i.no{background:none}
+.tier i{position:absolute;right:10px;top:10px;font-style:normal;font-size:10.5px;font-weight:500;background:var(--gold);color:var(--ink);border-radius:4px;padding:1px 7px}
 .plan:last-child i,.tier:last-child i{background:var(--violet);color:#fff}
 .plan .pn{font-size:16px}
-.plan .pc{font-size:28px;font-variant-numeric:tabular-nums;color:var(--accent)}
-.plan .pc small{font-size:12px;color:var(--mute);margin-right:6px}
+.plan .pc{font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--accent)}
+.plan .pc small{font-size:11px;color:var(--mute);margin-right:4px}
+.plan .gm{margin:0}
+.plan .gift{margin:2px 0 0;font-size:11.5px}
+@media (max-width:480px){.plan{padding:10px 8px}.plan .pn{font-size:14px}.plan .pc{font-size:18px}.plan .pr{font-size:11.5px}.plan .gift{font-size:10.5px;padding:1px 5px}}
 .plan .pr{font-size:12.5px;color:var(--mute)}
 .gift{display:inline-block;justify-self:start;margin:4px 0 2px;font-size:12.5px;font-weight:700;color:#8A6A2F;background:var(--gold-soft);border:1px solid var(--gold);border-radius:4px;padding:1px 8px}
 .tier small.gift-s{color:#8A6A2F;font-weight:700;margin-top:2px}
@@ -295,7 +318,7 @@ footer a{color:var(--mute)}
   <div class="hero"><div class="wrap">
     <span class="kicker">STUDENT ORDER｜學生批貨</span>
     <h1>選好數量，系統幫你<mark>整理訂單</mark></h1>
-    <p>魔法蠟燭、噴霧、擴香直接填數量；靈數手鍊一位客人一條。金額自動計算，付款後複製訂單貼給小都就完成。</p>
+    <p>點開要訂的商品填數量，金額自動計算，付款後複製訂單貼給小都就完成。</p>
     <div class="hero-steps"><span>選寄送方式</span><span>選商品</span><span>轉帳</span><span>複製訂單</span><span>LINE 傳給小都</span></div>
   </div></div>
 
@@ -307,7 +330,7 @@ footer a{color:var(--mute)}
       <div class="field"><label>你的名字（學生，小都對帳用）<span class="req">*</span></label><input class="input" type="text" id="stuName" autocomplete="name"><span class="hint">只要填一次，下次會自動帶入。</span></div>
       <div class="field shipbit"><label>寄送方式 <span class="req">*</span></label><select class="input" id="shipMethod"></select></div>
     </div>
-    <p class="pay-wait shipbit" id="laterNote" style="margin-bottom:14px">蝦皮店到店選好就可以了，小都做好後會在 LINE 跟你要門市編號。</p>
+    <p class="pay-wait shipbit" id="laterNote" style="margin-bottom:14px"></p>
     <div class="grid2 shipbit" id="rcWrap">
       <div class="field"><label>客人姓名（收件人）<span class="req">*</span></label><input class="input" type="text" id="rcName"><span class="hint">請填真實姓名，取貨要核對證件</span></div>
       <div class="field"><label>客人手機 <span class="req">*</span></label><input class="input" type="tel" id="rcPhone" inputmode="tel" placeholder="09xxxxxxxx"></div>
@@ -315,25 +338,26 @@ footer a{color:var(--mute)}
     <div class="field shipbit" id="shipDetailWrap"><label id="shipDetailLab">門市名稱</label><input class="input" type="text" id="shipDetail"></div>
   </section>
 
-  <section class="sec" id="s-candle">
-    <div class="sec-head with-img"><div class="sh-text"><span class="kicker">CANDLE｜魔法蠟燭</span><h2>魔法蠟燭</h2><p>各功效同價，直接在對應尺寸填數量。</p></div><img class="sec-img" id="img-candle" alt="魔法蠟燭"></div>
-    <div id="mtx-candle"></div>
+  <section class="sec fold-sec" id="s-candle" data-sec="candle">
+    <div class="sec-head with-img"><div class="sh-text"><span class="kicker">CANDLE｜魔法蠟燭</span><h2>魔法蠟燭</h2><p>各功效同價，直接在對應尺寸填數量。</p><button type="button" class="sec-toggle" aria-expanded="false"><span class="sum" id="sum-candle">未選購</span><span class="chev">展開 ▾</span></button></div><img class="sec-img" id="img-candle" alt="魔法蠟燭"></div>
+    <div class="sec-body"><div id="mtx-candle"></div></div>
   </section>
 
-  <section class="sec" id="s-spray">
-    <div class="sec-head with-img"><div class="sh-text"><span class="kicker">SPRAY｜魔法噴霧</span><h2>魔法噴霧</h2><p>各功效同價，直接在對應尺寸填數量。</p></div><img class="sec-img" id="img-spray" alt="魔法噴霧"></div>
-    <div id="mtx-spray"></div>
+  <section class="sec fold-sec" id="s-spray" data-sec="spray">
+    <div class="sec-head with-img"><div class="sh-text"><span class="kicker">SPRAY｜魔法噴霧</span><h2>魔法噴霧</h2><p>各功效同價，直接在對應尺寸填數量。</p><button type="button" class="sec-toggle" aria-expanded="false"><span class="sum" id="sum-spray">未選購</span><span class="chev">展開 ▾</span></button></div><img class="sec-img" id="img-spray" alt="魔法噴霧"></div>
+    <div class="sec-body"><div id="mtx-spray"></div></div>
   </section>
 
-  <section class="sec" id="s-diffuser">
-    <div class="sec-head with-img"><div class="sh-text"><span class="kicker">DIFFUSER｜魔法擴香</span><h2>魔法擴香</h2><p>全部 100ml，<b>每瓶 $580</b>，含擴香棒、藥草包。</p></div><img class="sec-img" id="img-diffuser" alt="魔法擴香"></div>
-    <div id="mtx-diffuser"></div>
+  <section class="sec fold-sec" id="s-diffuser" data-sec="diffuser">
+    <div class="sec-head with-img"><div class="sh-text"><span class="kicker">DIFFUSER｜魔法擴香</span><h2>魔法擴香</h2><p>全部 100ml，<b>每瓶 $580</b>，含擴香棒、藥草包。</p><button type="button" class="sec-toggle" aria-expanded="false"><span class="sum" id="sum-diffuser">未選購</span><span class="chev">展開 ▾</span></button></div><img class="sec-img" id="img-diffuser" alt="魔法擴香"></div>
+    <div class="sec-body"><div id="mtx-diffuser"></div></div>
   </section>
 
-  <section class="sec" id="s-bracelet">
-    <div class="sec-head"><span class="kicker">CRYSTAL｜靈數手鍊</span><h2>生命靈數水晶手鍊</h2><p>一位客人一條，選方案計價（不分手圍）。含設計水晶、碎石、包裝材料；後續免費換線 1 次、隔珠更新、淨化服務。</p></div>
+  <section class="sec fold-sec" id="s-bracelet" data-sec="bracelet">
+    <div class="sec-head"><span class="kicker">CRYSTAL｜靈數手鍊</span><h2>生命靈數水晶手鍊</h2><p>一位客人一條，選方案計價（不分手圍）。含設計水晶、碎石、包裝材料；後續免費換線 1 次、隔珠更新、淨化服務。</p><button type="button" class="sec-toggle" aria-expanded="false"><span class="sum" id="sum-bracelet">未選購</span><span class="chev">展開 ▾</span></button></div>
+    <div class="sec-body">
     <div class="plans" id="wristPrices"></div>
-    <div class="gm-note"><b>建議毛利率：50%–60%</b><br>・售價<b>不要低於建議售價</b>，避免跟官網和其他同學打價格戰。<br>・客群預算高、有附加服務（例如一對一解說缺數）可以往上調，但毛利率超過 60% 客人容易覺得貴、不好成交。<br>・記得扣掉自己的運費、包材、廣告費，實際賺的會比毛利少一些。</div>
+    <details class="how"><summary>建議毛利率：50%–60%（定價小提醒）</summary><div class="body gm-note" style="margin:0">・售價<b>不要低於建議售價</b>，避免跟官網和其他同學打價格戰。<br>・客群預算高、有附加服務（例如一對一解說缺數）可以往上調，但毛利率超過 60% 客人容易覺得貴、不好成交。<br>・記得扣掉自己的運費、包材、廣告費，實際賺的會比毛利少一些。</div></details>
     <div class="addon-note">加購貔貅：<b>尺寸 mm × $60</b>（例：12.8mm × 60 = $768），款式小都會在 LINE 傳給你挑。</div>
     <details class="how">
       <summary>手圍怎麼量？（可以截圖給客人）</summary>
@@ -348,6 +372,7 @@ footer a{color:var(--mute)}
     <p class="hint" style="margin-bottom:16px">客人的缺數可以先用 <a id="calcLink" target="_blank" rel="noopener" style="color:var(--accent)">小都靈數水晶網站</a> 算好再填，也可以直接把網址傳給客人看作品。</p>
     <div id="braceletList"></div>
     <button class="btn ghost full" id="addBracelet">＋ 新增一條手鍊</button>
+    </div>
   </section>
 
   <section class="sec" id="s-checkout" style="border-bottom:0">
@@ -355,7 +380,7 @@ footer a{color:var(--mute)}
     <div class="steps">
       <div class="st">
         <div class="st-top"><span class="st-no">STEP 1</span><b>先完成轉帳</b></div>
-        <div class="pay-amt"><span class="hint">應付總額</span><span class="big" id="payTotal">$0</span></div>
+        <div class="pay-amt"><span class="hint">應付總額</span><span class="big" id="payTotal">$0</span><button class="mini" data-copy="total">複製金額</button></div>
         <div id="payBox"></div>
         <div class="pay-wait" id="shipFeeNote" hidden></div>
       </div>
@@ -371,11 +396,11 @@ footer a{color:var(--mute)}
         <div class="st-top"><span class="st-no">STEP 3</span><b>複製訂單內容</b></div>
         <button class="btn full" id="copyOrder">複製訂單內容</button>
         <div id="errBox"></div>
-        <pre class="preview" id="preview"></pre>
+        <details class="pv"><summary>預覽訂單內容</summary><pre class="preview" id="preview"></pre></details>
       </div>
       <div class="st">
         <div class="st-top"><span class="st-no">STEP 4</span><b>開啟 LINE 貼給小都</b></div>
-        <p class="hint" style="margin-bottom:10px">在聊天室長按輸入框「貼上」送出，小都對帳後就開始備貨。最後的系統碼請不要刪，小都整理訂單會用到。</p>
+        <p class="hint" style="margin-bottom:10px">在聊天室長按輸入框「貼上」送出，小都對帳後就開始備貨。訂單內容請不要修改，小都整理訂單會用到。</p>
         <a class="btn line full" id="lineBtn" target="_blank" rel="noopener">開啟 LINE 傳給小都</a>
         <button class="btn ghost full" id="newOrder" style="margin-top:10px">送出完成，開始下一張新訂單</button>
       </div>
@@ -439,7 +464,8 @@ const CONFIG = {
   // 運費：填數字會自動加進應付金額；填 null 代表「另計，小都確認後告知」
   shipping: [
     { k: "711",    label: "7-11 店到店",       fee: null, detail: "門市名稱" },
-    { k: "shopee", label: "蝦皮店到店",        fee: null, later: true },
+    { k: "myship", label: "7-11 賣貨便",       fee: null, later: "寄件編號" },
+    { k: "shopee", label: "蝦皮店到店",        fee: null, later: "門市編號" },
     { k: "home",   label: "宅配",              fee: null, detail: "收件地址" },
     { k: "pickup", label: "學生自取（台中面交／課堂領取）", fee: 0,    detail: null }
   ]
@@ -472,7 +498,10 @@ const CATALOG = {
     funcs: [ { k: "初戀", d: "甜味" }, { k: "維納斯", d: "玫瑰紫羅蘭香・加強指定對方" }, { k: "豐盛招財", d: "木質香氣" }, { k: "淨化", d: "森林香氣" } ]
   }
 };
-const BURN_RATE = 0.15; // 代燒加收：蠟燭金額的 15%
+const BURN_RATE = 0.15; // 代燒加收：蠟燭金額的 15%（新月／滿月場統一燒）
+const RUSH_RATE = 0.30; // 急單：蠟燭金額的 30%（不等月亮場次）
+const burnRate = () => S.rush ? RUSH_RATE : BURN_RATE;
+const pct = r => Math.round(r * 100) + "%";
 CATALOG.candleBurn = Object.assign({}, CATALOG.candle, { title: "魔法蠟燭（代燒）" });
 const T_CATS = ["candle", "candleBurn", "spray", "diffuser"];
 // 手鍊方案：cost＝學生批貨價，retail＝建議售價
@@ -519,7 +548,7 @@ const uid = () => Math.random().toString(36).slice(2, 8);
 const hex = n => getComputedStyle(document.documentElement).getPropertyValue("--n" + n).trim();
 
 /* ---------------- state ---------------- */
-const blankState = () => ({ qty: {}, burn: false, bracelets: [], pay: { last5: "", last5b: "", date: today() }, note: "", orderId: "", rcp: null });
+const blankState = () => ({ open: {}, qty: {}, burn: false, rush: false, bracelets: [], pay: { last5: "", last5b: "", date: today() }, note: "", orderId: "", rcp: null });
 let S = Object.assign(blankState(), store.get("xd_wholesale_draft", {}));
 S.bracelets.forEach(b => { if (!Array.isArray(b.works)) b.works = []; });
 let stu = Object.assign({ name: "" }, store.get("xd_wholesale_student", {}));
@@ -529,6 +558,17 @@ const rcp = () => S.rcp;
 function save() { store.set("xd_wholesale_draft", S); store.set("xd_wholesale_student", stu); }
 
 /* ---------------- matrix ---------------- */
+function secHas(k) { return k === "bracelet" ? S.bracelets.length > 0 : Object.keys(S.qty).some(x => x.startsWith(k + "|")); }
+function setOpen(k, v) {
+  if (!S.open) S.open = {}; S.open[k] = v;
+  const sec = $("#s-" + k); sec.classList.toggle("open", v);
+  const tg = sec.querySelector(".sec-toggle"); tg.setAttribute("aria-expanded", v); tg.querySelector(".chev").textContent = v ? "收合 ▴" : "展開 ▾";
+}
+function initFold() {
+  ["candle", "spray", "diffuser", "bracelet"].forEach(k => setOpen(k, S.open && k in S.open ? S.open[k] : secHas(k)));
+  document.querySelectorAll("section.fold-sec .sec-head").forEach(h => h.addEventListener("click", () => { const k = h.closest("section").dataset.sec; setOpen(k, !$("#s-" + k).classList.contains("open")); save(); }));
+  document.querySelectorAll(".menu a").forEach(a => a.addEventListener("click", () => { const k = (a.getAttribute("href") || "").replace("#s-", ""); if (["candle", "spray", "diffuser", "bracelet"].includes(k)) setOpen(k, true); }));
+}
 function renderMatrix(cat) {
   const C = CATALOG[cat];
   let h = '<table class="mtx"><thead><tr><th>功效</th>' + C.sizes.map(s => `<th>${s.k}<small>${fmt(s.p)}</small></th>`).join("") + "</tr></thead><tbody>";
@@ -542,8 +582,9 @@ function renderMatrix(cat) {
   });
   h += "</tbody></table>";
   if (cat === "candle") h += '<div class="sizes-note">' + C.sizes.map(s => `<div><b>${s.k}</b>｜${s.note}</div>`).join("") + "</div>";
-  if (cat === "candle") h += `<div class="burn"><label class="same"><input type="checkbox" id="burnChk"${S.burn ? " checked" : ""}> 這筆蠟燭請小都代燒　<b>＋蠟燭金額 ${Math.round(BURN_RATE * 100)}%</b></label>
-    <div class="burn-body" id="burnBody"${S.burn ? "" : " hidden"}><div class="burn-fee">代燒費 <b id="burnFee">$0</b>　<span class="hint">勾選代燒的蠟燭不會寄出，由小都燒完附照片回報</span></div>
+  if (cat === "candle") h += `<div class="burn"><label class="same"><input type="checkbox" id="burnChk"${S.burn ? " checked" : ""}> 這筆蠟燭請小都代燒　<b>＋蠟燭金額 ${pct(BURN_RATE)}</b></label>
+    <div class="burn-body" id="burnBody"${S.burn ? "" : " hidden"}><div class="hint" style="color:var(--ink)">小都統一在<b>新月、滿月場</b>代燒，排進最近一場。</div>
+    <label class="same rush"><input type="checkbox" id="rushChk"${S.rush ? " checked" : ""}> 急單（不等月亮場次，小都盡快安排）　<b>代燒費改為 ${pct(RUSH_RATE)}</b></label><div class="burn-fee">代燒費 <b id="burnFee">$0</b>　<span class="hint">勾選代燒的蠟燭不會寄出，由小都燒完附照片回報</span></div>
     <div class="hint" style="color:var(--ink)">客人的心願細節請貼到 <b>LINE 記事本</b>：</div>
     <div class="tpl-box"><div class="tpl-head"><span>範例（照這樣寫）</span></div><pre class="tpl ex" id="burnEx"></pre></div>
     <div class="tpl-box"><div class="tpl-head"><span>LINE 記事本格式</span><button type="button" class="mini" id="burnTpl">複製格式</button></div><pre class="tpl" id="burnTplPre"></pre></div></div></div>`;
@@ -562,7 +603,7 @@ document.addEventListener("click", e => {
   const key = b.parentElement.dataset.key; setQty(key, (S.qty[key] || 0) + Number(b.dataset.d));
 });
 document.addEventListener("change", e => { const i = e.target.closest(".step input"); if (i) setQty(i.parentElement.dataset.key, i.value); });
-document.addEventListener("change", e => { if (e.target.id === "burnChk") { S.burn = e.target.checked; $("#burnBody").hidden = !S.burn; update(); } });
+document.addEventListener("change", e => { if (e.target.id === "burnChk") { S.burn = e.target.checked; $("#burnBody").hidden = !S.burn; update(); } if (e.target.id === "rushChk") { S.rush = e.target.checked; update(); } });
 document.addEventListener("click", async e => { if (e.target.id === "burnTpl") { if (!totals().candleAmt) { toast("先選要代燒的蠟燭"); return; } if (await copyText(burnTemplate())) toast("格式已複製，到 LINE 記事本貼上填寫"); } });
 const CIRCLE = "❶❷❸❹❺❻❼❽❾❿";
 function burnTemplate() {
@@ -590,8 +631,8 @@ function renderBracelets() {
   const list = $("#braceletList");
   if (!S.bracelets.length) { list.innerHTML = '<p class="empty">還沒有手鍊，按下方新增。</p>'; return; }
   const charmOpts = ["交給小都挑"].concat(Array.from({ length: 26 }, (_, n) => "No." + (n + 1)));
-  list.innerHTML = S.bracelets.map((b, i) => `<div class="br" data-id="${b.id}">
-      <div class="br-head"><h3>手鍊 #${i + 1}</h3><div style="display:flex;gap:10px;align-items:center"><span class="p" data-f="price"></span><button class="icon-btn" data-act="del">刪除</button></div></div>
+  list.innerHTML = S.bracelets.map((b, i) => `<div class="br${b.fold ? " fold" : ""}" data-id="${b.id}">
+      <div class="br-head" data-act="head"><h3>手鍊 #${i + 1}<span class="br-sum" data-f="sum"></span></h3><div style="display:flex;gap:8px;align-items:center"><span class="p" data-f="price"></span><button class="mini" data-act="fold">${b.fold ? "展開" : "收合"}</button><button class="icon-btn" data-act="del">刪除</button></div></div>
       <div class="grid2">
         <div class="field"><label>客人稱呼 <span class="req">*</span></label><input class="input" type="text" data-f="cust" value="${esc(b.cust)}" placeholder="例：小美"></div>
         <div class="field"><label>手圍（公分）<span class="req">*</span></label><input class="input" type="number" step="0.1" min="10" max="25" inputmode="decimal" data-f="wrist" value="${esc(b.wrist)}" placeholder="例：13.8"></div>
@@ -621,6 +662,7 @@ function refreshBracelet(b) {
   el.querySelector('[data-show="charm"]').style.display = b.style === "A" ? "" : "none";
   el.querySelector('[data-show="pixiu"]').style.display = b.style === "C" ? "none" : "";
   el.querySelector('[data-f="price"]').textContent = pr.total ? fmt(pr.total) : "";
+  el.querySelector('[data-f="sum"]').textContent = [b.cust || "未填稱呼", tierOf(b.tier).name, b.wrist ? b.wrist + "cm" : "未填手圍", STYLES[b.style][0]].join("｜");
   let line = `${tierOf(b.tier).name} ${fmt(pr.base)}`;
   if (pr.px) line += `　＋ 貔貅 ${b.pixiu}mm × ${PIXIU_PER_MM} = ${fmt(pr.px)}`;
   el.querySelector('[data-f="calc"]').textContent = line;
@@ -629,6 +671,9 @@ function refreshPicked(b) { const el = document.querySelector(`.br[data-id="${b.
 $("#braceletList").addEventListener("click", e => {
   const card = e.target.closest(".br"); if (!card) return;
   const b = S.bracelets.find(x => x.id === card.dataset.id);
+  const setFold = v => { b.fold = v; card.classList.toggle("fold", v); card.querySelector('[data-act="fold"]').textContent = v ? "展開" : "收合"; save(); };
+  if (e.target.closest('[data-act="fold"]')) { setFold(!b.fold); return; }
+  if (b.fold && e.target.closest('[data-act="head"]') && !e.target.closest('[data-act="del"]')) { setFold(false); return; }
   if (e.target.closest('[data-act="del"]')) { if (confirm("確定刪除這條手鍊？")) { S.bracelets = S.bracelets.filter(x => x !== b); renderBracelets(); update(); } return; }
   const ch = e.target.closest(".ch");
   if (ch) { b.charm = ch.dataset.v; ch.parentElement.querySelectorAll(".ch").forEach(x => x.classList.toggle("on", x === ch)); refreshBracelet(b); update(); return; }
@@ -650,7 +695,7 @@ $("#braceletList").addEventListener("input", e => {
   const b = S.bracelets.find(x => x.id === card.dataset.id); b[f] = e.target.value; refreshBracelet(b); update();
 });
 $("#addBracelet").onclick = () => {
-  S.bracelets.push(newBracelet()); renderBracelets(); update();
+  S.bracelets.forEach(x => { x.fold = true; }); S.bracelets.push(newBracelet()); renderBracelets(); update();
   const last = document.querySelector(".br:last-child"); if (last) { last.scrollIntoView({ behavior: "smooth", block: "start" }); last.querySelector('[data-f="cust"]').focus({ preventScroll: true }); }
 };
 
@@ -700,11 +745,11 @@ function lineItems() {
 }
 function shipOpt() { return CONFIG.shipping.find(x => x.k === rcp().ship) || CONFIG.shipping[0]; }
 function shopeePhone() { return ""; }
-function shipLine() { const sh = shipOpt(); return sh.label + (sh.later ? "（門市編號之後 LINE 補給小都）" : sh.detail ? "｜" + (rcp().shipDetail || "—") : ""); }
+function shipLine() { const sh = shipOpt(); return sh.label + (sh.later ? `（${sh.later}之後 LINE 補給小都）` : sh.detail ? "｜" + (rcp().shipDetail || "—") : ""); }
 function totals() {
   const items = lineItems();
   const candleAmt = items.filter(x => x.cat === "candle").reduce((a, x) => a + x.amt, 0);
-  const burnFee = S.burn ? Math.round(candleAmt * BURN_RATE) : 0;
+  const burnFee = S.burn ? Math.round(candleAmt * burnRate()) : 0;
   const goods = items.reduce((a, x) => a + x.amt, 0) + burnFee + S.bracelets.reduce((a, b) => a + braceletPrice(b).total, 0);
   const sh = shipOpt(); const fee = typeof sh.fee === "number" ? sh.fee : 0;
   const count = items.reduce((a, x) => a + x.q, 0) + S.bracelets.length;
@@ -719,6 +764,70 @@ function ensureOrderId() {
   return S.orderId;
 }
 const encodeData = obj => btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+function parseOrderText(txt) {
+  const L = txt.split(/\r?\n/).map(s => s.replace(/^[\s\u3000]+|[\s\u3000]+$/g, ""));
+  const num = s => { const m = String(s || "").match(/\$?([\d,]+)/); return m ? +m[1].replace(/,/g, "") : 0; };
+  const d = { v: 2, id: "", t: "", stu: { n: "" }, rc: null, ship: "", shd: "", it: [], br: [], bn: null, ns: false, g: 0, fee: 0, l5: "", nt: "" };
+  let sec = null, br = null, burn = false, catSub = 0;
+  const catByTitle = { "魔法蠟燭": "candle", "魔法噴霧": "spray", "魔法擴香": "diffuser" };
+  for (const line of L) {
+    if (!line) continue;
+    let m;
+    if ((m = line.match(/^訂單編號：(.+)$/))) { d.id = m[1].trim(); continue; }
+    if ((m = line.match(/^學生：(.*)$/))) { d.stu.n = m[1].trim(); continue; }
+    if ((m = line.match(/^收件客人：(.*?)／(.*)$/))) { d.rc = { n: m[1].trim(), ph: m[2].trim() }; continue; }
+    if ((m = line.match(/^寄送：(.*)$/))) {
+      const v = m[1];
+      if (v.startsWith("全部代燒")) { d.ns = true; continue; }
+      const opt = CONFIG.shipping.filter(s => v.startsWith(s.label)).sort((a, b) => b.label.length - a.label.length)[0];
+      d.ship = opt ? opt.label : v.split(/[｜（]/)[0];
+      const rest = v.slice(d.ship.length); if (rest.startsWith("｜")) d.shd = rest.slice(1);
+      continue;
+    }
+    if (line.startsWith("▍")) {
+      br = null;
+      if (line.startsWith("▍靈數水晶手鍊")) { sec = "br"; continue; }
+      const title = Object.keys(catByTitle).find(k => line.startsWith("▍" + k));
+      sec = title ? catByTitle[title] : null; burn = sec === "candle" && line.includes("代燒"); catSub = 0;
+      if (burn) d.bn = { f: 0, a: 0 };
+      continue;
+    }
+    if (line.startsWith("━")) { sec = null; br = null; continue; }
+    if (sec && sec !== "br") {
+      if ((m = line.match(/^(\S+) (\d+ml) × (\d+)/))) {
+        const C = CATALOG[sec]; const sz = C.sizes.find(s => s.k === m[2]);
+        d.it.push([sec, m[1], m[2], +m[3], sz ? sz.p : 0]); continue;
+      }
+      if (line.startsWith("代燒費") && d.bn) { d.bn.f = num(line.split("＋")[1]); d.bn.r = line.includes("急單"); continue; }
+      if (line.startsWith("小計") && burn && d.bn) { d.bn.a = num(line); continue; }
+      continue;
+    }
+    if (sec === "br") {
+      if ((m = line.match(/^#\d+ 客人：(.*)$/))) { br = { tr: "", gf: "", c: m[1].trim(), w: "", s: "", sp: "", ch: "", px: "", m: [], bd: "", wk: "", nt: "", p: 0 }; d.br.push(br); continue; }
+      if (!br) continue;
+      if ((m = line.match(/^方案 (\S+)/))) { br.tr = m[1]; continue; }
+      if ((m = line.match(/^贈品 (.*)$/))) { br.gf = m[1]; continue; }
+      if ((m = line.match(/^手圍 ([\d.]+)/))) { br.w = m[1]; continue; }
+      if ((m = line.match(/^款式 (.*)$/))) {
+        const v = m[1]; br.s = v.trim().charAt(0);
+        const c = v.match(/吊飾 (No\.\d+|交給小都挑)/); if (c) br.ch = c[1];
+        br.sp = v.includes("金色") ? "gold" : "silver"; continue;
+      }
+      if ((m = line.match(/^缺數 (.*)$/))) { br.m = (m[1].match(/\d/g) || []).map(Number).filter(n => n >= 1 && n <= 9); continue; }
+      if ((m = line.match(/^生日 (.*)$/))) { br.bd = m[1].trim(); continue; }
+      if ((m = line.match(/^加購貔貅 ([\d.]+)mm/))) { br.px = m[1]; continue; }
+      if ((m = line.match(/^喜歡作品 (.*)$/))) { br.wk = m[1].includes("交給") ? "" : m[1].replace(/No\./g, ""); continue; }
+      if ((m = line.match(/^備註 (.*)$/))) { br.nt = m[1]; continue; }
+      if (line.startsWith("手鍊金額")) { br.p = num(line); continue; }
+      continue;
+    }
+    if (line.startsWith("商品合計")) { d.g = num(line); continue; }
+    if (line.startsWith("運費")) { d.fee = line.includes("另計") ? null : num(line); continue; }
+    if ((m = line.match(/^已轉帳.*?後五碼 (\d{5}|—)｜(.*)$/))) { d.l5 = m[1] === "—" ? "" : m[1]; d.t = m[2].trim().replace(/\//g, "-"); continue; }
+    if ((m = line.match(/^訂單備註：(.*)$/))) { d.nt = m[1]; continue; }
+  }
+  return d;
+}
 const decodeData = s => JSON.parse(decodeURIComponent(escape(atob(s))));
 
 function buildOrder() {
@@ -732,9 +841,9 @@ function buildOrder() {
   for (const cat of ["candle", "spray", "diffuser"]) {
     const its = T.items.filter(x => x.cat === cat); if (!its.length) continue;
     const burnIt = cat === "candle" && S.burn;
-    L.push("▍" + CATALOG[cat].title + (cat === "diffuser" ? "（含擴香棒、藥草包）" : "") + (burnIt ? "【請小都代燒】" : ""));
+    L.push("▍" + CATALOG[cat].title + (cat === "diffuser" ? "（含擴香棒、藥草包）" : "") + (burnIt ? (S.rush ? "【請小都代燒・急單】" : "【請小都代燒・新月／滿月場】") : ""));
     its.forEach(x => L.push(`${x.func} ${x.size} × ${x.q}　${fmt(x.amt)}`));
-    if (burnIt) L.push(`代燒費（蠟燭金額 × ${Math.round(BURN_RATE * 100)}%）＋${fmt(T.burnFee)}`, "客人心願細節：貼在 LINE 記事本");
+    if (burnIt) L.push(`代燒費（蠟燭金額 × ${pct(burnRate())}${S.rush ? "・急單" : ""}）＋${fmt(T.burnFee)}`, "客人心願細節：貼在 LINE 記事本");
     L.push("小計 " + fmt(its.reduce((a, x) => a + x.amt, 0) + (burnIt ? T.burnFee : 0)), "");
   }
   if (S.bracelets.length) {
@@ -761,14 +870,6 @@ function buildOrder() {
   const d = (S.pay.date || "—").replace(/-/g, "/");
   L.push(`已轉帳 ${fmt(T.total)}｜後五碼 ${S.pay.last5 || "—"}｜${d}`);
   if (S.note) L.push("訂單備註：" + S.note.replace(/\n/g, " "));
-  L.push("", "⌗系統碼（請勿刪除）");
-  const data = {
-    v: 1, id: S.orderId, t: S.pay.date, stu: { n: stu.name }, rc: T.needShip && sh.detail ? { n: rcp().name, ph: rcp().phone } : null, ship: sh.label, shd: sh.detail ? rcp().shipDetail : "", sph: shopeePhone(),
-    it: T.items.map(x => [x.cat, x.func, x.size, x.q, x.p]),
-    br: S.bracelets.map(b => ({ tr: tierOf(b.tier).name, gf: tierOf(b.tier).gift || "", c: b.cust || rcp().name, w: b.wrist, s: b.style, sp: b.spacer, ch: b.style === "A" ? b.charm : "", px: b.style !== "C" ? b.pixiu : "", m: b.missing, bd: b.birthday, wk: b.works.join("、"), nt: b.note, p: braceletPrice(b).total })),
-    bn: S.burn && T.candleAmt ? { f: T.burnFee, a: T.burnAmt } : null, ns: !T.needShip, g: T.goods, fee: T.feeUnknown ? null : T.fee, l5: S.pay.last5, nt: S.note
-  };
-  L.push("DATA:" + encodeData(data));
   return L.join("\n");
 }
 function validate() {
@@ -791,12 +892,15 @@ function update() {
   const T = totals();
   ["candle", "spray", "diffuser"].forEach(c => { const el = $("#sub-" + c); if (el) el.textContent = fmt(T.items.filter(x => x.cat === c).reduce((a, x) => a + x.amt, 0) + (c === "candle" ? T.burnFee : 0)); });
   const bf = $("#burnFee"); if (bf) bf.textContent = fmt(T.burnFee);
+  ["candle", "spray", "diffuser"].forEach(c => { const its = T.items.filter(x => x.cat === c); const q = its.reduce((a, x) => a + x.q, 0); const el = $("#sum-" + c); if (!el) return;
+    el.textContent = q ? `已選 ${q} 件・${fmt(its.reduce((a, x) => a + x.amt, 0) + (c === "candle" ? T.burnFee : 0))}${c === "candle" && S.burn ? (S.rush ? "・急單代燒" : "・代燒") : ""}` : "未選購"; el.classList.toggle("has", !!q); });
+  { const el = $("#sum-bracelet"); const n = S.bracelets.length; if (el) { el.textContent = n ? `${n} 條・${fmt(S.bracelets.reduce((a, b) => a + braceletPrice(b).total, 0))}` : "未選購"; el.classList.toggle("has", !!n); } }
   const ex = $("#burnEx"); if (ex) ex.textContent = BURN_EXAMPLE;
   const tp = $("#burnTplPre"); if (tp) tp.textContent = T.candleAmt ? burnTemplate() : "先在上方選要代燒的蠟燭，格式會自動出現在這裡。";
   $("#barTotal").textContent = fmt(T.total);
   $("#barCount").textContent = T.count ? `已選 ${T.count} 件${T.feeUnknown ? "・運費另計" : ""}` : "尚未選購";
   $("#payTotal").textContent = fmt(T.total);
-  const acct = (B, title, amt, key) => `<div class="payacct"><h4>${title}</h4><div class="pay-amt"><span class="big" style="font-size:24px">${fmt(amt)}</span><button class="mini" data-copyv="${amt}">複製金額</button></div><dl class="bank">
+  const acct = (B, title, amt, key) => `<div class="payacct" style="border:0;padding:0"><dl class="bank">
     <div><dt>銀行</dt><dd>${esc(B.name)}（<b>${esc(B.code)}</b>）</dd><dd><button class="mini" data-copyv="${esc(B.code)}">複製代碼</button></dd></div>
     <div><dt>帳號</dt><dd><b>${esc(B.account)}</b></dd><dd><button class="mini" data-copyv="${esc(B.account)}">複製帳號</button></dd></div>
     ${B.holder ? `<div><dt>戶名</dt><dd>${esc(B.holder)}</dd><dd></dd></div>` : ""}</dl></div>`;
@@ -819,7 +923,7 @@ function initInfo() {
   [["#rcName", "name"], ["#rcPhone", "phone"], ["#shipDetail", "shipDetail"]].forEach(([sel, k]) => $(sel).addEventListener("input", e => { rcp()[k] = e.target.value; update(); }));
   syncRcp();
 }
-function syncShip() { const o = shipOpt(); $("#rcWrap").style.display = o.detail ? "" : "none"; $("#shipDetailWrap").style.display = o.detail ? "" : "none"; $("#laterNote").style.display = o.later ? "" : "none"; $("#shipDetailLab").innerHTML = (o.detail || "") + ' <span class="req">*</span>'; $("#shipDetail").placeholder = o.k === "home" ? "客人收件地址" : "例：7-11 文心門市"; }
+function syncShip() { const o = shipOpt(); $("#rcWrap").style.display = o.detail ? "" : "none"; $("#shipDetailWrap").style.display = o.detail ? "" : "none"; $("#laterNote").style.display = o.later ? "" : "none"; $("#laterNote").textContent = o.later ? `選好就可以了，小都做好後會在 LINE 跟你要${o.later}。` : ""; $("#shipDetailLab").innerHTML = (o.detail || "") + ' <span class="req">*</span>'; $("#shipDetail").placeholder = o.k === "home" ? "客人收件地址" : "例：7-11 文心門市"; }
 function syncRcp() { const r = rcp(); r.ship = shipOpt().k; $("#shipMethod").value = r.ship; $("#rcName").value = r.name; $("#rcPhone").value = r.phone; $("#shipDetail").value = r.shipDetail; syncShip(); }
 function initRest() {
   $("#payLast5").value = S.pay.last5; $("#payDate").value = S.pay.date; $("#orderNote").value = S.note;
@@ -827,7 +931,7 @@ function initRest() {
   $("#payDate").addEventListener("input", e => { S.pay.date = e.target.value; update(); });
   $("#orderNote").addEventListener("input", e => { S.note = e.target.value; update(); });
   $("#lineBtn").href = CONFIG.lineUrl; $("#topLine").href = CONFIG.lineUrl; $("#calcLink").href = CONFIG.crystalSite;
-  $("#wristPrices").innerHTML = TIERS.map(x => `<div class="plan">${x.tag ? `<i>${x.tag}</i>` : ""}<span class="pn">${x.name}</span><span class="pc"><small>批貨價</small>${fmt(x.cost)}</span><span class="pr">建議售價 ${fmt(x.retail)}<em class="gm">毛利率 ${margin(x)}</em></span><span class="pr">${x.desc}・每條賺 ${fmt(x.retail - x.cost)}</span>${x.gift ? `<span class="gift">🎁 ${x.gift}</span>` : ""}<span class="pr range">建議售價區間 ${fmt(x.retail)}–${fmt(priceCap(x))}</span></div>`).join("");
+  $("#wristPrices").innerHTML = TIERS.map(x => `<div class="plan">${x.tag ? `<i>${x.tag}</i>` : "<i class='no'></i>"}<span class="pn">${x.name}</span><span class="pc"><small>批貨</small>${fmt(x.cost)}</span><span class="pr">售價 ${fmt(x.retail)}</span><em class="gm">毛利 ${margin(x)}</em>${x.gift ? `<span class="gift">🎁 送蠟燭10ml</span>` : ""}<span class="pr range">區間 ${fmt(x.retail)}–${fmt(priceCap(x)).slice(1)}</span></div>`).join("");
   ["candle", "spray", "diffuser"].forEach(k => { $("#img-" + k).src = IMG["p_" + k]; });
   $("#imgTape").src = IMG.wristTape; $("#imgPaper").src = IMG.wristPaper;
 }
@@ -837,13 +941,16 @@ document.addEventListener("click", async e => {
 });
 $("#copyOrder").onclick = async () => {
   const errs = validate();
-  if (errs.length) { $("#errBox").innerHTML = `<div class="errs">還差這幾項：<ul>${errs.map(x => `<li>${x}</li>`).join("")}</ul></div>`; return; }
+  if (errs.length) {
+    let re = false; S.bracelets.forEach(b => { if (b.fold && (!b.cust.trim() || !parseFloat(b.wrist))) { b.fold = false; re = true; } }); if (re) { setOpen("bracelet", true); renderBracelets(); }
+    $("#errBox").innerHTML = `<div class="errs">還差這幾項：<ul>${errs.map(x => `<li>${x}</li>`).join("")}</ul></div>`; return;
+  }
   $("#errBox").innerHTML = ""; ensureOrderId(); update();
   if (await copyText(buildOrder())) toast("訂單已複製，打開 LINE 貼上送出"); else toast("複製失敗，請長按下方內容手動複製");
 };
 $("#newOrder").onclick = () => {
   if (!confirm("確定這張已經傳給小都了嗎？會清空目前的商品和收件客人（你的名字會保留）。")) return;
-  const keepShip = rcp().ship; S = blankState(); S.rcp = blankRcp(); S.rcp.ship = keepShip; syncRcp(); ["candle", "spray", "diffuser"].forEach(renderMatrix); renderBracelets();
+  const keepShip = rcp().ship; S = blankState(); ["candle", "spray", "diffuser", "bracelet"].forEach(k => setOpen(k, false)); S.rcp = blankRcp(); S.rcp.ship = keepShip; syncRcp(); ["candle", "spray", "diffuser"].forEach(renderMatrix); renderBracelets();
   $("#payLast5").value = ""; $("#payDate").value = S.pay.date; $("#orderNote").value = ""; $("#errBox").innerHTML = "";
   update(); window.scrollTo({ top: 0, behavior: "smooth" }); toast("已開新訂單");
 };
@@ -854,12 +961,13 @@ $("#newOrder").onclick = () => {
 let ORD = store.get("xd_wholesale_teacher", {});
 function saveT() { store.set("xd_wholesale_teacher", ORD); }
 $("#importBtn").onclick = () => {
-  const txt = $("#pasteBox").value; const re = /DATA:([A-Za-z0-9+/=]+)/g; let m, ok = 0, dup = 0, bad = 0;
-  while ((m = re.exec(txt))) {
-    try { const d = decodeData(m[1]); if (!d.id) { bad++; continue; } if (ORD[d.id]) dup++; else ok++; ORD[d.id] = d; } catch (e) { bad++; }
-  }
+  const txt = $("#pasteBox").value; let ok = 0, dup = 0, bad = 0;
+  const add = d => { if (!d || !d.id) { bad++; return; } if (ORD[d.id]) dup++; else ok++; ORD[d.id] = d; };
+  txt.split("【小都學生批貨訂單】").slice(1).forEach(block => {
+    try { const old = block.match(/DATA:([A-Za-z0-9+/=]+)/); add(old ? decodeData(old[1]) : parseOrderText(block)); } catch (e) { bad++; }
+  });
   saveT(); renderTeacher(); $("#pasteBox").value = "";
-  $("#importMsg").textContent = (ok + dup + bad) ? `新增 ${ok} 張${dup ? `、更新重複 ${dup} 張` : ""}${bad ? `、${bad} 段讀不到（系統碼可能被截斷）` : ""}` : "沒有找到系統碼，請確認有複製到最後的 DATA: 那一行";
+  $("#importMsg").textContent = (ok + dup + bad) ? `新增 ${ok} 張${dup ? `、更新重複 ${dup} 張` : ""}${bad ? `、${bad} 段讀不到（請確認有複製到訂單編號）` : ""}` : "沒有找到訂單，請確認有複製到開頭的【小都學生批貨訂單】";
 };
 $("#clearAll").onclick = () => { if (confirm("清空所有彙整資料？（學生的訂單不受影響）")) { ORD = {}; saveT(); renderTeacher(); } };
 function pickAgg() {
@@ -882,7 +990,7 @@ function renderTeacher() {
     });
     h += "</tbody></table></div>";
   }
-  if (burns.length) h += `<h3 class="tsub">代燒名單</h3><div class="tbl-wrap"><table class="tbl"><thead><tr><th>學生</th><th>蠟燭</th><th class="r">代燒款</th><th>後五碼</th></tr></thead><tbody>${burns.map(o => `<tr><td>${esc(o.stu.n)}<br><small>${esc(o.id)}</small></td><td><small>${(o.it || []).filter(x => x[0] === "candle").map(x => x[1] + " " + x[2] + "×" + x[3]).join("<br>")}<br>心願見 LINE 記事本</small></td><td class="r">${fmt(o.bn.a || 0)}<br><small>含代燒費 ${fmt(o.bn.f)}</small></td><td>${esc(o.bn.l5 || o.l5 || "")}</td></tr>`).join("")}</tbody></table></div>`;
+  if (burns.length) h += `<h3 class="tsub">代燒名單</h3><div class="tbl-wrap"><table class="tbl"><thead><tr><th>學生</th><th>蠟燭</th><th class="r">代燒款</th><th>後五碼</th></tr></thead><tbody>${burns.map(o => `<tr><td>${esc(o.stu.n)}${o.bn.r ? ' <span class="gm" style="background:#FBEFED;color:var(--danger)">急單</span>' : ""}<br><small>${esc(o.id)}</small></td><td><small>${(o.it || []).filter(x => x[0] === "candle").map(x => x[1] + " " + x[2] + "×" + x[3]).join("<br>")}<br>心願見 LINE 記事本</small></td><td class="r">${fmt(o.bn.a || 0)}<br><small>含代燒費 ${fmt(o.bn.f)}</small></td><td>${esc(o.bn.l5 || o.l5 || "")}</td></tr>`).join("")}</tbody></table></div>`;
   $("#pickList").innerHTML = h || '<p class="empty">還沒有蠟燭／噴霧／擴香訂單。</p>';
   const brs = orders.flatMap(o => (o.br || []).map(b => ({ o, b })));
   $("#brList").innerHTML = brs.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>學生／客人</th><th>手圍</th><th>款式</th><th>缺數</th><th>貔貅</th><th>作品／備註</th></tr></thead><tbody>${brs.map(({ o, b }) =>
@@ -909,7 +1017,7 @@ $("#dlCsv").onclick = () => {
   Object.values(ORD).forEach(o => {
     const base = [o.id, o.t, o.stu.n, o.ns ? "全部代燒" : o.ship, o.shd || "", o.rc ? o.rc.n : "", o.rc ? o.rc.ph : ""];
     (o.it || []).forEach(([cat, f, s, q, p]) => rows.push([...base, CATALOG[cat === "candle" && o.bn ? "candleBurn" : cat].title, f, s, q, p, q * p, "", o.l5 || (o.bn && o.bn.l5) || ""]));
-    if (o.bn) rows.push([...base, "代燒費", "蠟燭金額 × " + Math.round(BURN_RATE * 100) + "%", "", 1, o.bn.f, o.bn.f, "心願見 LINE 記事本", o.l5 || o.bn.l5 || ""]);
+    if (o.bn) rows.push([...base, "代燒費" + (o.bn.r ? "（急單）" : ""), "蠟燭金額 × " + pct(o.bn.r ? RUSH_RATE : BURN_RATE), "", 1, o.bn.f, o.bn.f, "心願見 LINE 記事本", o.l5 || o.bn.l5 || ""]);
     (o.br || []).forEach(b => rows.push([...base, "靈數手鍊", "客人 " + b.c, b.w + "cm", 1, b.p, b.p,
       [b.tr, b.gf, styleName(b.s), b.ch, spacerName(b.sp), "缺數" + (b.m || []).join(""), b.px ? "貔貅" + b.px + "mm" : "", b.bd, b.wk && "作品" + b.wk, b.nt].filter(Boolean).join("／"), o.l5]));
   });
@@ -921,7 +1029,7 @@ $("#dlCsv").onclick = () => {
 /* ---------------- routing ---------------- */
 function route() { const t = location.hash === "#teacher"; document.body.classList.toggle("t-mode", t); if (t) { renderTeacher(); window.scrollTo(0, 0); } }
 window.addEventListener("hashchange", route);
-initInfo(); initRest(); ["candle", "spray", "diffuser"].forEach(renderMatrix); renderBracelets(); update(); route();
+initInfo(); initRest(); initFold(); ["candle", "spray", "diffuser"].forEach(renderMatrix); renderBracelets(); update(); route();
 </script>
 </body>
 </html>
