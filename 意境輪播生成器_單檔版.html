@@ -209,7 +209,6 @@ details[open] summary{margin-bottom:8px}
     <summary>AI 連線設定</summary>
     <label class="f" for="aiMode">生成方式</label>
     <select id="aiMode">
-      <option value="auto">自動（在 Claude 網頁版時直接生成）</option>
       <option value="key">自己的 API Key</option>
       <option value="proxy">老師給的代理網址</option>
     </select>
@@ -516,7 +515,7 @@ const GRADES={
   mono:{name:'黑白',v:{bright:96,contrast:118,sat:0,warm:0,grain:30,vig:46,scrim:36}}
 };
 const DEF={
-  ai:{mode:'auto',key:'',proxy:'',pass:'',model:'claude-sonnet-5'},
+  ai:{mode:'key',key:'',proxy:'',pass:'',model:'claude-sonnet-5'},
   niche:'',aud:'',brand:'',handle:'',theme:'',mood:'tender',n:7,kw:'',offer:'',
   slides:[],sel:0,caption:'',dm:'',replies:'',struct:'flow',quiz:false,bandSel:0,cands:null,seedHook:'',quotes:null,
   assign:'lib',focX:50,focY:50,gradeName:'film',libCat:'全部',
@@ -542,18 +541,50 @@ async function sampleCap(){ if(_sample===undefined){ _sample=await getCap('sampl
     if(p&&p.request){ await p.request(['sample']); _sample=await claude.use('sample') } }catch(e){} } }
   return _sample }
 function repairJSON(s){
-  let t=String(s).trim();
+  let t=String(s).replace(/```(json)?/gi,'').trim();
   const a=t.indexOf('{'), b=t.indexOf('[');
-  let i=(a<0)?b:(b<0?a:Math.min(a,b)); if(i>0) t=t.slice(i);
-  t=t.replace(/```(json)?/gi,'').trim();
-  const lastB=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));
-  if(lastB>0) t=t.slice(0,lastB+1);
-  t=t.replace(/,\s*([}\]])/g,'$1');
-  return t;
+  const i=(a<0)?b:(b<0?a:Math.min(a,b));
+  if(i<0) return t;
+  if(i>0) t=t.slice(i);
+  const scan=u=>{ const st=[]; let ins=false, esc=false, done=-1;
+    for(let k=0;k<u.length;k++){ const c=u[k];
+      if(ins){ if(esc){esc=false;continue} if(c==='\\'){esc=true;continue} if(c==='"') ins=false; continue }
+      if(c==='"'){ ins=true; continue }
+      if(c==='{'||c==='[') st.push(c==='{'?'}':']');
+      else if(c==='}'||c===']'){ st.pop(); if(!st.length) done=k }
+    }
+    return {st,ins,done};
+  };
+  let r=scan(t);
+  if(!r.st.length&&r.done>=0) return t.slice(0,r.done+1).replace(/,\s*([}\]])/g,'$1');
+  /* 被截斷：把寫到一半的那一段切掉，再把沒關的括號補起來 */
+  let u=t;
+  if(r.ins){ const q=u.lastIndexOf('"'); if(q>0) u=u.slice(0,q) }
+  u=u.replace(/\\+$/,'');
+  for(let g=0;g<8;g++){
+    const b4=u;
+    u=u.replace(/\s+$/,'');
+    u=u.replace(/"(?:[^"\\]|\\.)*"\s*:\s*$/,'');
+    if(scan(u).st.slice(-1)[0]==='}')
+      u=u.replace(/([{,])\s*"(?:[^"\\]|\\.)*"\s*$/,'$1');
+    u=u.replace(/[,:]\s*$/,'');
+    if(u===b4) break;
+  }
+  r=scan(u);
+  while(r.st.length) u+=r.st.pop();
+  return u.replace(/,\s*([}\]])/g,'$1');
 }
 function parseJSON(body){
-  try{ return JSON.parse(body) }catch(e){}
-  return JSON.parse(repairJSON(body));
+  window.__REPAIRED=false;
+  const raw=String(body==null?'':body);
+  if(!raw.trim()) throw new Error('Claude 沒有回傳任何內容（可能是連線中斷或額度用完），再按一次試試。');
+  try{ return JSON.parse(raw) }catch(e){}
+  const o=JSON.parse(repairJSON(raw));
+  window.__REPAIRED=true;
+  return o;
+}
+function repairNote(){
+  return window.__REPAIRED?'　⚠️ 這次回覆被截斷，只救回寫完的部分，缺的請再生成一次或手動補。':'';
 }
 async function callAPI(prompt){
   const a=state.ai||{};
@@ -569,7 +600,7 @@ async function callAPI(prompt){
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
     headers:{'Content-Type':'application/json','x-api-key':a.key,'anthropic-version':'2023-06-01',
       'anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:a.model||'claude-sonnet-5',max_tokens:4000,
+    body:JSON.stringify({model:a.model||'claude-sonnet-5',max_tokens:8000,
       messages:[{role:'user',content:prompt}]})});
   if(!r.ok){ const t=await r.text(); throw new Error('API 錯誤 '+r.status+'：'+t.slice(0,140)) }
   const j=await r.json();
@@ -804,7 +835,7 @@ async function makeCands(btn){
       if(!sm){ setStatus('這個畫面沒有內建連線，請填 API Key。',true); return }
       progShow2('Claude 思考中…');
       const r=await sm(p,{modelTier:'default',cache:false});
-      o=parseJSON(r.text);
+      window.LAST_RAW=r.text; o=parseJSON(r.text);
     }
     const arr=(o&&o.cands)||(Array.isArray(o)?o:[]);
     if(!arr.length){ progFail(); $('candProg').hidden=true; setStatus('回傳裡找不到 cands。',true); return }
@@ -812,7 +843,7 @@ async function makeCands(btn){
       preview:String(c.preview||'').trim(),score:Math.max(0,Math.min(100,parseInt(c.score,10)||0)),
       why:String(c.why||'').trim()})).sort((a,b)=>b.score-a.score);
     save(); renderCands(); progDone2('完成');
-    setStatus('七種寫法都出來了，點一個就會套用。');
+    setStatus('七種寫法都出來了，點一個就會套用。'+repairNote(),window.__REPAIRED);
   }catch(e){ $('candProg').hidden=true; setStatus('比較失敗：'+(e.message||e),true);
     if(window.LAST_RAW) openText('Claude 的原始回覆',window.LAST_RAW) }
   finally{ btn.disabled=false }
@@ -897,7 +928,7 @@ async function makeAns(btn){
     else{ const sm=await sampleCap();
       if(!sm){ setStatus('這個畫面沒有內建連線，請填 API Key。',true); return }
       show('Claude 思考中…');
-      const r=await sm(p,{modelTier:'default',cache:false}); o=parseJSON(r.text) }
+      const r=await sm(p,{modelTier:'default',cache:false}); window.LAST_RAW=r.text; o=parseJSON(r.text) }
     const arr=(o&&o.ans)||(Array.isArray(o)?o:[]);
     if(!arr.length){ w.hidden=true; setStatus('回傳裡找不到 ans。',true); return }
     sl.ans=arr.slice(0,4).map(x=>(x&&typeof x==='object')?String(x.text||'').trim():String(x||'').trim());
@@ -908,7 +939,7 @@ async function makeAns(btn){
     save(); renderAns(); if($('slCards')) $('slCards').value=(sl.cards||[]).join('\n');
     const bb=w.querySelector('.bar'); bb.classList.add('det'); bb.querySelector('i').style.width='100%';
     w.querySelector('.ptxt').textContent='完成'; setTimeout(()=>{ w.hidden=true },1200);
-    setStatus('四個解析寫好了，可以直接複製去設 GoSky。');
+    setStatus('四個解析寫好了，可以直接複製去設 GoSky。'+repairNote(),window.__REPAIRED);
   }catch(e){ w.hidden=true; setStatus('生成失敗：'+(e.message||e),true);
     if(window.LAST_RAW) openText('Claude 的原始回覆',window.LAST_RAW) }
   finally{ btn.disabled=false }
@@ -948,7 +979,7 @@ async function makeQuotes(btn){
       show('Claude 思考中…');
       const r=await sm(p,{modelTier:'default',cache:false,
         onText:({text})=>{ w.querySelector('.ptxt').textContent=`撰寫中… 已寫 ${text.length} 字` }});
-      o=parseJSON(r.text); }
+      window.LAST_RAW=r.text; o=parseJSON(r.text); }
     const arr=(o&&o.quotes)||(Array.isArray(o)?o:[]);
     if(!arr.length){ w.hidden=true; setStatus('回傳裡找不到 quotes。',true); return }
     state.quotes=arr.map(q=>({text:String(q.text||'').trim(),type:QTYPE[q.type]?q.type:'truth',
@@ -957,7 +988,7 @@ async function makeQuotes(btn){
     save(); renderQuotes();
     const bb=w.querySelector('.bar'); bb.classList.add('det'); bb.querySelector('i').style.width='100%';
     w.querySelector('.ptxt').textContent='完成'; setTimeout(()=>{ w.hidden=true },1300);
-    setStatus(`${state.quotes.length} 句金句，照分數排好了。`);
+    setStatus(`${state.quotes.length} 句金句，照分數排好了。`+repairNote(),window.__REPAIRED);
   }catch(e){ w.hidden=true; setStatus('生成失敗：'+(e.message||e),true);
     if(window.LAST_RAW) openText('Claude 的原始回覆',window.LAST_RAW) }
   finally{ btn.disabled=false }
@@ -998,7 +1029,7 @@ function renderQuotes(){
 async function generate(btn){
   if(!state.theme.trim()){ setStatus('先寫「這一篇要講什麼」。',true); return }
   const p=fullPrompt();
-  const mode=(state.ai||{}).mode||'auto';
+  const mode=(state.ai||{}).mode||'key';
   let o=null;
   if(mode==='key'||mode==='proxy'){
     btn.disabled=true; setStatus('生成中…'); progShow('生成中…（請稍候）');
@@ -1012,8 +1043,9 @@ async function generate(btn){
     btn.disabled=true; progShow('Claude 思考中…');
     try{ const r=await s(p,{modelTier:'default',cache:false,
         onText:({text})=>progText(`撰寫中… 已寫 ${text.length} 字`,text.length)});
-      o=parseJSON(r.text); progDone('完成') }
-    catch(e){ progFail(); setStatus('生成失敗：'+(e&&e.message||'回傳不是 JSON'),true) }
+      window.LAST_RAW=r.text; o=parseJSON(r.text); progDone('完成') }
+    catch(e){ progFail(); setStatus('生成失敗：'+(e&&e.message||'回傳不是 JSON'),true);
+      if(window.LAST_RAW) openText('Claude 的原始回覆',window.LAST_RAW) }
     finally{ btn.disabled=false }
   }
   if(o) applyDeck(o);
@@ -1052,7 +1084,7 @@ function applyDeck(o){
   if(o.dm) state.dm=o.dm;
   if(Array.isArray(o.replies)) state.replies=o.replies.join('\n');
   state.sel=0; save(); syncOut(); invalidate(); renderAll();
-  setStatus(`做好了，共 ${state.slides.length} 張。`);
+  setStatus(`做好了，共 ${state.slides.length} 張。`+repairNote(),window.__REPAIRED);
 }
 
 function matchLib(nm){
