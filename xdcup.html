@@ -165,6 +165,7 @@ details.howto summary{cursor:pointer;font-weight:700;color:var(--gold-ink);font-
 .howto figcaption{font-size:12.5px;line-height:1.55;display:flex;flex-direction:column;gap:2px}
 .howto figcaption b{color:var(--green-deep)}
 .howto p{margin:8px 0 0}
+.howto .wan{display:block;margin-top:4px;color:var(--gold-ink);font-weight:700}
 form.reflect{display:flex;flex-direction:column;gap:10px}
 .rgrade{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--green-soft);border-radius:12px;padding:10px 14px}
 .rgrade b{font-size:22px;color:var(--green-deep)}
@@ -612,7 +613,7 @@ const PROMPTS={
   health:'這些是學員今天的健康打卡照片。請判斷是否至少有一張照片是「運動」（健身、跑步、瑜伽、健走、騎車、運動器材或正在運動的人、運動 App 紀錄畫面）或「健康飲食」（蔬菜、水果、原型食物、均衡餐盤、自煮清爽料理、無糖飲品；炸物、甜點、含糖飲料、速食不算）。只回傳 JSON：{"ok": true或false, "kind": "運動、健康飲食、兩者都有，或都不是", "desc": "用一句中文描述照片內容", "note": "看不清楚時用一句中文說明，否則空字串"}',
   stories:ig=>'這是學員打開自己的 Instagram 限時動態時的截圖（學員帳號是「'+ig+'」，手機畫面可能把帳號截斷）。限動畫面最上方有一排白色細長進度條，分成幾段就代表目前有幾則限時動態。請數出進度條的段數；如果有多張截圖，取段數最多的那張。也讀出畫面上的帳號名稱和發佈時間（例如 3小時）。如果不是限時動態畫面，count 回傳 0。只回傳 JSON：{"count": 整數, "username": "看得到的帳號名稱或空字串", "times": ["發佈時間文字"], "note": "看不清楚時用一句中文說明，否則空字串"}',
   comments:ig=>'這些是 IG 留言截圖。請只計算帳號「'+ig+'」留下的留言，而且每則留言的文字內容要有 10 個字以上（不含表情符號、@標記和 hashtag）。同一則留言出現在多張截圖只算一次。只回傳 JSON：{"count": 整數, "note": "看不到帳號名稱或看不清楚時用一句中文說明，否則空字串"}',
-  dash:'這是一張 Instagram「你的主控板」截圖（摘要頁）。請讀出：觀看次數、粉絲人數、淨粉絲人數，以及統計區間（例如 30 天）。數字請換算成整數，淨粉絲人數可以是負數。只回傳 JSON：{"views": 整數或 null, "followers": 整數或 null, "netFollowers": 整數或 null, "range": "統計區間文字或空字串", "note": "看不清楚或不是主控板截圖時用一句中文說明，否則空字串"}',
+  dash:'這些是 Instagram 數據截圖（可能有 1～3 張），可能是「你的主控板」摘要頁，或「洞察報告」的「總覽」或「分享對象」分頁。請綜合所有截圖讀出：觀看次數（總覽或主控板上的「觀看次數」）、粉絲人數（主控板的「粉絲人數」，或「分享對象」分頁最上方「粉絲」下面的大數字，要精確到個位數，不要用個人主頁上「1萬」這種四捨五入的數字）、淨粉絲人數，以及統計區間（例如 30 天）。數字請換算成整數，淨粉絲人數可以是負數。只回傳 JSON：{"views": 整數或 null, "followers": 整數或 null, "netFollowers": 整數或 null, "range": "統計區間文字或空字串", "note": "看不清楚或缺少粉絲人數時用一句中文說明，否則空字串"}',
   reflect:()=>'這些是學員在 Skool 社群發的「每日復盤」貼文截圖（可能有多張，是同一篇的不同段落）。請讀出貼文內文，依下列標準給 0～7 分：0＝少於 20 個有意義的中文字、用重複字或無意義的字洗版、跟今天的發文挑戰無關，或只貼了範本題目沒有回答；1＝只列出今天做了什麼（流水帳）；2＝做了什麼，加上一句感受；3＝具體說出卡在哪裡；4＝說出哪篇有效、哪篇沒效；5＝有發現，而且分析了原因；6＝找到原因，並寫出明天具體要怎麼調整；7＝有原因、有行動，還連結到自己的定位、客群或接案目標，真誠而完整。請嚴格但友善地評分，不要因為字多就給高分，重點是反思有沒有深度、是不是真誠具體。各分數的參考範例：'+REFLECT_RUBRIC.map(([n,a,b,c])=>n+' 分（'+a+'）：「'+c+'」').join('；')+'。只回傳 JSON：{"score": 0到7的整數, "chars": 內文有意義的字數估計, "spam": true或false, "excerpt": "內文前 40 字", "reason": "一句中文說明為什麼是這個分數，語氣溫暖鼓勵", "tip": "一句具體建議怎麼寫得更深入，7 分就空字串", "note": "看不到內文時用一句中文說明，否則空字串"}',
   content:'這是 Instagram「你的主控板 → 內容」的貼文列表截圖（可能有多張），列表依「分享次數」或「儲存次數」排序。請讀出每一列貼文：左邊的標題文字（照畫面上的字，最多 30 字，不含最後的 …）、標題旁的日期文字（例如 10/6、3天）、右邊的大數字，以及數字下方寫的是「分享次數」還是「儲存次數」。同一列在多張截圖重複只列一次。只回傳 JSON：{"metric": "shares 或 saves", "rows": [{"title": "標題文字", "date": "日期文字", "value": 整數}], "note": "看不清楚或不是這個畫面時用一句中文說明，否則空字串"}',
   profile:'這是一張 Instagram 個人主頁截圖。請讀出「粉絲」人數，以及畫面上看得到的帳號名稱。手機畫面常把帳號名稱截斷成「urban_lege...」，這種情況照原樣回傳看得到的部分（不含 ... 和 @），並把 truncated 設為 true；這不算看不清楚。「萬」「K」「M」等單位請換算成整數（例：1.7萬 = 17000、2.5K = 2500）。只回傳 JSON：{"followers": 整數或 null, "username": "看得到的帳號名稱" 或 null, "truncated": true或false, "avatar": 個人大頭貼（畫面左上方的圓形頭像）在圖片中的位置，用 0 到 1 的比例表示 {"x": 左緣, "y": 上緣, "w": 寬, "h": 高}，找不到就 null, "note": "粉絲數看不清楚時用一句中文說明，否則空字串"}',
@@ -875,13 +876,13 @@ function howTo(open){
   return h("details",{class:"howto",open:open||null},h("summary",{},"要截哪兩張圖？看示範"),
     h("div",{class:"howto-grid"},
       h("figure",{},h("img",{src:EX1,alt:"IG 個人主頁截圖示範",loading:"lazy"}),h("figcaption",{},h("b",{},"① 個人主頁"),"打開 IG，點右下角你的頭像，截上半部。要看得到帳號名稱和粉絲數。")),
-      h("figure",{},h("img",{src:EX2,alt:"IG 主控板截圖示範",loading:"lazy"}),h("figcaption",{},h("b",{},"② 你的主控板"),"在個人主頁點「你的主控板」，截「摘要」這一區（30 天）。要看得到觀看次數、粉絲人數和淨粉絲人數。"))),
+      h("figure",{},h("img",{src:EX2,alt:"IG 主控板截圖示範",loading:"lazy"}),h("figcaption",{},h("b",{},"② 你的主控板"),"在個人主頁點「你的主控板」，截「摘要」這一區（30 天）。要看得到觀看次數、粉絲人數和淨粉絲人數。",h("span",{class:"wan"},"萬粉以上：主控板沒顯示粉絲人數的話，改截「洞察報告 → 分享對象」頁（最上面寫著粉絲 10,376 這種精確數字），跟主控板一起上傳。")))),
     h("p",{class:"h"},"示範圖是小都自己的帳號。主控板只有專業帳號（創作者或商家）才有，還沒切換的話到「設定 → 帳號類型和工具」切換，免費。"));
 }
 function dashDone(r,s){
-  if(Number.isFinite(r.followers)||Number.isFinite(r.views)){s.status="ok";s.value=r.followers;s.views=r.views;s.net=r.netFollowers;
-    s.text="AI 讀到主控板："+(Number.isFinite(r.views)?"觀看 "+fmt(r.views)+" 次":"")+(Number.isFinite(r.followers)?"、粉絲 "+fmt(r.followers)+" 人":"")+(Number.isFinite(r.netFollowers)?"、淨粉絲 "+(r.netFollowers>=0?"+":"")+fmt(r.netFollowers):"")+(r.range?"（"+r.range+"）":"")+"。"}
-  else{s.status="err";s.text=(cleanNote(r.note)||"AI 沒讀到主控板的數字")+"。請照示範截「你的主控板」摘要頁。"}
+  if(Number.isFinite(r.followers)){s.status="ok";s.value=r.followers;s.views=r.views;s.net=r.netFollowers;
+    s.text="AI 讀到："+(Number.isFinite(r.views)?"觀看 "+fmt(r.views)+" 次、":"")+"粉絲 "+fmt(r.followers)+" 人"+(Number.isFinite(r.netFollowers)?"、淨粉絲 "+(r.netFollowers>=0?"+":"")+fmt(r.netFollowers):"")+(r.range?"（"+r.range+"）":"")+"。"}
+  else{s.status="err";s.text="AI 沒讀到精確的粉絲人數"+(Number.isFinite(r.views)?"（有讀到觀看 "+fmt(r.views)+" 次）":"")+"。萬粉以上的帳號，請到「洞察報告 → 分享對象」截圖，跟這張一起重新上傳（可以一次選 2 張）。"}
 }
 function loginForm(){
   const f=h("form",{});
@@ -912,7 +913,7 @@ function regForm(){
       s.text="AI 讀到：粉絲 "+fmt(r.followers)+" 人"+(s.visible?"，帳號 @"+s.visible+(s.trunc?"…（被手機截斷，請在下方填完整帳號）":""):"")+"。"}
     else{s.status="err";s.text=(cleanNote(r.note)||"AI 沒找到粉絲數")+"。請換一張看得到粉絲數的主頁截圖。"}}));
   f.append(h("b",{class:"fl"},"② 主控板截圖"));
-  f.append(...dropZone("regDash","dash","上傳主控板截圖","摘要頁，要看得到觀看次數和粉絲人數",dashDone));
+  f.append(...dropZone("regDash","dash","上傳主控板截圖","萬粉以上看不到粉絲人數的，多傳一張「分享對象」，可以一次選 2 張",dashDone,{multiple:true}));
   const igK=keep("rIg");
   f.append(h("label",{class:"f"},"IG 帳號",h("span",{class:"h"},"完整帳號，不用打 @"+(st.trunc&&st.visible?"。截圖顯示開頭是「"+st.visible+"」":"")),h("input",{type:"text",id:"rIg",required:true,maxlength:"40",autocapitalize:"off",autocomplete:"off",spellcheck:"false",placeholder:"例：urban_legend_tarot",value:igK!==undefined&&igK!==""?igK:(st.ig||"")})));
   f.append(h("label",{class:"f"},"暱稱",h("span",{class:"h"},"排行榜上顯示的名字"),h("input",{type:"text",id:"rNick",required:true,maxlength:"20",placeholder:"例：月亮塔羅小安",value:prevNick||""})));
@@ -1215,7 +1216,7 @@ function postForm(me){
     if(Number.isFinite(r.followers)){s.status="ok";s.value=r.followers;s.ig=igPrefix(r.username);s.trunc=!!r.truncated;s.text="AI 讀到粉絲 "+fmt(r.followers)+" 人。"+(s.ig&&!igMatches(me.ig,s.ig,s.trunc)?"注意：截圖帳號「"+s.ig+(s.trunc?"…":"")+"」跟報名的 @"+me.ig+" 不同。":"")}
     else{s.status="err";s.text=(cleanNote(r.note)||"AI 沒找到粉絲數")+"。請換一張清楚的主頁截圖。"}}));
   f.append(h("b",{class:"fl"},"② 主控板首頁截圖"));
-  f.append(...dropZone("postDash","dash",done?"重新上傳主控板截圖":"上傳今天的主控板截圖","AI 讀出精確粉絲數和 30 天觀看",dashDone));
+  f.append(...dropZone("postDash","dash",done?"重新上傳主控板截圖":"上傳今天的主控板截圖","萬粉以上請多傳一張「分享對象」，可以一次選 2 張",dashDone,{multiple:true}));
   f.append(h("b",{class:"fl"},"③ 作品成效：主控板「內容」列表"));
   f.append(h("span",{class:"h"},"用來算每篇作品的分享＋收藏，給成效之星排名。"+(dl?"可以先揭曉成績單，"+dl.replace(/-/g,"/")+" 23:59 前都能再回來補傳更新。":"")));
   f.append(contentHowTo(!me.contentAt));
