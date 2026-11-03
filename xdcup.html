@@ -697,9 +697,10 @@ function renderMe(ranked){
   box.append(h("div",{class:"tblwrap"},tb));
   if(me.gain!=null)box.append(h("div",{class:"msg"},"你的 5 日成績單已經出爐，就在頁面最上方。"));
   if(S.flash)box.append(h("div",{class:"msg"+(S.flash.err?" err":"")},S.flash.text));
+  if(!S.dayPicked){const ti=todayIdx();if(ti!=null)S.day=Math.max(1,Math.min(5,ti))}
   const tabs=h("div",{class:"tabs",role:"group","aria-label":"選擇交作業的天數"});
   for(let i=1;i<=6;i++){const done=i<=5?!!(me.days[i]&&me.days[i].link):Number.isFinite(me.postFollowers);
-    tabs.append(h("button",{type:"button","aria-pressed":S.day===i?"true":"false",onclick:()=>{S.day=i;S.flash=null;render()}},(i<=5?"Day "+i:"賽後")+(done?" ✓":"")))}
+    tabs.append(h("button",{type:"button","aria-pressed":S.day===i?"true":"false",onclick:()=>{S.day=i;S.dayPicked=true;S.flash=null;render()}},(i<=5?"Day "+i:"賽後")+(done?" ✓":"")))}
   box.append(tabs,S.day<=5?dayForm(me,S.day):postForm(me));
 }
 
@@ -1574,13 +1575,14 @@ function ownerTools(p){
       grp.append(h("button",{type:"button",class:"mini"+(po.ok?" on":""),title:"點一下改判",onclick:()=>ownerPatch(p,i,{posts:{[po.k]:{ok:!po.ok,override:true}}})},"計分"+(po.ok?"✓":"✕")))});
     (d.healthShots||[]).forEach((id,k)=>grp.append(shotLink(id,"健康"+(k+1))));
     (d.storyShots||[]).forEach((id,k)=>grp.append(shotLink(id,"限動"+(k+1))));
-    if(d.healthAt&&!inTime(d.healthAt,i))grp.append(h("span",{style:"color:var(--warn)"},"健康打卡隔天才傳"));
-    if(d.storiesAt&&!inTime(d.storiesAt,i))grp.append(h("span",{style:"color:var(--warn)"},"限動隔天才傳"));
+    const fixT=(f,lbl)=>h("button",{type:"button",class:"mini",title:"學員其實有準時交，只是後來傳錯天蓋掉",onclick:()=>ownerPatch(p,i,{[f]:Date.parse(dayDate(i)+"T23:00:00+08:00"),override:true})},lbl+"改成準時");
+    if(d.healthAt&&!inTime(d.healthAt,i))grp.append(h("span",{style:"color:var(--warn)"},"健康打卡隔天才傳"),fixT("healthAt","健康"));
+    if(d.storiesAt&&!inTime(d.storiesAt,i))grp.append(h("span",{style:"color:var(--warn)"},"限動隔天才傳"),fixT("storiesAt","限動"));
     if(d.storiesAi&&d.storiesAi.username&&!igMatches(p.ig,d.storiesAi.username,true))grp.append(h("span",{style:"color:var(--warn)"},"限動帳號 @"+d.storiesAi.username));
     const flip=(f,lbl)=>h("button",{type:"button",class:"mini"+(d[f]?" on":""),title:"點一下改判",onclick:()=>ownerPatch(p,i,{[f]:!d[f],override:true})},lbl+(d[f]?"✓":"✕"));
     grp.append(flip("health","健康"),flip("storiesOk","限動"+(Number.isFinite(d.stories)?d.stories:"")));
     if(d.reflectLink){grp.append(h("a",{href:d.reflectLink,target:"_blank",rel:"noopener"},"反思"),...(d.reflectShots||[]).map((id,k)=>shotLink(id,"反思截圖"+(k+1))));
-      if(d.reflectAt&&!inTime(d.reflectAt,i))grp.append(h("span",{style:"color:var(--warn)"},"復盤隔天才交"));
+      if(d.reflectAt&&!inTime(d.reflectAt,i))grp.append(h("span",{style:"color:var(--warn)"},"反思隔天才交"),fixT("reflectAt","反思"));
       if(d.reflectAi&&d.reflectAi.excerpt)grp.append(h("span",{class:"muted",title:d.reflectAi.reason||""},"「"+String(d.reflectAi.excerpt).slice(0,30)+"…」"));
       grp.append(h("span",{class:"rsel"},"反思分",[0,1,2,3,4,5,6,7].map(n=>h("button",{type:"button",class:"mini"+(d.reflectScore===n?" on":""),onclick:()=>ownerPatch(p,i,{reflectScore:n,reflectOverride:true})},n))));}
     tools.append(grp)}
