@@ -8,14 +8,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="小都塔羅占卜｜線上占卜・魔法蠟燭代燒預約">
 <meta property="og:description" content="塔羅占卜・感情復合・魔法蠟燭。線上占卜與依月相代燒，一站預約。">
-<meta property="og:image" content="https://urbantarot13.github.io/tarot/og-cover.jpg">
+<meta property="og:image" content="https://urbantarot13.github.io/booking/og-cover.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:url" content="https://urbantarot13.github.io/tarot/">
+<meta property="og:url" content="https://urbantarot13.github.io/booking/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="小都塔羅占卜｜線上占卜・魔法蠟燭代燒預約">
 <meta name="twitter:description" content="塔羅占卜・感情復合・魔法蠟燭，一站預約。">
-<meta name="twitter:image" content="https://urbantarot13.github.io/tarot/og-cover.jpg">
+<meta name="twitter:image" content="https://urbantarot13.github.io/booking/og-cover.jpg?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -625,7 +625,7 @@ body.combo .no-combo{display:none}
       </div>
     </div></div>
     <div class="pstep"><div class="no">2</div><div class="b"><div class="t">填寫匯款資料（開立發票）</div><div class="d">填寫後小都將為你開立發票，請保留作為付款憑證。</div>
-      <a class="btn ghost sm" href="https://forms.gle/DnncnH3eazgsuJ44A" target="_blank" rel="noopener" style="margin-top:12px">✦ 填寫表單，開立發票 →</a>
+      <a class="btn ghost sm" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener" style="margin-top:12px">✦ 填寫表單，開立發票 →</a>
     </div></div>
   </div>
 </section>
@@ -648,7 +648,7 @@ body.combo .no-combo{display:none}
     <div class="payrow"><span class="k">帳號</span><span class="v mono">204035013142</span></div>
     <div class="payrow"><span class="k">金額</span><span class="v amt" id="done-amt"></span></div>
   </div>
-  <a class="btn ghost" href="https://forms.gle/DnncnH3eazgsuJ44A" target="_blank" rel="noopener">✦ 匯款完成，填寫表單（開立發票）→</a>
+  <a class="btn ghost" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener">✦ 匯款完成，填寫表單（開立發票）→</a>
   <button class="backlink" onclick="show('home')">← 回首頁</button>
 </section>
 
@@ -771,7 +771,7 @@ body.combo .no-combo{display:none}
       <div class="payrow"><span class="k">金額</span><span class="v amt" id="payAmt2">—</span></div>
     </div>
     <div class="pstep"><div class="no">2</div><div class="b"><div class="t">填寫匯款資料（開立發票）</div><div class="d">填寫後小都將為你開立發票，請保留作為付款憑證。</div></div></div>
-    <a class="btn ghost" href="https://forms.gle/MiAVyEDq22F1sGR38" target="_blank" rel="noopener">✦ 填寫表單，開立發票 →</a>
+    <a class="btn ghost" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener">✦ 填寫表單，開立發票 →</a>
   </div>
 </section>
 
@@ -797,7 +797,7 @@ body.combo .no-combo{display:none}
   </div>
   <div id="x-calstep" style="display:none"><div class="pstep"><div class="no">3</div><div class="b"><div class="t">選擇一對一占卜時段</div><div class="d">匯款後在行事曆選擇方便的時段，小都確認入帳後為你安排。</div><div id="x-cal"></div></div></div></div>
   <div class="pstep"><div class="no" id="x-formno">3</div><div class="b"><div class="t">填寫匯款資料（開立發票）</div><div class="d">占卜＋代燒填一份表單就好，小都會開一張發票給你。</div>
-    <a class="btn ghost sm" id="x-form" href="https://forms.gle/MiAVyEDq22F1sGR38" target="_blank" rel="noopener" style="margin-top:12px">✦ 填寫表單，開立發票 →</a></div></div>
+    <a class="btn ghost sm" id="x-form" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener" style="margin-top:12px">✦ 填寫表單，開立發票 →</a></div></div>
 </section>
 
 </main>
@@ -1437,7 +1437,7 @@ let MODE='reading';
 /* 組合滿額折扣：門檻（滿多少）→ 折多少。改這裡就好 */
 const COMBO_TIERS=[{min:3000,off:150},{min:5000,off:400},{min:8000,off:800}];
 /* 新的共用發票表單：建好後把連結貼在這裡，全站會自動換成這一份 */
-const FORM_UNIFIED='';
+const FORM_UNIFIED='https://forms.gle/kU4Q3SBa4XdTpvUi9';
 
 function rPriceNum(){return parseInt(String(RS.price||'0').replace(/[^0-9]/g,''),10)||0;}
 function comboBase(){return rPriceNum()+discSubtotal();}
