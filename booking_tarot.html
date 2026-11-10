@@ -428,6 +428,10 @@ footer .dot{color:var(--btn);margin:0 6px}
 .sent-ok.show{display:block}
 .send-err{margin-top:10px;font-size:12.5px;color:var(--warn);text-align:center;line-height:1.7}
 
+.chkrow{display:flex;align-items:center;gap:10px;margin-top:16px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;font-size:14px;cursor:pointer;background:#fff}
+.chkrow input{width:20px;height:20px;accent-color:var(--acc);flex-shrink:0}
+.chkrow:has(input:checked){border-color:var(--acc);background:var(--soft)}
+
 /* 組合預約 */
 .pick{position:relative}
 .pick.combo{border-color:var(--btn);background:linear-gradient(160deg,#FBF3F4 0%,#fff 70%)}
@@ -599,7 +603,7 @@ body.combo .no-combo{display:none}
 <!-- ═════════════ READING 2C：一對一匯款 ═════════════ -->
 <section class="view" id="v-r2c">
   <button class="backlink" onclick="show('r1')">← 上一步，修改服務</button>
-  <div class="steps"><span class="done">選服務</span><span class="on">匯款・預約</span><span>完成</span></div>
+  <div class="steps"><span class="done">選服務</span><span class="on">匯款・預約・送出</span></div>
   <div class="sec" style="padding-top:22px">
     <div class="sec-head"><span class="tag">STEP 02 ｜ 匯款與預約</span><h2>完成匯款，再選時段</h2><p class="hint">匯款後依序完成以下步驟，小都確認入帳後即完成預約安排 🔮</p></div>
     <div class="paycard" id="o1-summary"></div>
@@ -609,7 +613,7 @@ body.combo .no-combo{display:none}
       <div class="payrow"><span class="k">帳號</span><span class="v mono">204035013142</span></div>
       <div class="payrow"><span class="k">金額</span><span class="v amt" id="o1-amt"></span></div>
     </div>
-    <p class="hint" style="margin-top:14px">匯款完成後，請依序完成（缺一不可）</p>
+    <p class="hint" style="margin-top:14px">匯款完成後，請依序完成以下 3 步（缺一不可）</p>
     <div class="pstep"><div class="no">1</div><div class="b"><div class="t">選擇預約時段</div><div class="d">在行事曆選擇你方便的日期與時段，小都確認入帳後將為你完成預約安排。</div>
       <div class="cal" id="calBox">
         <div class="cal-head"><div class="t">🗓 選擇你的占卜時段</div><div class="s">台北時間（GMT+08:00）</div></div>
@@ -624,38 +628,65 @@ body.combo .no-combo{display:none}
         <div class="cal-foot"><button class="btn sm" id="cal-confirm" disabled onclick="goToGoogleCal()">前往 Google 完成預約 →</button></div>
       </div>
     </div></div>
-    <div class="pstep"><div class="no">2</div><div class="b"><div class="t">填寫匯款資料（開立發票）</div><div class="d">填寫後小都將為你開立發票，請保留作為付款憑證。</div>
+    <div class="pstep"><div class="no">2</div><div class="b"><div class="t">填寫發票表單</div><div class="d">填寫後小都會為你開立發票，請保留作為付款憑證。</div>
       <a class="btn ghost sm" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener" style="margin-top:12px">✦ 填寫表單，開立發票 →</a>
     </div></div>
+    <div class="pstep"><div class="no">3</div><div class="b"><div class="t">填寫匯款資訊，送出給小都</div><div class="d">匯款、填完發票表單後，填寫下面資料按送出，小都會直接收到通知並幫你對帳。</div></div></div>
+    <div class="field"><label>姓名<span class="req">必填</span></label><input id="o-name" placeholder="你的姓名" oninput="flowRender('o')"></div>
+    <div class="field"><label>你的 LINE ID 或手機號碼<span class="req">必填</span></label><div class="tip">小都對帳後會用 LINE 聯絡你。LINE ID 在 LINE「主頁 → 設定 → 個人檔案」可以看到；沒有設定 ID 就填手機號碼。</div><input id="o-contact" placeholder="例：xiaomei123 或 0912-345-678" oninput="flowRender('o')"></div>
+    <div class="field"><label>匯款銀行<span class="req">必填</span></label><input id="o-bank" placeholder="例：國泰世華、中國信託、郵局" oninput="flowRender('o')"></div>
+    <div class="field"><label>匯款帳號後五碼<span class="req">必填</span></label><div class="tip">你用來轉帳的帳號最後 5 碼，網銀或 ATM 明細上都看得到。</div><input id="o-last5" inputmode="numeric" maxlength="5" placeholder="例：12345" oninput="this.value=this.value.replace(/\D/g,'');flowRender('o')"></div>
+    <label class="chkrow"><input type="checkbox" id="o-chk" onchange="flowRender('o')"><span>我已完成匯款，也填好發票表單了</span></label>
+    <div class="msgbox-t">📋 將傳送給小都的內容</div>
+    <div class="msgbox" id="o-pv"></div>
+    <button class="btn" id="o-send" onclick="flowSend('o')">✦ 送出給小都</button>
+    <div class="sent-ok" id="o-ok">✓ 已送出給小都！<br><small>小都對帳後會用 LINE 聯絡你，請留意 LINE 訊息 🔮</small></div>
+    <div id="o-fb">
+      <a class="btn line" id="o-line" href="https://lin.ee/RNGOLzO" target="_blank" rel="noopener" onclick="lineSend(event,FLOWS['o'].msg())"><svg style="width:20px;height:20px"><use href="#i-line"/></svg><span id="o-line-t">傳送到小都的 LINE</span></a>
+      <p class="hint" style="text-align:center;margin-top:8px">LINE 打開後，訊息已經自動填好，按「傳送」就完成 ✦</p>
+      <button class="btn ghost sm" id="o-copy" onclick="flowCopy('o')" style="margin-top:10px">📋 沒有自動帶入？按這裡複製訊息</button>
+    </div>
   </div>
 </section>
 
 <!-- ═════════════ READING 3：完成 ═════════════ -->
 <section class="view" id="v-r3">
-  <div class="steps" style="margin-top:22px"><span class="done">選服務</span><span class="done">填資料</span><span class="on">完成</span></div>
-  <div class="done-hero"><div class="ic">✓</div><h2 id="r3-t">問卷完成！</h2><p id="r3-p">按下方綠色按鈕，訊息會自動帶進 LINE<br>再按「傳送」就完成，匯款後記得填寫表單喔 🔮</p></div>
-  <div class="paycard" id="done-summary"></div>
-  <div class="msgbox-t" id="r3-mt">📋 將傳送給小都的訊息</div>
-  <div class="msgbox" id="done-msg"></div>
-  <div id="r3-fb">
-  <a class="btn line" id="r-line" href="https://lin.ee/RNGOLzO" target="_blank" rel="noopener" onclick="lineSend(event,RS.msg)"><svg style="width:20px;height:20px"><use href="#i-line"/></svg>傳送到小都的 LINE</a>
-  <p class="hint" style="text-align:center;margin-top:8px">LINE 打開後，訊息已經自動填好，按「傳送」就完成 ✦</p>
-  <button class="btn ghost sm" id="r-copy" onclick="rCopy()" style="margin-top:10px">📋 沒有自動帶入？按這裡複製訊息</button>
+  <button class="backlink" onclick="show('r2b')">← 上一步，修改問卷</button>
+  <div class="steps"><span class="done">選服務</span><span class="done">填問卷</span><span class="on">匯款・送出</span></div>
+  <div class="sec" style="padding-top:22px">
+    <div class="sec-head"><span class="tag">STEP 03 ｜ 匯款與送出</span><h2>完成匯款，再送出給小都</h2><p class="hint">依序完成以下 3 步，小都收到後會對帳並開始為你占卜 🔮</p></div>
+    <div class="paycard" id="done-summary"></div>
+    <div class="pstep"><div class="no">1</div><div class="b"><div class="t">完成匯款</div><div class="d">依下方資訊轉帳，金額為你的方案費用。</div></div></div>
+    <div class="paycard strong">
+      <div class="paytag">✦ 匯款資訊</div>
+      <div class="payrow"><span class="k">銀行</span><span class="v">013 國泰世華銀行</span></div>
+      <div class="payrow"><span class="k">帳號</span><span class="v mono">204035013142</span></div>
+      <div class="payrow"><span class="k">金額</span><span class="v amt" id="done-amt"></span></div>
+    </div>
+    <div class="pstep"><div class="no">2</div><div class="b"><div class="t">填寫發票表單</div><div class="d">填寫後小都會為你開立發票，請保留作為付款憑證。</div>
+      <a class="btn ghost sm" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener" style="margin-top:12px">✦ 填寫表單，開立發票 →</a>
+    </div></div>
+    <div class="pstep"><div class="no">3</div><div class="b"><div class="t">填寫匯款資訊，送出給小都</div><div class="d">匯款、填完發票表單後，填寫下面資料按送出，小都會直接收到通知並幫你對帳。</div></div></div>
+    <div class="field"><label>匯款銀行<span class="req">必填</span></label><input id="r-bank" placeholder="例：國泰世華、中國信託、郵局" oninput="flowRender('r')"></div>
+    <div class="field"><label>匯款帳號後五碼<span class="req">必填</span></label><div class="tip">你用來轉帳的帳號最後 5 碼，網銀或 ATM 明細上都看得到。</div><input id="r-last5" inputmode="numeric" maxlength="5" placeholder="例：12345" oninput="this.value=this.value.replace(/\D/g,'');flowRender('r')"></div>
+    <label class="chkrow"><input type="checkbox" id="r-chk" onchange="flowRender('r')"><span>我已完成匯款，也填好發票表單了</span></label>
+    <div class="msgbox-t">📋 將傳送給小都的內容</div>
+    <div class="msgbox" id="done-msg"></div>
+    <button class="btn" id="r-send" onclick="flowSend('r')">✦ 送出給小都</button>
+    <div class="sent-ok" id="r-ok">✓ 已送出給小都！<br><small>小都對帳後會用 LINE 聯絡你，請留意 LINE 訊息 🔮</small></div>
+    <div id="r-fb">
+      <a class="btn line" id="r-line" href="https://lin.ee/RNGOLzO" target="_blank" rel="noopener" onclick="lineSend(event,FLOWS['r'].msg())"><svg style="width:20px;height:20px"><use href="#i-line"/></svg><span id="r-line-t">傳送到小都的 LINE</span></a>
+      <p class="hint" style="text-align:center;margin-top:8px">LINE 打開後，訊息已經自動填好，按「傳送」就完成 ✦</p>
+      <button class="btn ghost sm" id="r-copy" onclick="flowCopy('r')" style="margin-top:10px">📋 沒有自動帶入？按這裡複製訊息</button>
+    </div>
   </div>
-  <div class="pstep"><div class="no">✦</div><div class="b"><div class="t">匯款資訊</div><div class="d">匯款完成後，點下方按鈕填寫表單開立發票。</div></div></div>
-  <div class="paycard strong">
-    <div class="payrow"><span class="k">銀行</span><span class="v">013 國泰世華銀行</span></div>
-    <div class="payrow"><span class="k">帳號</span><span class="v mono">204035013142</span></div>
-    <div class="payrow"><span class="k">金額</span><span class="v amt" id="done-amt"></span></div>
-  </div>
-  <a class="btn ghost" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener">✦ 匯款完成，填寫表單（開立發票）→</a>
   <button class="backlink" onclick="show('home')">← 回首頁</button>
 </section>
 
 <!-- ═════════════ CANDLE 1：選方案 ═════════════ -->
 <section class="view" id="v-c1">
   <button class="backlink" id="c1-back" onclick="c1Back()">← 回首頁</button>
-  <div class="steps"><span class="on">選蠟燭・吉日</span><span>許願資料</span><span>付款</span></div>
+  <div class="steps"><span class="on">選蠟燭・吉日</span><span>許願資料</span><span>匯款・送出</span></div>
 
   <div class="sec" style="padding-top:22px">
     <div class="sec-head"><span class="tag">CANDLE RITUAL ｜ 魔法蠟燭代燒</span><h2>於新月許願，於滿月釋放</h2>
@@ -731,7 +762,7 @@ body.combo .no-combo{display:none}
 <!-- ═════════════ CANDLE 2：許願資料＋付款 ═════════════ -->
 <section class="view" id="v-c2">
   <button class="backlink" id="c2-back" onclick="c2Back()">← 上一步，修改身份／方案</button>
-  <div class="steps"><span class="done">選蠟燭・吉日</span><span class="on">許願資料</span><span>付款</span></div>
+  <div class="steps"><span class="done">選蠟燭・吉日</span><span class="on">許願資料</span><span class="on">匯款・送出</span></div>
   <div class="sec" style="padding-top:22px">
     <div class="sec-head"><span class="tag">04 ｜ 填寫許願資料</span><h2>越具體，能量越聚焦</h2></div>
     <div class="field"><label>我的姓名 &amp; 生日<span class="req">必填</span></label><div class="tip">請填國曆。例：王小明 1990/03/15</div><input id="fMe" oninput="cRender()" placeholder="姓名 + 國曆生日"></div>
@@ -745,19 +776,7 @@ body.combo .no-combo{display:none}
   <div class="only-combo"><button class="btn" id="c2-combo-next" onclick="xGo()">下一步：確認訂單與付款 →</button></div>
 
   <div class="sec no-combo">
-    <div class="sec-head"><span class="tag">✦ ｜ 送出前確認</span><p class="hint" id="c-sendhint">按下方按鈕，這段訊息會自動帶進 LINE 傳給小都</p></div>
-    <div class="msgbox" id="preview"></div>
-    <button class="btn" id="c-send" onclick="cSend()">✦ 送出預約給小都</button>
-    <div class="sent-ok" id="c-ok">✓ 已送出給小都！<br><small>小都收到後會用 LINE 聯絡你，請依下方資訊完成匯款並填寫表單。</small></div>
-    <div id="c-fb">
-    <a class="btn line" id="c-line" href="https://lin.ee/RNGOLzO" target="_blank" rel="noopener" onclick="lineSend(event,cBuildMsg())"><svg style="width:20px;height:20px"><use href="#i-line"/></svg><span id="c-line-t">傳送到小都的 LINE → 完成預約</span></a>
-    <p class="hint" style="text-align:center;margin-top:8px">LINE 打開後，訊息已經自動填好，按「傳送」就完成 ✦</p>
-    <button class="btn ghost sm" id="copyBtn" onclick="cCopy()" style="margin-top:10px">📋 沒有自動帶入？按這裡複製訊息</button>
-    </div>
-  </div>
-
-  <div class="sec no-combo">
-    <div class="sec-head"><span class="tag">✦ ｜ 費用與付款</span><p class="hint">匯款後開立發票</p></div>
+    <div class="sec-head"><span class="tag">05 ｜ 匯款與送出</span><h2>完成匯款，再送出給小都</h2><p class="hint">依序完成以下 3 步，小都收到後會對帳並安排代燒 🕯️</p></div>
     <div class="paycard">
       <div class="payrow"><span class="k">服務</span><span class="v">魔法蠟燭代燒</span></div>
       <div class="payrow"><span class="k">方案</span><span class="v" id="payPlan">—</span></div>
@@ -768,10 +787,24 @@ body.combo .no-combo{display:none}
       <div class="paytag">✦ 匯款資訊</div>
       <div class="payrow"><span class="k">銀行</span><span class="v">013 國泰世華銀行</span></div>
       <div class="payrow"><span class="k">帳號</span><span class="v mono">204035013142</span></div>
-      <div class="payrow"><span class="k">金額</span><span class="v amt" id="payAmt2">—</span></div>
+      <div class="payrow"><span class="k">金額</span><span class="v amt" id="payAmt2"></span></div>
     </div>
-    <div class="pstep"><div class="no">2</div><div class="b"><div class="t">填寫匯款資料（開立發票）</div><div class="d">填寫後小都將為你開立發票，請保留作為付款憑證。</div></div></div>
-    <a class="btn ghost" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener">✦ 填寫表單，開立發票 →</a>
+    <div class="pstep"><div class="no">2</div><div class="b"><div class="t">填寫發票表單</div><div class="d">填寫後小都會為你開立發票，請保留作為付款憑證。</div>
+      <a class="btn ghost sm" href="https://forms.gle/kU4Q3SBa4XdTpvUi9" target="_blank" rel="noopener" style="margin-top:12px">✦ 填寫表單，開立發票 →</a>
+    </div></div>
+    <div class="pstep"><div class="no">3</div><div class="b"><div class="t">填寫匯款資訊，送出給小都</div><div class="d">匯款、填完發票表單後，填寫下面資料按送出，小都會直接收到通知並幫你對帳。</div></div></div>
+    <div class="field"><label>匯款銀行<span class="req">必填</span></label><input id="c-bank" placeholder="例：國泰世華、中國信託、郵局" oninput="flowRender('c')"></div>
+    <div class="field"><label>匯款帳號後五碼<span class="req">必填</span></label><div class="tip">你用來轉帳的帳號最後 5 碼，網銀或 ATM 明細上都看得到。</div><input id="c-last5" inputmode="numeric" maxlength="5" placeholder="例：12345" oninput="this.value=this.value.replace(/\D/g,'');flowRender('c')"></div>
+    <label class="chkrow"><input type="checkbox" id="c-chk" onchange="flowRender('c')"><span>我已完成匯款，也填好發票表單了</span></label>
+    <div class="msgbox-t">📋 將傳送給小都的內容</div>
+    <div class="msgbox" id="preview"></div>
+    <button class="btn" id="c-send" onclick="flowSend('c')">✦ 送出給小都</button>
+    <div class="sent-ok" id="c-ok">✓ 已送出給小都！<br><small>小都對帳後會用 LINE 聯絡你，請留意 LINE 訊息 🔮</small></div>
+    <div id="c-fb">
+      <a class="btn line" id="c-line" href="https://lin.ee/RNGOLzO" target="_blank" rel="noopener" onclick="lineSend(event,FLOWS['c'].msg())"><svg style="width:20px;height:20px"><use href="#i-line"/></svg><span id="c-line-t">傳送到小都的 LINE</span></a>
+      <p class="hint" style="text-align:center;margin-top:8px">LINE 打開後，訊息已經自動填好，按「傳送」就完成 ✦</p>
+      <button class="btn ghost sm" id="c-copy" onclick="flowCopy('c')" style="margin-top:10px">📋 沒有自動帶入？按這裡複製訊息</button>
+    </div>
   </div>
 </section>
 
@@ -969,12 +1002,12 @@ function rNext1(){
   if(MODE==='combo'){show('c1');return;}
   if(RS.svc==='free'){window.open(RS.freeUrl,'_blank');}
   else if(RS.svc==='text'){show('r2b');rValidate();}
-  else if(RS.svc==='oneon1'){document.getElementById('o1-summary').innerHTML=sumRows();document.getElementById('o1-amt').textContent=RS.price;show('r2c');}
+  else if(RS.svc==='oneon1'){document.getElementById('o1-summary').innerHTML=sumRows();document.getElementById('o1-amt').textContent=RS.price;flowRender('o');show('r2c');}
 }
 function tv(id){return document.getElementById(id).value.trim();}
 function rValidate(){
   const ok=tv('t-name')&&tv('t-gender')&&tv('t-contact')&&tv('t-bg')&&tv('t-q');
-  const b=document.getElementById('t-submit');b.disabled=!ok;b.textContent=ok?(MODE==='combo'?'下一步：填寫許願資料 →':(GAS_URL?'✦ 確認並送出給小都 →':'✦ 確認問卷，整理成 LINE 訊息 →')):'請填完必填欄位';
+  const b=document.getElementById('t-submit');b.disabled=!ok;b.textContent=ok?(MODE==='combo'?'下一步：填寫許願資料 →':'下一步：匯款與送出 →'):'請填完必填欄位';
   document.getElementById('t-preview').style.display=ok?'block':'none';
   if(ok)document.getElementById('t-msg').textContent=rBuildMsg();
 }
@@ -986,21 +1019,12 @@ function rBuildMsg(){
   msg+=`━━━━━━━━━━━\n注意事項：\n1. 個人問題皆保密，不會公開對話紀錄\n2. 占卜後續問題皆可發問，以本題相關為主\n\n請幫我占卜，謝謝 🙏`;
   return msg;
 }
-async function rSubmitText(){
+function rSubmitText(){
   RS.msg=rBuildMsg();
   if(MODE==='combo'){show('c2');return;}
-  let ok=false;
-  if(GAS_URL&&!rSent){const b=document.getElementById('t-submit');b.disabled=true;b.textContent='送出中…';ok=await notifyLine('文字占卜',RS.msg);b.disabled=false;rValidate();if(ok)rSent=true;}
-  else if(rSent)ok=true;
-  document.getElementById('r3-t').textContent=ok?'已送出給小都！':'問卷完成！';
-  document.getElementById('r3-p').innerHTML=ok?'小都收到後會用 LINE 聯絡你<br>記得完成匯款並填寫表單喔 🔮':(GAS_URL?'自動送出沒有成功，請按下方綠色按鈕<br>用 LINE 傳給小都 🙏':'按下方綠色按鈕，訊息會自動帶進 LINE<br>再按「傳送」就完成，匯款後記得填寫表單喔 🔮');
-  document.getElementById('r3-mt').textContent=ok?'📋 你送出的內容':'📋 將傳送給小都的訊息';
-  document.getElementById('r3-fb').style.display=ok?'none':'block';
   document.getElementById('done-summary').innerHTML=sumRows();
   document.getElementById('done-amt').textContent=RS.price;
-  document.getElementById('done-msg').textContent=RS.msg;
-  const b=document.getElementById('r-copy');b.textContent='📋 沒有自動帶入？按這裡複製訊息';b.classList.remove('ok');
-  show('r3');
+  flowRender('r');show('r3');
 }
 /* ═════════ 送出預約 → 直接推播到小都的 LINE（Google Apps Script）═════════
    部署好 Apps Script 後，把網址貼在 GAS_URL。留空時，會改用「一鍵帶入 LINE」的方式。 */
@@ -1013,21 +1037,48 @@ async function notifyLine(kind,msg){
     return j?j.ok===true:r.ok;
   }catch(e){return false;}
 }
-let rSent=false,cSent=false;
-async function cSend(){
-  if(cSent||selectionReason()||fillReason())return;
-  const b=document.getElementById('c-send');b.disabled=true;b.textContent='送出中…';
-  const ok=await notifyLine('魔法蠟燭代燒',cBuildMsg());
-  if(ok){cSent=true;b.style.display='none';document.getElementById('c-ok').classList.add('show');document.getElementById('c-sendhint').textContent='已送出，以下是你送出的內容';}
-  else{b.disabled=false;b.textContent='✦ 再試一次送出';document.getElementById('c-fb').style.display='block';
-    let er=document.getElementById('c-err');if(!er){er=document.createElement('div');er.id='c-err';er.className='send-err';b.after(er);}
+/* 三個流程共用：匯款資訊 → 送出 */
+function fv(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function payReason(p){
+  if(!/^\d{5}$/.test(fv(p+'-last5')))return '請填寫匯款帳號後五碼（5 個數字）';
+  if(!fv(p+'-bank'))return '請填寫匯款銀行';
+  if(!document.getElementById(p+'-chk').checked)return '請勾選「已完成匯款，也填好發票表單」';
+  return '';
+}
+function payLines(p,amt){return `【匯款資訊】\n匯款銀行：${fv(p+'-bank')||'（待填）'}\n帳號後五碼：${fv(p+'-last5')||'（待填）'}\n匯款金額：${amt}\n發票表單：${document.getElementById(p+'-chk').checked?'已填寫':'（尚未勾選）'}`;}
+function rFinalMsg(){return (RS.msg||rBuildMsg()).replace('━━━━━━━━━━━\n注意事項','\n'+payLines('r',RS.price)+'\n━━━━━━━━━━━\n注意事項');}
+function oMsg(){
+  let m=`🔮 一對一深度占卜諮詢｜預約\n【方案】${RS.subName}（${RS.price}）\n━━━━━━━━━━━\n姓名：${fv('o-name')||'（待填）'}\n聯絡方式（LINE ID／手機）：${fv('o-contact')||'（待填）'}\n`;
+  m+=(calSelectedDate&&calSelectedSlot)?`想預約的時段：${calSelectedDate.getFullYear()}/${calSelectedDate.getMonth()+1}/${calSelectedDate.getDate()} ${calSelectedSlot}（已於 Google 行事曆預約）\n`:'預約時段：已於 Google 行事曆選擇\n';
+  return m+payLines('o',RS.price)+'\n━━━━━━━━━━━\n請幫我安排，謝謝 🙏';
+}
+function oReason(){if(!fv('o-name'))return '請填寫姓名';if(!fv('o-contact'))return '請填寫「LINE ID 或手機」';return payReason('o');}
+const FLOWS={
+  r:{kind:'文字占卜',pv:'done-msg',msg:()=>rFinalMsg(),reason:()=>payReason('r')},
+  o:{kind:'一對一深度占卜',pv:'o-pv',msg:()=>oMsg(),reason:()=>oReason()},
+  c:{kind:'魔法蠟燭代燒',pv:'preview',msg:()=>cBuildMsg(),reason:()=>selectionReason()||fillReason()||payReason('c')}
+};
+const SENT={};
+function flowRender(p){
+  const F=FLOWS[p],r=F.reason();
+  document.getElementById(F.pv).textContent=F.msg();
+  const b=document.getElementById(p+'-send');if(!SENT[p]){b.disabled=!!r;b.textContent=r||'✦ 送出給小都';}
+  document.getElementById(p+'-line').classList.toggle('off',!!r);document.getElementById(p+'-line-t').textContent=r||'傳送到小都的 LINE';
+  const cp=document.getElementById(p+'-copy');cp.disabled=!!r;if(!cp.classList.contains('ok'))cp.textContent=r||'📋 沒有自動帶入？按這裡複製訊息';
+}
+async function flowSend(p){
+  const F=FLOWS[p];if(SENT[p]||F.reason())return;
+  const b=document.getElementById(p+'-send');b.disabled=true;b.textContent='送出中…';
+  const ok=await notifyLine(F.kind,F.msg());
+  if(ok){SENT[p]=1;b.style.display='none';document.getElementById(p+'-ok').classList.add('show');document.getElementById(p+'-fb').style.display='none';const er=document.getElementById(p+'-err');if(er)er.remove();}
+  else{b.disabled=false;b.textContent='✦ 再試一次送出';document.getElementById(p+'-fb').style.display='block';
+    let er=document.getElementById(p+'-err');if(!er){er=document.createElement('div');er.id=p+'-err';er.className='send-err';b.after(er);}
     er.textContent='自動送出沒有成功，請改按下方綠色按鈕，用 LINE 傳給小都 🙏';}
 }
+function flowCopy(p){copyText(FLOWS[p].msg(),()=>{const b=document.getElementById(p+'-copy');b.textContent='✓ 已複製，請貼到 LINE 給小都';b.classList.add('ok');setTimeout(()=>{b.classList.remove('ok');flowRender(p);},2600);});}
 function applySendMode(){
   const auto=!!GAS_URL;
-  document.getElementById('c-send').style.display=auto?'':'none';
-  document.getElementById('c-fb').style.display=auto?'none':'block';
-  if(auto)document.getElementById('c-sendhint').textContent='確認內容後按「送出預約」，小都會直接收到通知';
+  ['r','o','c'].forEach(p=>{document.getElementById(p+'-send').style.display=auto?'':'none';document.getElementById(p+'-fb').style.display=auto?'none':'block';});
 }
 
 /* 一鍵傳到 LINE 官方帳號（訊息自動帶入輸入框） */
@@ -1072,7 +1123,7 @@ function renderCalSlots(){
   w.innerHTML=CAL_SLOT_TIMES.map(t=>`<div class="cal-slot${calSelectedSlot===t?' selected':''}" onclick="calPickSlot('${t}')">${t}</div>`).join('');
   calConfirmState();
 }
-function calPickSlot(t){calSelectedSlot=t;renderCalSlots();}
+function calPickSlot(t){calSelectedSlot=t;renderCalSlots();flowRender('o');}
 function calConfirmState(){document.getElementById('cal-confirm').disabled=!(calSelectedDate&&calSelectedSlot);}
 function goToGoogleCal(){if(calSelectedDate&&calSelectedSlot)window.open(CAL_GOOGLE_BASE,'_blank');}
 
@@ -1285,6 +1336,7 @@ function cBuildMsg(){
   m+='────────────\n';
   m+=`我的姓名 & 生日：${me||'（待填）'}\n聯絡方式（LINE ID／手機）：${cv('fContact')||'（待填）'}\n對方姓名 & 生日：${you||'—'}\n對方特徵：${feat?'\n'+feat:'—'}\n心願：${wish?'\n'+wish:'（待填）'}\n`;
   m+='────────────\n'+`許願日期 & 簽名：${fmtFull(e.date)}　${sign||'（簽名）'}`;
+  if(MODE!=='combo'&&document.getElementById('c-chk'))m+='\n────────────\n'+payLines('c',cart.length?fmtNT(orderFinal()):'—');
   return m;
 }
 function selectionReason(){
@@ -1296,16 +1348,13 @@ function selectionReason(){
 function fillReason(){if(!cv('fMe'))return '請填寫「姓名 & 生日」';if(!cv('fContact'))return '請填寫「LINE ID 或手機」';if(!cv('fWish'))return '請填寫「心願」';return '';}
 function cNext(){if(selectionReason())return;if(MODE==='combo'&&RS.svc==='text'){show('r2b');rValidate();}else show('c2');}
 function cRender(){
-  document.getElementById('preview').textContent=cBuildMsg();
   const has=cart.length>0,amt=has?fmtNT(orderFinal()):'—';
   document.getElementById('payPlan').textContent=has?`蠟燭 ${cartCount()} 顆`+(rush?'（含急單）':''):'—';
   document.getElementById('payAmt').textContent=amt;document.getElementById('payAmt2').textContent=amt;
   const sr=selectionReason(),nb=document.getElementById('nextBtn');
   nb.disabled=!!sr;nb.textContent=sr||'下一步：填寫許願資料 →';
-  const fr=sr||fillReason(),b=document.getElementById('copyBtn');
-  b.disabled=!!fr;b.textContent=fr?fr:'📋 沒有自動帶入？按這裡複製訊息';if(fr)b.classList.remove('ok');
-  const cs=document.getElementById('c-send');if(!cSent){cs.disabled=!!fr;cs.textContent=fr||'✦ 送出預約給小都';}
-  const cl=document.getElementById('c-line');cl.classList.toggle('off',!!fr);document.getElementById('c-line-t').textContent=fr||'傳送到小都的 LINE → 完成預約';
+  const fr=sr||fillReason();
+  flowRender('c');
   const xb=document.getElementById('c2-combo-next');xb.disabled=!!fr;xb.textContent=fr||'下一步：確認訂單與付款 →';
 }
 function cCopy(){copyText(cBuildMsg(),()=>{const b=document.getElementById('copyBtn');b.textContent='✓ 已複製，請貼到 LINE 給小都';b.classList.add('ok');setTimeout(()=>{b.textContent='📋 沒有自動帶入？按這裡複製訊息';b.classList.remove('ok');},2600);});}
