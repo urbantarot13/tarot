@@ -3,7 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>小都靈數水晶</title>
+<title>小都靈數水晶｜免費算出你缺少的數字</title>
+<meta name="description" content="輸入生日，免費算出你的生命靈數與缺數，看你缺什麼能量，推薦適合你的客製靈數水晶手鍊。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://urbantarot13.github.io/tarot/crystal/">
+<meta property="og:title" content="小都靈數水晶｜免費算出你缺少的數字">
+<meta property="og:description" content="輸入生日，免費算出生命靈數與缺數，看你缺什麼能量，推薦適合你的手鍊。">
+<meta property="og:image" content="https://urbantarot13.github.io/tarot/crystal/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
 <style>html,body{margin:0}img{max-width:100%}</style>
 </head>
 <body>
@@ -371,8 +381,8 @@ footer .brand{color:var(--ink)}
           <select class="input" id="d" aria-label="日"></select>
         </div>
       </div>
-      <label class="toggle"><input type="checkbox" id="useLunar"> <span>進階：同時計算農曆（後天缺數）<br><small style="color:var(--mute)">國曆看先天帶來的缺數，農曆看後天環境養成的缺數</small></span></label>
-      <div class="lunar-box" id="lunarBox" hidden>
+      <label class="toggle"><input type="checkbox" id="useLunar" checked> <span>進階：同時計算農曆（後天缺數）<br><small style="color:var(--mute)">國曆看先天帶來的缺數，農曆看後天環境養成的缺數</small></span></label>
+      <div class="lunar-box" id="lunarBox">
         <div class="field">
           <label for="ly">農曆生日（已依國曆自動換算，可自行修改）</label>
           <div class="date-row">
@@ -381,11 +391,11 @@ footer .brand{color:var(--ink)}
             <select class="input" id="ld" aria-label="農曆日"></select>
           </div>
         </div>
-        <p class="hint" id="lunarHint">閏月以該月數字計算。星座數沿用國曆生日的星座。</p>
+        <p class="hint" id="lunarHint">閏月以該月數字計算。星座數用農曆月日對照星座。</p>
       </div>
       <p class="err" id="err" role="alert"></p>
       <button class="btn" type="submit">開始計算 →</button>
-      <p class="eyebrow" id="sampleNote" style="letter-spacing:.1em">目前顯示範例：1999 / 03 / 13</p>
+      <p class="eyebrow" id="sampleNote" style="letter-spacing:.1em">目前顯示範例：1999 / 03 / 13（含農曆）</p>
     </form>
   </div>
 </section>
@@ -747,8 +757,8 @@ function syncLunar(){
   if(!(y>=1900&&y<=2100))return;
   const L=toLunar(y,m,d);
   if(L&&L.y){$("ly").value=L.y;$("lm").value=L.m;$("ld").value=L.d;
-    $("lunarHint").textContent=`換算結果：農曆 ${L.y} 年 ${L.leap?"閏":""}${L.m} 月 ${L.d} 日。閏月以該月數字計算，星座數沿用國曆生日的星座。`;}
-  else $("lunarHint").textContent="這個瀏覽器無法自動換算，請手動填入農曆生日。星座數沿用國曆生日的星座。";
+    $("lunarHint").textContent=`換算結果：農曆 ${L.y} 年 ${L.leap?"閏":""}${L.m} 月 ${L.d} 日。閏月以該月數字計算，星座數用農曆月日對照星座。`;}
+  else $("lunarHint").textContent="這個瀏覽器無法自動換算，請手動填入農曆生日。星座數用農曆月日對照星座。";
 }
 $("useLunar").addEventListener("change",e=>{$("lunarBox").hidden=!e.target.checked;if(e.target.checked)syncLunar();});
 
@@ -763,7 +773,7 @@ $("calcForm").addEventListener("submit",e=>{
   state.post=null;
   if($("useLunar").checked){
     const ly=+$("ly").value,lm=+$("lm").value,ld=+$("ld").value;
-    if(ly>=1900&&ly<=2100) state.post=compute(ly,lm,ld,m,d);
+    if(ly>=1900&&ly<=2100) state.post=compute(ly,lm,ld,lm,ld);
   }
   state.view="pre";
   $("sampleNote").textContent=`已計算：${y} / ${String(m).padStart(2,"0")} / ${String(d).padStart(2,"0")}${state.post?"（含農曆）":""}`;
@@ -1001,6 +1011,8 @@ function renderAll(){renderStyle();renderPicked();renderSheet();renderMissing();
 
 /* 範例：講義的 1999/03/13 */
 state.pre=compute(1999,3,13,3,13);
+syncLunar();
+{const ly=+$("ly").value,lm=+$("lm").value,ld=+$("ld").value; if(ly>=1900&&ly<=2100) state.post=compute(ly,lm,ld,lm,ld);}
 renderAll();
 document.fonts&&document.fonts.ready.then(()=>{});
 </script>
